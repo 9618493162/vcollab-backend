@@ -10,16 +10,19 @@ const roomController = require("./controllers/roomController");
 const PORT = process.env.PORT || 5002;
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/vcollab";
 
-// Connect to MongoDB
-mongoose.connect(MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
-.then(() => console.log("✅ Connected to MongoDB"))
-.catch((err) => {
-    console.log("⚠️ MongoDB not available, using in-memory storage");
-    console.log("To use MongoDB: Install MongoDB and start the service");
-});
+// Connect to MongoDB (optional - we're using Supabase for persistent storage)
+if (MONGODB_URI && MONGODB_URI !== "mongodb://localhost:27017/vcollab") {
+    mongoose.connect(MONGODB_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+    })
+    .then(() => console.log("✅ Connected to MongoDB"))
+    .catch((err) => {
+        console.log("⚠️ MongoDB not available, using in-memory storage");
+    });
+} else {
+    console.log("ℹ️ MongoDB not configured, using in-memory storage for room coordination");
+}
 
 // Create HTTP server
 const server = http.createServer(app);
