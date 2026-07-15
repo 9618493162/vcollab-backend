@@ -141,6 +141,10 @@ const corsOptions = {
             'http://127.0.0.1:3000',
             'http://localhost:5173',
             'http://127.0.0.1:5173',
+            'https://vcollab-frontend.vercel.app',
+            'https://vcollab-frontend-b092nji47-ggundrathinavadeep-4146s-projects.vercel.app',
+            'https://vcollab-frontend-py4x87l13-ggundrathinavadeep-4146s-projects.vercel.app',
+            'https://vcollab-frontend-drdqpabn9-ggundrathinavadeep-4146s-projects.vercel.app',
             process.env.FRONTEND_URL
         ].filter(Boolean);
 
