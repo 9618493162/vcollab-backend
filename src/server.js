@@ -11,17 +11,15 @@ const PORT = process.env.PORT || 5002;
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/vcollab";
 
 // Connect to MongoDB (optional - we're using Supabase for persistent storage)
+// MongoDB is only used for room coordination, not required
 if (MONGODB_URI && MONGODB_URI !== "mongodb://localhost:27017/vcollab") {
-    mongoose.connect(MONGODB_URI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-    })
+    mongoose.connect(MONGODB_URI)
     .then(() => console.log("✅ Connected to MongoDB"))
     .catch((err) => {
         console.log("⚠️ MongoDB not available, using in-memory storage");
     });
 } else {
-    console.log("ℹ️ MongoDB not configured, using in-memory storage for room coordination");
+    console.log("ℹ️ Using in-memory storage for room coordination (MongoDB not configured)");
 }
 
 // Create HTTP server
