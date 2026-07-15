@@ -1,0 +1,108 @@
+2026-07-15 22:16:51 [ERROR]: Failed to initialize MongoDB session store: MongoStore.create is not a function {"service":"vcollab-backend"}
+TypeError: MongoStore.create is not a function
+    at initializeSessionStore (C:\Users\HP\Downloads\IITHYB (3)\backend\src\middleware\sessionManager.js:30:42)
+    at sessionMiddleware (C:\Users\HP\Downloads\IITHYB (3)\backend\src\middleware\sessionManager.js:50:20)
+    at Object.<anonymous> (C:\Users\HP\Downloads\IITHYB (3)\backend\src\app.js:47:9)
+    at Module._compile (node:internal/modules/cjs/loader:1804:14)
+    at Object..js (node:internal/modules/cjs/loader:1936:10)
+    at Module.load (node:internal/modules/cjs/loader:1525:32)
+    at Module._load (node:internal/modules/cjs/loader:1327:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.require (node:internal/modules/cjs/loader:1548:12)
+2026-07-15 22:17:06 [ERROR]: Failed to initialize MongoDB session store: MongoStore.create is not a function {"service":"vcollab-backend"}
+TypeError: MongoStore.create is not a function
+    at initializeSessionStore (C:\Users\HP\Downloads\IITHYB (3)\backend\src\middleware\sessionManager.js:30:42)
+    at sessionMiddleware (C:\Users\HP\Downloads\IITHYB (3)\backend\src\middleware\sessionManager.js:50:20)
+    at Object.<anonymous> (C:\Users\HP\Downloads\IITHYB (3)\backend\src\app.js:47:9)
+    at Module._compile (node:internal/modules/cjs/loader:1804:14)
+    at Object..js (node:internal/modules/cjs/loader:1936:10)
+    at Module.load (node:internal/modules/cjs/loader:1525:32)
+    at Module._load (node:internal/modules/cjs/loader:1327:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.require (node:internal/modules/cjs/loader:1548:12)
+2026-07-15 22:17:06 [ERROR]: Uncaught Exception: listen EADDRINUSE: address already in use :::5003 {"service":"vcollab-backend","code":"EADDRINUSE","errno":-4091,"syscall":"listen","address":"::","port":5003}
+Error: listen EADDRINUSE: address already in use :::5003
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at Object.<anonymous> (C:\Users\HP\Downloads\IITHYB (3)\backend\src\server.js:202:8)
+    at Module._compile (node:internal/modules/cjs/loader:1804:14)
+    at Object..js (node:internal/modules/cjs/loader:1936:10)
+    at Module.load (node:internal/modules/cjs/loader:1525:32)
+    at Module._load (node:internal/modules/cjs/loader:1327:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+2026-07-15 22:17:54 [ERROR]: Failed to initialize MongoDB session store: MongoStore.create is not a function {"service":"vcollab-backend"}
+TypeError: MongoStore.create is not a function
+    at initializeSessionStore (C:\Users\HP\Downloads\IITHYB (3)\backend\src\middleware\sessionManager.js:30:42)
+    at sessionMiddleware (C:\Users\HP\Downloads\IITHYB (3)\backend\src\middleware\sessionManager.js:50:20)
+    at Object.<anonymous> (C:\Users\HP\Downloads\IITHYB (3)\backend\src\app.js:47:9)
+    at Module._compile (node:internal/modules/cjs/loader:1804:14)
+    at Object..js (node:internal/modules/cjs/loader:1936:10)
+    at Module.load (node:internal/modules/cjs/loader:1525:32)
+    at Module._load (node:internal/modules/cjs/loader:1327:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.require (node:internal/modules/cjs/loader:1548:12)
+2026-07-15 22:18:21 [ERROR]: Error occurred: {"service":"vcollab-backend","error":"Expected property name or '}' in JSON at position 1 (line 1 column 2)","url":"/api/auth/register","method":"POST","ip":"::1"}
+SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)
+    at JSON.parse (<anonymous>)
+    at parse (C:\Users\HP\Downloads\IITHYB (3)\backend\node_modules\body-parser\lib\types\json.js:91:21)
+    at C:\Users\HP\Downloads\IITHYB (3)\backend\node_modules\body-parser\lib\read.js:162:18
+    at AsyncResource.runInAsyncScope (node:async_hooks:214:14)
+    at invokeCallback (C:\Users\HP\Downloads\IITHYB (3)\backend\node_modules\raw-body\index.js:238:16)
+    at done (C:\Users\HP\Downloads\IITHYB (3)\backend\node_modules\raw-body\index.js:227:7)
+    at IncomingMessage.onEnd (C:\Users\HP\Downloads\IITHYB (3)\backend\node_modules\raw-body\index.js:287:7)
+    at IncomingMessage.emit (node:events:508:28)
+    at endReadableNT (node:internal/streams/readable:1701:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)
+2026-07-15 22:19:11 [ERROR]: Error occurred: {"service":"vcollab-backend","error":"Cannot set property query of #<IncomingMessage> which has only a getter","url":"/api/auth/register","method":"POST","ip":"::1"}
+TypeError: Cannot set property query of #<IncomingMessage> which has only a getter
+    at C:\Users\HP\Downloads\IITHYB (3)\backend\node_modules\express-mongo-sanitize\index.js:113:18
+    at Array.forEach (<anonymous>)
+    at C:\Users\HP\Downloads\IITHYB (3)\backend\node_modules\express-mongo-sanitize\index.js:110:44
+    at Layer.handleRequest (C:\Users\HP\Downloads\IITHYB (3)\backend\node_modules\router\lib\layer.js:152:17)
+    at trimPrefix (C:\Users\HP\Downloads\IITHYB (3)\backend\node_modules\router\index.js:342:13)
+    at C:\Users\HP\Downloads\IITHYB (3)\backend\node_modules\router\index.js:297:9
+    at processParams (C:\Users\HP\Downloads\IITHYB (3)\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\HP\Downloads\IITHYB (3)\backend\node_modules\router\index.js:291:5)
+    at detectSessionHijacking (C:\Users\HP\Downloads\IITHYB (3)\backend\src\middleware\sessionManager.js:110:16)
+    at Layer.handleRequest (C:\Users\HP\Downloads\IITHYB (3)\backend\node_modules\router\lib\layer.js:152:17)
+2026-07-15 22:20:11 [ERROR]: Failed to initialize MongoDB session store: MongoStore.create is not a function {"service":"vcollab-backend"}
+TypeError: MongoStore.create is not a function
+    at initializeSessionStore (C:\Users\HP\Downloads\IITHYB (3)\backend\src\middleware\sessionManager.js:30:42)
+    at sessionMiddleware (C:\Users\HP\Downloads\IITHYB (3)\backend\src\middleware\sessionManager.js:50:20)
+    at Object.<anonymous> (C:\Users\HP\Downloads\IITHYB (3)\backend\src\app.js:47:9)
+    at Module._compile (node:internal/modules/cjs/loader:1804:14)
+    at Object..js (node:internal/modules/cjs/loader:1936:10)
+    at Module.load (node:internal/modules/cjs/loader:1525:32)
+    at Module._load (node:internal/modules/cjs/loader:1327:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.require (node:internal/modules/cjs/loader:1548:12)
+2026-07-15 22:35:36 [ERROR]: Failed to initialize MongoDB session store: MongoStore.create is not a function {"service":"vcollab-backend"}
+TypeError: MongoStore.create is not a function
+    at initializeSessionStore (C:\Users\HP\Downloads\IITHYB (3)\backend\src\middleware\sessionManager.js:30:42)
+    at sessionMiddleware (C:\Users\HP\Downloads\IITHYB (3)\backend\src\middleware\sessionManager.js:50:20)
+    at Object.<anonymous> (C:\Users\HP\Downloads\IITHYB (3)\backend\src\app.js:47:9)
+    at Module._compile (node:internal/modules/cjs/loader:1804:14)
+    at Object..js (node:internal/modules/cjs/loader:1936:10)
+    at Module.load (node:internal/modules/cjs/loader:1525:32)
+    at Module._load (node:internal/modules/cjs/loader:1327:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.require (node:internal/modules/cjs/loader:1548:12)
+2026-07-15 23:01:49 [ERROR]: Failed to initialize MongoDB session store: MongoStore.create is not a function {"service":"vcollab-backend"}
+TypeError: MongoStore.create is not a function
+    at initializeSessionStore (C:\Users\HP\Downloads\IITHYB (3)\backend\src\middleware\sessionManager.js:30:42)
+    at sessionMiddleware (C:\Users\HP\Downloads\IITHYB (3)\backend\src\middleware\sessionManager.js:50:20)
+    at Object.<anonymous> (C:\Users\HP\Downloads\IITHYB (3)\backend\src\app.js:47:9)
+    at Module._compile (node:internal/modules/cjs/loader:1804:14)
+    at Object..js (node:internal/modules/cjs/loader:1936:10)
+    at Module.load (node:internal/modules/cjs/loader:1525:32)
+    at Module._load (node:internal/modules/cjs/loader:1327:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.require (node:internal/modules/cjs/loader:1548:12)

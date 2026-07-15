@@ -1,0 +1,23 @@
+2026-07-15 22:17:06 [ERROR]: uncaughtException: listen EADDRINUSE: address already in use :::5003
+Error: listen EADDRINUSE: address already in use :::5003
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at Object.<anonymous> (C:\Users\HP\Downloads\IITHYB (3)\backend\src\server.js:202:8)
+    at Module._compile (node:internal/modules/cjs/loader:1804:14)
+    at Object..js (node:internal/modules/cjs/loader:1936:10)
+    at Module.load (node:internal/modules/cjs/loader:1525:32)
+    at Module._load (node:internal/modules/cjs/loader:1327:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24) {"error":{"code":"EADDRINUSE","errno":-4091,"syscall":"listen","address":"::","port":5003},"exception":true,"date":"Wed Jul 15 2026 22:17:06 GMT+0530 (India Standard Time)","process":{"pid":3992,"uid":null,"gid":null,"cwd":"C:\\Users\\HP\\Downloads\\IITHYB (3)\\backend","execPath":"C:\\Program Files\\nodejs\\node.exe","version":"v24.13.1","argv":["C:\\Program Files\\nodejs\\node.exe","C:\\Users\\HP\\Downloads\\IITHYB (3)\\backend\\src\\server.js"],"memoryUsage":{"rss":109621248,"heapTotal":68231168,"heapUsed":42041472,"external":22033034,"arrayBuffers":18265448}},"os":{"loadavg":[0,0,0],"uptime":9612.328},"trace":[{"column":16,"file":"node:net","function":"Server.setupListenHandle [as _listen2]","line":1940,"method":"setupListenHandle [as _listen2]","native":false},{"column":12,"file":"node:net","function":"listenInCluster","line":1997,"method":null,"native":false},{"column":7,"file":"node:net","function":"Server.listen","line":2102,"method":"listen","native":false},{"column":8,"file":"3)\\backend\\src\\server.js","function":"Object.<anonymous> (C:\\Users\\HP\\Downloads\\IITHYB","line":202,"method":"<anonymous> (C:\\Users\\HP\\Downloads\\IITHYB","native":false},{"column":14,"file":"node:internal/modules/cjs/loader","function":"Module._compile","line":1804,"method":"_compile","native":false},{"column":10,"file":"node:internal/modules/cjs/loader","function":"Object..js","line":1936,"method":".js","native":false},{"column":32,"file":"node:internal/modules/cjs/loader","function":"Module.load","line":1525,"method":"load","native":false},{"column":12,"file":"node:internal/modules/cjs/loader","function":"Module._load","line":1327,"method":"_load","native":false},{"column":14,"file":"node:diagnostics_channel","function":"TracingChannel.traceSync","line":328,"method":"traceSync","native":false},{"column":24,"file":"node:internal/modules/cjs/loader","function":"wrapModuleLoad","line":245,"method":null,"native":false}],"service":"vcollab-backend"}
+Error: listen EADDRINUSE: address already in use :::5003
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at Object.<anonymous> (C:\Users\HP\Downloads\IITHYB (3)\backend\src\server.js:202:8)
+    at Module._compile (node:internal/modules/cjs/loader:1804:14)
+    at Object..js (node:internal/modules/cjs/loader:1936:10)
+    at Module.load (node:internal/modules/cjs/loader:1525:32)
+    at Module._load (node:internal/modules/cjs/loader:1327:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)

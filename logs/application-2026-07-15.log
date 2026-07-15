@@ -1,0 +1,174 @@
+2026-07-15 22:16:51 [ERROR]: Failed to initialize MongoDB session store: MongoStore.create is not a function {"service":"vcollab-backend"}
+TypeError: MongoStore.create is not a function
+    at initializeSessionStore (C:\Users\HP\Downloads\IITHYB (3)\backend\src\middleware\sessionManager.js:30:42)
+    at sessionMiddleware (C:\Users\HP\Downloads\IITHYB (3)\backend\src\middleware\sessionManager.js:50:20)
+    at Object.<anonymous> (C:\Users\HP\Downloads\IITHYB (3)\backend\src\app.js:47:9)
+    at Module._compile (node:internal/modules/cjs/loader:1804:14)
+    at Object..js (node:internal/modules/cjs/loader:1936:10)
+    at Module.load (node:internal/modules/cjs/loader:1525:32)
+    at Module._load (node:internal/modules/cjs/loader:1327:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.require (node:internal/modules/cjs/loader:1548:12)
+2026-07-15 22:16:51 [WARN]: Falling back to in-memory session store {"service":"vcollab-backend"}
+2026-07-15 22:16:51 [INFO]: Application middleware configured successfully {"service":"vcollab-backend"}
+2026-07-15 22:17:06 [ERROR]: Failed to initialize MongoDB session store: MongoStore.create is not a function {"service":"vcollab-backend"}
+TypeError: MongoStore.create is not a function
+    at initializeSessionStore (C:\Users\HP\Downloads\IITHYB (3)\backend\src\middleware\sessionManager.js:30:42)
+    at sessionMiddleware (C:\Users\HP\Downloads\IITHYB (3)\backend\src\middleware\sessionManager.js:50:20)
+    at Object.<anonymous> (C:\Users\HP\Downloads\IITHYB (3)\backend\src\app.js:47:9)
+    at Module._compile (node:internal/modules/cjs/loader:1804:14)
+    at Object..js (node:internal/modules/cjs/loader:1936:10)
+    at Module.load (node:internal/modules/cjs/loader:1525:32)
+    at Module._load (node:internal/modules/cjs/loader:1327:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.require (node:internal/modules/cjs/loader:1548:12)
+2026-07-15 22:17:06 [WARN]: Falling back to in-memory session store {"service":"vcollab-backend"}
+2026-07-15 22:17:06 [INFO]: Application middleware configured successfully {"service":"vcollab-backend"}
+2026-07-15 22:17:06 [ERROR]: Uncaught Exception: listen EADDRINUSE: address already in use :::5003 {"service":"vcollab-backend","code":"EADDRINUSE","errno":-4091,"syscall":"listen","address":"::","port":5003}
+Error: listen EADDRINUSE: address already in use :::5003
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at Object.<anonymous> (C:\Users\HP\Downloads\IITHYB (3)\backend\src\server.js:202:8)
+    at Module._compile (node:internal/modules/cjs/loader:1804:14)
+    at Object..js (node:internal/modules/cjs/loader:1936:10)
+    at Module.load (node:internal/modules/cjs/loader:1525:32)
+    at Module._load (node:internal/modules/cjs/loader:1327:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+2026-07-15 22:17:54 [ERROR]: Failed to initialize MongoDB session store: MongoStore.create is not a function {"service":"vcollab-backend"}
+TypeError: MongoStore.create is not a function
+    at initializeSessionStore (C:\Users\HP\Downloads\IITHYB (3)\backend\src\middleware\sessionManager.js:30:42)
+    at sessionMiddleware (C:\Users\HP\Downloads\IITHYB (3)\backend\src\middleware\sessionManager.js:50:20)
+    at Object.<anonymous> (C:\Users\HP\Downloads\IITHYB (3)\backend\src\app.js:47:9)
+    at Module._compile (node:internal/modules/cjs/loader:1804:14)
+    at Object..js (node:internal/modules/cjs/loader:1936:10)
+    at Module.load (node:internal/modules/cjs/loader:1525:32)
+    at Module._load (node:internal/modules/cjs/loader:1327:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.require (node:internal/modules/cjs/loader:1548:12)
+2026-07-15 22:17:54 [WARN]: Falling back to in-memory session store {"service":"vcollab-backend"}
+2026-07-15 22:17:54 [INFO]: Application middleware configured successfully {"service":"vcollab-backend"}
+2026-07-15 22:18:21 [ERROR]: Error occurred: {"service":"vcollab-backend","error":"Expected property name or '}' in JSON at position 1 (line 1 column 2)","url":"/api/auth/register","method":"POST","ip":"::1"}
+SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)
+    at JSON.parse (<anonymous>)
+    at parse (C:\Users\HP\Downloads\IITHYB (3)\backend\node_modules\body-parser\lib\types\json.js:91:21)
+    at C:\Users\HP\Downloads\IITHYB (3)\backend\node_modules\body-parser\lib\read.js:162:18
+    at AsyncResource.runInAsyncScope (node:async_hooks:214:14)
+    at invokeCallback (C:\Users\HP\Downloads\IITHYB (3)\backend\node_modules\raw-body\index.js:238:16)
+    at done (C:\Users\HP\Downloads\IITHYB (3)\backend\node_modules\raw-body\index.js:227:7)
+    at IncomingMessage.onEnd (C:\Users\HP\Downloads\IITHYB (3)\backend\node_modules\raw-body\index.js:287:7)
+    at IncomingMessage.emit (node:events:508:28)
+    at endReadableNT (node:internal/streams/readable:1701:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)
+2026-07-15 22:18:21 [INFO]: ::1 POST /api/auth/register 400 30.135 ms - 1115 {"service":"vcollab-backend"}
+2026-07-15 22:19:11 [ERROR]: Error occurred: {"service":"vcollab-backend","error":"Cannot set property query of #<IncomingMessage> which has only a getter","url":"/api/auth/register","method":"POST","ip":"::1"}
+TypeError: Cannot set property query of #<IncomingMessage> which has only a getter
+    at C:\Users\HP\Downloads\IITHYB (3)\backend\node_modules\express-mongo-sanitize\index.js:113:18
+    at Array.forEach (<anonymous>)
+    at C:\Users\HP\Downloads\IITHYB (3)\backend\node_modules\express-mongo-sanitize\index.js:110:44
+    at Layer.handleRequest (C:\Users\HP\Downloads\IITHYB (3)\backend\node_modules\router\lib\layer.js:152:17)
+    at trimPrefix (C:\Users\HP\Downloads\IITHYB (3)\backend\node_modules\router\index.js:342:13)
+    at C:\Users\HP\Downloads\IITHYB (3)\backend\node_modules\router\index.js:297:9
+    at processParams (C:\Users\HP\Downloads\IITHYB (3)\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\HP\Downloads\IITHYB (3)\backend\node_modules\router\index.js:291:5)
+    at detectSessionHijacking (C:\Users\HP\Downloads\IITHYB (3)\backend\src\middleware\sessionManager.js:110:16)
+    at Layer.handleRequest (C:\Users\HP\Downloads\IITHYB (3)\backend\node_modules\router\lib\layer.js:152:17)
+2026-07-15 22:19:11 [INFO]: ::1 POST /api/auth/register 500 4.482 ms - 1298 {"service":"vcollab-backend"}
+2026-07-15 22:20:11 [ERROR]: Failed to initialize MongoDB session store: MongoStore.create is not a function {"service":"vcollab-backend"}
+TypeError: MongoStore.create is not a function
+    at initializeSessionStore (C:\Users\HP\Downloads\IITHYB (3)\backend\src\middleware\sessionManager.js:30:42)
+    at sessionMiddleware (C:\Users\HP\Downloads\IITHYB (3)\backend\src\middleware\sessionManager.js:50:20)
+    at Object.<anonymous> (C:\Users\HP\Downloads\IITHYB (3)\backend\src\app.js:47:9)
+    at Module._compile (node:internal/modules/cjs/loader:1804:14)
+    at Object..js (node:internal/modules/cjs/loader:1936:10)
+    at Module.load (node:internal/modules/cjs/loader:1525:32)
+    at Module._load (node:internal/modules/cjs/loader:1327:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.require (node:internal/modules/cjs/loader:1548:12)
+2026-07-15 22:20:11 [WARN]: Falling back to in-memory session store {"service":"vcollab-backend"}
+2026-07-15 22:20:11 [INFO]: Application middleware configured successfully {"service":"vcollab-backend"}
+2026-07-15 22:20:59 [INFO]: ::1 POST /api/auth/register 201 22326.010 ms - 479 {"service":"vcollab-backend"}
+2026-07-15 22:27:48 [INFO]: ::1 POST /api/auth/register 201 22559.049 ms - 501 {"service":"vcollab-backend"}
+2026-07-15 22:27:58 [INFO]: ::1 POST /api/auth/login 200 10099.228 ms - 494 {"service":"vcollab-backend"}
+2026-07-15 22:28:05 [INFO]: ::1 POST /api/meetings/create 401 7092.871 ms - 44 {"service":"vcollab-backend"}
+2026-07-15 22:29:01 [INFO]: ::1 POST /api/auth/register 201 22005.698 ms - 494 {"service":"vcollab-backend"}
+2026-07-15 22:32:00 [INFO]: ::1 POST /api/auth/register 201 22357.006 ms - 501 {"service":"vcollab-backend"}
+2026-07-15 22:32:11 [INFO]: ::1 POST /api/auth/login 200 10064.087 ms - 494 {"service":"vcollab-backend"}
+2026-07-15 22:32:18 [INFO]: ::1 GET /api/auth/profile 401 7107.333 ms - 44 {"service":"vcollab-backend"}
+2026-07-15 22:32:18 [INFO]: ::1 GET /api/auth/profile 401 0.858 ms - 53 {"service":"vcollab-backend"}
+2026-07-15 22:32:28 [INFO]: ::1 POST /api/auth/login 401 10074.030 ms - 55 {"service":"vcollab-backend"}
+2026-07-15 22:35:36 [ERROR]: Failed to initialize MongoDB session store: MongoStore.create is not a function {"service":"vcollab-backend"}
+TypeError: MongoStore.create is not a function
+    at initializeSessionStore (C:\Users\HP\Downloads\IITHYB (3)\backend\src\middleware\sessionManager.js:30:42)
+    at sessionMiddleware (C:\Users\HP\Downloads\IITHYB (3)\backend\src\middleware\sessionManager.js:50:20)
+    at Object.<anonymous> (C:\Users\HP\Downloads\IITHYB (3)\backend\src\app.js:47:9)
+    at Module._compile (node:internal/modules/cjs/loader:1804:14)
+    at Object..js (node:internal/modules/cjs/loader:1936:10)
+    at Module.load (node:internal/modules/cjs/loader:1525:32)
+    at Module._load (node:internal/modules/cjs/loader:1327:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.require (node:internal/modules/cjs/loader:1548:12)
+2026-07-15 22:35:36 [WARN]: Falling back to in-memory session store {"service":"vcollab-backend"}
+2026-07-15 22:35:36 [INFO]: Application middleware configured successfully {"service":"vcollab-backend"}
+2026-07-15 22:36:28 [INFO]: ::1 POST /api/auth/register 201 29359.906 ms - 501 {"service":"vcollab-backend"}
+2026-07-15 22:36:46 [INFO]: ::1 POST /api/auth/login 200 17126.876 ms - 494 {"service":"vcollab-backend"}
+2026-07-15 22:36:53 [INFO]: ::1 GET /api/auth/profile 401 7122.822 ms - 44 {"service":"vcollab-backend"}
+2026-07-15 22:36:53 [INFO]: ::1 GET /api/auth/profile 401 1.030 ms - 53 {"service":"vcollab-backend"}
+2026-07-15 22:37:10 [INFO]: ::1 POST /api/auth/login 401 17103.265 ms - 55 {"service":"vcollab-backend"}
+2026-07-15 22:52:24 [INFO]: ::1 GET / 200 1.267 ms - 273 {"service":"vcollab-backend"}
+2026-07-15 22:52:25 [WARN]: 404 - Not Found: GET /favicon.ico from ::1 {"service":"vcollab-backend"}
+2026-07-15 22:52:25 [INFO]: ::1 GET /favicon.ico 404 2.034 ms - 48 {"service":"vcollab-backend"}
+2026-07-15 22:53:13 [INFO]: ::1 OPTIONS /api/auth/register 204 0.246 ms - 0 {"service":"vcollab-backend"}
+2026-07-15 22:53:13 [INFO]: ::1 POST /api/auth/register 400 3.052 ms - 175 {"service":"vcollab-backend"}
+2026-07-15 22:56:04 [INFO]: ::1 POST /api/auth/register 400 1.782 ms - 175 {"service":"vcollab-backend"}
+2026-07-15 22:56:24 [INFO]: ::1 POST /api/auth/register 400 1.576 ms - 175 {"service":"vcollab-backend"}
+2026-07-15 22:56:32 [INFO]: ::1 OPTIONS /api/auth/login 204 0.184 ms - 0 {"service":"vcollab-backend"}
+2026-07-15 22:56:46 [INFO]: ::1 POST /api/auth/login - - ms - - {"service":"vcollab-backend"}
+2026-07-15 22:57:04 [INFO]: ::1 POST /api/auth/register 400 1.887 ms - 175 {"service":"vcollab-backend"}
+2026-07-15 22:58:26 [INFO]: ::1 POST /api/auth/register 429 1.076 ms - 86 {"service":"vcollab-backend"}
+2026-07-15 23:01:49 [ERROR]: Failed to initialize MongoDB session store: MongoStore.create is not a function {"service":"vcollab-backend"}
+TypeError: MongoStore.create is not a function
+    at initializeSessionStore (C:\Users\HP\Downloads\IITHYB (3)\backend\src\middleware\sessionManager.js:30:42)
+    at sessionMiddleware (C:\Users\HP\Downloads\IITHYB (3)\backend\src\middleware\sessionManager.js:50:20)
+    at Object.<anonymous> (C:\Users\HP\Downloads\IITHYB (3)\backend\src\app.js:47:9)
+    at Module._compile (node:internal/modules/cjs/loader:1804:14)
+    at Object..js (node:internal/modules/cjs/loader:1936:10)
+    at Module.load (node:internal/modules/cjs/loader:1525:32)
+    at Module._load (node:internal/modules/cjs/loader:1327:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.require (node:internal/modules/cjs/loader:1548:12)
+2026-07-15 23:01:49 [WARN]: Falling back to in-memory session store {"service":"vcollab-backend"}
+2026-07-15 23:01:49 [INFO]: Application middleware configured successfully {"service":"vcollab-backend"}
+2026-07-15 23:03:15 [INFO]: ::1 POST /api/auth/register 201 29932.645 ms - 500 {"service":"vcollab-backend"}
+2026-07-15 23:03:53 [INFO]: ::1 POST /api/auth/login 200 17462.889 ms - 493 {"service":"vcollab-backend"}
+2026-07-15 23:03:54 [INFO]: ::1 OPTIONS /api/auth/profile 204 0.288 ms - 0 {"service":"vcollab-backend"}
+2026-07-15 23:03:54 [INFO]: ::1 GET /api/auth/profile 401 2.621 ms - 54 {"service":"vcollab-backend"}
+2026-07-15 23:03:54 [INFO]: ::1 OPTIONS /api/meetings 204 0.273 ms - 0 {"service":"vcollab-backend"}
+2026-07-15 23:03:54 [WARN]: 404 - Not Found: GET /api/meetings from ::1 {"service":"vcollab-backend"}
+2026-07-15 23:03:54 [INFO]: ::1 GET /api/meetings 404 2.478 ms - 48 {"service":"vcollab-backend"}
+2026-07-15 23:03:54 [INFO]: ::1 OPTIONS /api/meetings/stats 204 0.190 ms - 0 {"service":"vcollab-backend"}
+2026-07-15 23:03:54 [INFO]: ::1 GET /api/meetings/stats 401 2.277 ms - 54 {"service":"vcollab-backend"}
+2026-07-15 23:03:58 [INFO]: ::1 GET /api/auth/profile 401 1.227 ms - 54 {"service":"vcollab-backend"}
+2026-07-15 23:04:25 [INFO]: ::1 GET /api/auth/profile 401 1.944 ms - 54 {"service":"vcollab-backend"}
+2026-07-15 23:04:45 [INFO]: ::1 GET /api/auth/profile 401 1.183 ms - 54 {"service":"vcollab-backend"}
+2026-07-15 23:04:45 [WARN]: 404 - Not Found: GET /api/meetings from ::1 {"service":"vcollab-backend"}
+2026-07-15 23:04:45 [INFO]: ::1 GET /api/meetings 404 1.782 ms - 48 {"service":"vcollab-backend"}
+2026-07-15 23:04:45 [INFO]: ::1 GET /api/meetings/stats 401 1.932 ms - 54 {"service":"vcollab-backend"}
+2026-07-15 23:04:47 [INFO]: ::1 GET /api/auth/profile 401 1.490 ms - 54 {"service":"vcollab-backend"}
+2026-07-15 23:04:49 [INFO]: ::1 GET /api/auth/profile 401 6.240 ms - 54 {"service":"vcollab-backend"}
+2026-07-15 23:06:01 [INFO]: ::1 GET /api/auth/profile 401 1.296 ms - 54 {"service":"vcollab-backend"}
+2026-07-15 23:27:54 [INFO]: ::1 POST /api/auth/login 200 17393.292 ms - 493 {"service":"vcollab-backend"}
+2026-07-15 23:27:55 [INFO]: ::1 GET /api/auth/profile 401 1.267 ms - 54 {"service":"vcollab-backend"}
+2026-07-15 23:27:55 [WARN]: 404 - Not Found: GET /api/meetings from ::1 {"service":"vcollab-backend"}
+2026-07-15 23:27:55 [INFO]: ::1 GET /api/meetings 404 1.341 ms - 48 {"service":"vcollab-backend"}
+2026-07-15 23:27:55 [INFO]: ::1 GET /api/meetings/stats 401 1.410 ms - 54 {"service":"vcollab-backend"}
+2026-07-15 23:28:17 [INFO]: ::1 GET /api/auth/profile 401 1.255 ms - 54 {"service":"vcollab-backend"}
+2026-07-15 23:28:27 [INFO]: ::1 GET /api/auth/profile 401 1.695 ms - 54 {"service":"vcollab-backend"}
+2026-07-15 23:28:40 [INFO]: ::1 GET /api/auth/profile 401 1.393 ms - 54 {"service":"vcollab-backend"}

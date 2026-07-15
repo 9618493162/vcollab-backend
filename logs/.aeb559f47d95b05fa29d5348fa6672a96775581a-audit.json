@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 90
+    },
+    "auditLog": "C:\\Users\\HP\\Downloads\\IITHYB (3)\\backend\\logs\\.aeb559f47d95b05fa29d5348fa6672a96775581a-audit.json",
+    "files": [
+        {
+            "date": 1784130706253,
+            "name": "C:\\Users\\HP\\Downloads\\IITHYB (3)\\backend\\logs\\security-2026-07-15.log",
+            "hash": "9c997b82881b143e821baa817283d706c0892b83ad2a496009675fb5257eb80f"
+        }
+    ],
+    "hashType": "sha256"
+}
