@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Recording Player - VCollab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/dark-modern.css">
+<style>
+/* Recording Player overrides for dark theme */
+body { background: var(--bg-primary); }
+.rp-layout{flex:1;display:grid;grid-template-columns:1fr 380px;overflow:hidden;}
+.rp-main{display:flex;flex-direction:column;overflow:hidden;background:var(--bg-primary);}
+.tr-panel{background:var(--bg-secondary);border-left:1px solid var(--border-primary);display:flex;flex-direction:column;overflow:hidden;}
+.tr-body{flex:1;overflow-y:auto;padding:var(--space-lg);}
+.tr-entry{display:flex;gap:var(--space-sm);margin-bottom:var(--space-md);cursor:pointer;padding:var(--space-sm);border-radius:var(--radius-md);transition:background var(--transition-base);}
+.tr-entry:hover{background:var(--bg-hover);}
+.tr-entry.cur{background:rgba(99,102,241,.1);border-left:3px solid var(--accent-primary);}
+<style>
+.rp-layout{flex:1;display:grid;grid-template-columns:1fr 360px;overflow:hidden;}
+.rp-main{display:flex;flex-direction:column;overflow:hidden;background:#111827;}
+/* Video player */
+.video-player{flex:1;position:relative;background:#000;display:flex;align-items:center;justify-content:center;}
+.video-grid-mock{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:16px;width:100%;height:100%;}
+.vt{border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;position:relative;}
+.vt-av{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:white;}
+.vt-name{font-size:12px;color:rgba(255,255,255,.8);font-weight:600;}
+.vt-label{position:absolute;bottom:6px;left:6px;background:rgba(0,0,0,.6);color:white;font-size:10px;padding:2px 7px;border-radius:3px;}
+/* Controls */
+.player-ctrl{background:#1f2937;border-top:1px solid rgba(255,255,255,.08);padding:14px 20px;flex-shrink:0;}
+.progress-wrap{margin-bottom:12px;}
+.prog-times{display:flex;justify-content:space-between;font-size:11px;color:#9ca3af;margin-bottom:6px;}
+.prog-bar{height:5px;background:rgba(255,255,255,.1);border-radius:3px;cursor:pointer;position:relative;}
+.prog-fill{height:100%;border-radius:3px;background:#6366f1;width:38%;pointer-events:none;}
+.prog-thumb{position:absolute;top:50%;transform:translate(-50%,-50%);width:13px;height:13px;border-radius:50%;background:#6366f1;left:38%;box-shadow:0 0 0 3px rgba(99,102,241,.3);}
+/* Chapter markers */
+.ch-mark{position:absolute;top:0;bottom:0;width:2px;background:rgba(255,255,255,.4);cursor:pointer;}
+.ctrl-row{display:flex;align-items:center;justify-content:space-between;}
+.cg{display:flex;align-items:center;gap:8px;}
+.pc-btn{width:38px;height:38px;border-radius:8px;background:rgba(255,255,255,.08);border:none;color:white;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.pc-btn:hover{background:rgba(255,255,255,.14);}
+.play-btn{width:44px;height:44px;border-radius:50%;background:#6366f1;color:white;font-size:18px;}
+.play-btn:hover{background:#4f46e5;}
+.speed-btn{background:rgba(99,102,241,.2);border:1px solid rgba(99,102,241,.3);color:#a5b4fc;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;}
+/* Right panel — transcript */
+.tr-panel{background:white;border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+.tr-tabs{display:flex;border-bottom:1px solid var(--border);}
+.trtab{flex:1;padding:12px 0;text-align:center;font-size:12.5px;font-weight:600;color:var(--text-secondary);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;}
+.trtab.active{color:#6366f1;border-bottom-color:#6366f1;}
+.tr-body{flex:1;overflow-y:auto;padding:16px;}
+.tr-entry{display:flex;gap:8px;margin-bottom:16px;cursor:pointer;padding:8px;border-radius:8px;transition:background .15s;}
+.tr-entry:hover{background:#f4f6fa;}
+.tr-entry.cur{background:#eef2ff;border-left:3px solid #6366f1;}
+.tr-ts{font-size:11px;font-weight:700;color:#6366f1;min-width:36px;padding-top:2px;}
+.tr-av{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:white;flex-shrink:0;}
+.tr-cont{flex:1;}
+.tr-sp{font-size:11px;font-weight:700;color:var(--text-secondary);margin-bottom:2px;}
+.tr-txt{font-size:13.5px;line-height:1.55;}
+/* Summary panel */
+.sum-section{background:#f9fafb;border-radius:8px;border:1px solid var(--border);padding:14px;margin-bottom:12px;}
+.sum-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-secondary);margin-bottom:8px;}
+.ai-badge{display:inline-flex;align-items:center;gap:5px;background:#eef2ff;color:#6366f1;border-radius:20px;padding:4px 12px;font-size:11.5px;font-weight:700;margin-bottom:12px;}
+.action-row{display:flex;gap:8px;align-items:flex-start;margin-bottom:7px;}
+.action-chk{width:16px;height:16px;border-radius:3px;border:2px solid var(--border);flex-shrink:0;cursor:pointer;margin-top:1px;}
+.action-chk.done{background:#6366f1;border-color:#6366f1;}
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div style="width:32px;height:32px;background:#6366f1;border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-size:15px;font-weight:800;">V</div>
+      <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:17px;font-weight:800;color:white;">VCollab</span>
+    </div>
+    <a href="dashboard-dark.html" class="sidebar-item"><span class="icon">🏠</span>Home</a>
+    <a href="meeting-dark.html" class="sidebar-item"><span class="icon">📅</span>Meetings</a>
+    <a href="chat-dark.html" class="sidebar-item"><span class="icon">💬</span>Chat</a>
+    <a href="kanban-dark.html" class="sidebar-item"><span class="icon">📋</span>Contacts</a>
+    <a href="whiteboard-dark.html" class="sidebar-item"><span class="icon">🖊</span>Whiteboard</a>
+    <div class="sidebar-divider"></div>
+    <a href="recording-player-dark.html" class="sidebar-item active"><span class="icon">⏺</span>Recordings</a>
+    <a href="ai-copilot-dark.html" class="sidebar-item"><span class="icon">🤖</span>AI Assistant</a>
+  </aside>
+  <div class="main-content">
+    <div class="topbar">
+      <div>
+        <div style="font-size:14px;font-weight:700;">Q1 Design Review — Recording</div>
+        <div style="font-size:12px;color:var(--text-secondary);">Mar 15, 2025 · 58:42 · 6 participants</div>
+      </div>
+      <div class="topbar-actions">
+        <button onclick="location.href='dashboard-dark.html'" style="padding:6px 14px;background:#f4f6fa;border:1px solid var(--border);border-radius:6px;font-size:12.5px;font-weight:600;cursor:pointer;">← Back</button>
+        <button style="padding:6px 14px;background:white;border:1.5px solid var(--border);border-radius:6px;font-size:12.5px;font-weight:600;cursor:pointer;">⬇ Download</button>
+        <button style="padding:6px 14px;background:#6366f1;color:white;border:none;border-radius:6px;font-size:12.5px;font-weight:600;cursor:pointer;">🔗 Share</button>
+      </div>
+    </div>
+    <div class="rp-layout">
+      <!-- Video player -->
+      <div class="rp-main">
+        <div class="video-player">
+          <div class="video-grid-mock">
+            <div class="vt" style="background:linear-gradient(135deg,#312e81,#4338ca);">
+              <div class="vt-av" style="background:rgba(255,255,255,.15);">N</div>
+              <div class="vt-name">Navdeep</div>
+              <div class="vt-label">🎙 Speaking</div>
+            </div>
+            <div class="vt" style="background:linear-gradient(135deg,#7c2d12,#c2410c);">
+              <div class="vt-av" style="background:rgba(255,255,255,.15);">B</div>
+              <div class="vt-name">Bold Sharma</div>
+              <div class="vt-label">👁 Watching</div>
+            </div>
+            <div class="vt" style="background:linear-gradient(135deg,#064e3b,#065f46);">
+              <div class="vt-av" style="background:rgba(255,255,255,.15);">A</div>
+              <div class="vt-name">Anaiya Roy</div>
+              <div class="vt-label">🖥 Sharing</div>
+            </div>
+            <div class="vt" style="background:linear-gradient(135deg,#1e3a5f,#1e40af);">
+              <div class="vt-av" style="background:rgba(255,255,255,.15);">D</div>
+              <div class="vt-name">Daniel</div>
+              <div class="vt-label">👁 Watching</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Player controls -->
+        <div class="player-ctrl">
+          <div class="progress-wrap">
+            <div class="prog-times"><span id="curTime">22:24</span><span>58:42</span></div>
+            <div class="prog-bar" onclick="seekTo(event,this)">
+              <div class="prog-fill" id="progFill"></div>
+              <div class="prog-thumb" id="progThumb"></div>
+              <div class="ch-mark" style="left:0%;"></div>
+              <div class="ch-mark" style="left:15%;"></div>
+              <div class="ch-mark" style="left:38%;"></div>
+              <div class="ch-mark" style="left:72%;"></div>
+            </div>
+          </div>
+          <div class="ctrl-row">
+            <div class="cg">
+              <button class="pc-btn" onclick="skip(-10)" title="Back 10s">«10</button>
+              <button class="pc-btn play-btn" id="playBtn" onclick="togglePlay()">▶</button>
+              <button class="pc-btn" onclick="skip(10)" title="Fwd 10s">10»</button>
+              <button class="pc-btn">🔊</button>
+            </div>
+            <div class="cg">
+              <button class="speed-btn" id="speedBtn" onclick="cycleSpeed()">1×</button>
+              <button class="pc-btn" title="Fullscreen">⛶</button>
+              <button class="pc-btn" title="Captions" onclick="this.style.color=this.style.color==='#a5b4fc'?'white':'#a5b4fc'">CC</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transcript panel -->
+      <div class="tr-panel">
+        <div class="tr-tabs">
+          <div class="trtab active" onclick="switchTr('transcript',this)">📝 Transcript</div>
+          <div class="trtab" onclick="switchTr('summary',this)">🤖 AI Summary</div>
+          <div class="trtab" onclick="switchTr('chapters',this)">📑 Chapters</div>
+        </div>
+
+        <!-- Transcript -->
+        <div class="tr-body" id="trtab-transcript">
+          <div class="tr-entry" onclick="seekTime('00:00')"><div class="tr-ts">00:00</div><div class="tr-av" style="background:#6366f1;">N</div><div class="tr-cont"><div class="tr-sp">Navdeep</div><div class="tr-txt">Let's get started with the Q1 design review. We have a lot to cover today.</div></div></div>
+          <div class="tr-entry" onclick="seekTime('01:34')"><div class="tr-ts">01:34</div><div class="tr-av" style="background:#f59e0b;">B</div><div class="tr-cont"><div class="tr-sp">Bold Sharma</div><div class="tr-txt">I wanted to start by sharing the new component library we built.</div></div></div>
+          <div class="tr-entry cur" onclick="seekTime('22:24')"><div class="tr-ts">22:24</div><div class="tr-av" style="background:#10b981;">A</div><div class="tr-cont"><div class="tr-sp">Anaiya Roy</div><div class="tr-txt">The glassmorphism effects look great but we need performance checks on lower-end devices.</div></div></div>
+          <div class="tr-entry" onclick="seekTime('24:08')"><div class="tr-ts">24:08</div><div class="tr-av" style="background:#3b82f6;">D</div><div class="tr-cont"><div class="tr-sp">Daniel</div><div class="tr-txt">I ran benchmarks — blur effects drop FPS by 8-12% on integrated graphics.</div></div></div>
+          <div class="tr-entry" onclick="seekTime('25:52')"><div class="tr-ts">25:52</div><div class="tr-av" style="background:#6366f1;">N</div><div class="tr-cont"><div class="tr-sp">Navdeep</div><div class="tr-txt">Let's add a performance mode toggle. That becomes an action item.</div></div></div>
+          <div class="tr-entry" onclick="seekTime('31:15')"><div class="tr-ts">31:15</div><div class="tr-av" style="background:#f59e0b;">B</div><div class="tr-cont"><div class="tr-sp">Bold Sharma</div><div class="tr-txt">Typography is settled — Inter for body, Plus Jakarta Sans for headings.</div></div></div>
+        </div>
+
+        <!-- Summary -->
+        <div class="tr-body" id="trtab-summary" style="display:none;">
+          <div class="ai-badge">🤖 AI Generated</div>
+          <div class="sum-section"><div class="sum-lbl">Overview</div><div style="font-size:13.5px;line-height:1.65;color:var(--text-primary);">Q1 design review covering the new component library, performance benchmarks, typography system, and color palette decisions for the VCollab product redesign.</div></div>
+          <div class="sum-section">
+            <div class="sum-lbl">Action Items</div>
+            <div class="action-row"><div class="action-chk" onclick="this.classList.toggle('done')"></div><div style="font-size:13px;line-height:1.5;">Add performance mode toggle — <strong>Daniel</strong> · Mar 22</div></div>
+            <div class="action-row"><div class="action-chk done"></div><div style="font-size:13px;line-height:1.5;text-decoration:line-through;color:var(--text-secondary);">Finalize component docs — <strong>Bold</strong> · Done</div></div>
+            <div class="action-row"><div class="action-chk" onclick="this.classList.toggle('done')"></div><div style="font-size:13px;line-height:1.5;">Accessibility audit — <strong>Anaiya</strong> · Mar 25</div></div>
+          </div>
+          <div class="sum-section">
+            <div class="sum-lbl">Sentiment</div>
+            <div style="display:flex;gap:12px;">
+              <div style="flex:1;text-align:center;"><div style="font-size:20px;">😊</div><div style="font-size:15px;font-weight:800;color:#10b981;">72%</div><div style="font-size:11px;color:var(--text-secondary);">Positive</div></div>
+              <div style="flex:1;text-align:center;"><div style="font-size:20px;">😐</div><div style="font-size:15px;font-weight:800;color:#f59e0b;">21%</div><div style="font-size:11px;color:var(--text-secondary);">Neutral</div></div>
+              <div style="flex:1;text-align:center;"><div style="font-size:20px;">😟</div><div style="font-size:15px;font-weight:800;color:#ef4444;">7%</div><div style="font-size:11px;color:var(--text-secondary);">Concern</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chapters -->
+        <div class="tr-body" id="trtab-chapters" style="display:none;">
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div onclick="seekTime('00:00')" style="display:flex;align-items:center;gap:10px;padding:10px;background:#eef2ff;border-radius:8px;cursor:pointer;border-left:3px solid #6366f1;"><span style="font-size:11px;font-weight:700;color:#6366f1;white-space:nowrap;">00:00</span><div><div style="font-size:13px;font-weight:600;">👋 Intro & Agenda</div><div style="font-size:11px;color:var(--text-secondary);">8 min 45 sec</div></div></div>
+            <div onclick="seekTime('08:45')" style="display:flex;align-items:center;gap:10px;padding:10px;background:#f9fafb;border-radius:8px;cursor:pointer;"><span style="font-size:11px;font-weight:700;color:#6366f1;white-space:nowrap;">08:45</span><div><div style="font-size:13px;font-weight:600;">🧩 Component Library</div><div style="font-size:11px;color:var(--text-secondary);">12 min 20 sec</div></div></div>
+            <div onclick="seekTime('21:05')" style="display:flex;align-items:center;gap:10px;padding:10px;background:#f9fafb;border-radius:8px;cursor:pointer;"><span style="font-size:11px;font-weight:700;color:#6366f1;white-space:nowrap;">21:05</span><div><div style="font-size:13px;font-weight:600;">📊 Performance</div><div style="font-size:11px;color:var(--text-secondary);">9 min 55 sec</div></div></div>
+            <div onclick="seekTime('31:00')" style="display:flex;align-items:center;gap:10px;padding:10px;background:#f9fafb;border-radius:8px;cursor:pointer;"><span style="font-size:11px;font-weight:700;color:#6366f1;white-space:nowrap;">31:00</span><div><div style="font-size:13px;font-weight:600;">🔤 Typography & Color</div><div style="font-size:11px;color:var(--text-secondary);">11 min 10 sec</div></div></div>
+            <div onclick="seekTime('42:10')" style="display:flex;align-items:center;gap:10px;padding:10px;background:#f9fafb;border-radius:8px;cursor:pointer;"><span style="font-size:11px;font-weight:700;color:#6366f1;white-space:nowrap;">42:10</span><div><div style="font-size:13px;font-weight:600;">♿ Accessibility</div><div style="font-size:11px;color:var(--text-secondary);">7 min 30 sec</div></div></div>
+            <div onclick="seekTime('49:40')" style="display:flex;align-items:center;gap:10px;padding:10px;background:#f9fafb;border-radius:8px;cursor:pointer;"><span style="font-size:11px;font-weight:700;color:#6366f1;white-space:nowrap;">49:40</span><div><div style="font-size:13px;font-weight:600;">✅ Action Items & Wrap</div><div style="font-size:11px;color:var(--text-secondary);">9 min 02 sec</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+let playing=false;
+const speeds=[0.5,0.75,1,1.25,1.5,2];let si=2;
+function togglePlay(){playing=!playing;document.getElementById('playBtn').textContent=playing?'⏸':'▶';}
+function skip(s){const el=document.getElementById('curTime');const[m,sec]=el.textContent.split(':').map(Number);let t=m*60+sec+s;if(t<0)t=0;el.textContent=Math.floor(t/60)+':'+String(t%60).padStart(2,'0');}
+function cycleSpeed(){si=(si+1)%speeds.length;document.getElementById('speedBtn').textContent=speeds[si]+'×';}
+function seekTime(t){document.getElementById('curTime').textContent=t;}
+function seekTo(e,bar){const r=bar.getBoundingClientRect();const p=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));document.getElementById('progFill').style.width=(p*100)+'%';document.getElementById('progThumb').style.left=(p*100)+'%';}
+function switchTr(n,el){document.querySelectorAll('.trtab').forEach(t=>t.classList.remove('active'));el.classList.add('active');['transcript','summary','chapters'].forEach(k=>{document.getElementById('trtab-'+k).style.display=k===n?'flex':'none';document.getElementById('trtab-'+k).style.flexDirection='column';});document.getElementById('trtab-'+n).style.display='block';}
+</script>
+</body>
+</html>

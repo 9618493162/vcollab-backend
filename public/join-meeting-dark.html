@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Join a Meeting - VCollab</title>
+<script>
+  window.location.href = 'join-meeting-new.html';
+</script>
+</head>
+<body>
+<p>Redirecting...</p>
+</body>
+</html>
+<style>
+.join-page{flex:1;display:flex;align-items:center;justify-content:center;background:var(--bg);}
+.join-card{background:white;border:1px solid var(--border);border-radius:16px;padding:48px;width:460px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.08);}
+.join-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:26px;font-weight:800;margin-bottom:8px;}
+.join-desc{font-size:14px;color:var(--text-secondary);margin-bottom:32px;line-height:1.6;}
+.code-input{width:100%;padding:14px 18px;font-size:20px;font-weight:700;text-align:center;letter-spacing:0.08em;border:2px solid var(--border);border-radius:10px;outline:none;font-family:'Inter',sans-serif;color:var(--text-primary);background:white;transition:border .15s;}
+.code-input:focus{border-color:var(--indigo);}
+.code-input::placeholder{color:#d1d5db;font-weight:400;font-size:16px;letter-spacing:0;}
+.join-btn{width:100%;margin-top:16px;padding:14px;background:var(--indigo);color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;transition:background .15s;font-family:'Inter',sans-serif;}
+.join-btn:hover{background:var(--indigo-dark);}
+.join-btn:disabled{background:#d1d5db;cursor:not-allowed;}
+.divider-row{display:flex;align-items:center;gap:12px;margin:24px 0;}
+.divider-line{flex:1;height:1px;background:var(--border);}
+.divider-text{font-size:13px;color:var(--text-tertiary);}
+.cal-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.cal-btn{padding:10px;background:white;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s;font-family:'Inter',sans-serif;}
+.cal-btn:hover{border-color:var(--indigo);color:var(--indigo);}
+.format-hint{font-size:12px;color:var(--text-tertiary);margin-top:8px;}
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div style="width:32px;height:32px;background:#6366f1;border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-size:15px;font-weight:800;">V</div>
+      <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:17px;font-weight:800;color:white;">VCollab</span>
+    </div>
+    <a href="dashboard-dark.html" class="sidebar-item"><span class="icon">🏠</span>Home</a>
+    <a href="meeting-dark.html" class="sidebar-item active"><span class="icon">📅</span>Meetings</a>
+    <a href="chat-dark.html" class="sidebar-item"><span class="icon">💬</span>Chat</a>
+    <a href="kanban-dark.html" class="sidebar-item"><span class="icon">📋</span>Contacts</a>
+    <a href="whiteboard-dark.html" class="sidebar-item"><span class="icon">🖊</span>Whiteboard</a>
+    <div class="sidebar-divider"></div>
+    <a href="recording-player-dark.html" class="sidebar-item"><span class="icon">⏺</span>Recordings</a>
+    <a href="ai-copilot-dark.html" class="sidebar-item"><span class="icon">🤖</span>AI Assistant</a>
+  </aside>
+  <div class="main-content">
+    <div class="topbar">
+      <div class="topbar-search-wrap">
+        <span class="topbar-search-icon">🔍</span>
+        <input class="topbar-search" placeholder="Search...">
+      </div>
+      <div class="topbar-actions">
+        <button class="topbar-icon-btn">🔔</button>
+        <div style="width:32px;height:32px;border-radius:50%;background:#6366f1;display:flex;align-items:center;justify-content:center;color:white;font-size:13px;font-weight:700;">N</div>
+      </div>
+    </div>
+    <div class="join-page">
+      <div class="join-card">
+        <div style="font-size:40px;margin-bottom:16px;">🔗</div>
+        <div class="join-title">Join a Meeting</div>
+        <div class="join-desc">Enter a meeting code or link to join.</div>
+        <input class="code-input" id="codeInput" placeholder="Enter meeting code or link" oninput="formatCode(this)" maxlength="20">
+        <div class="format-hint">e.g. abc-defg-hij or vcol.io/meeting</div>
+        <button class="join-btn" id="joinBtn" onclick="joinMeeting()" disabled>Join Now</button>
+        <div class="divider-row">
+          <div class="divider-line"></div>
+          <span class="divider-text">or join from your calendar</span>
+          <div class="divider-line"></div>
+        </div>
+        <div class="cal-btns">
+          <button class="cal-btn">📅 Google Calendar</button>
+          <button class="cal-btn">📆 Outlook Calendar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const API_URL = '/api';
+
+function formatCode(el){
+  let v=el.value.replace(/[^a-zA-Z0-9]/g,'').toLowerCase();
+  if(v.length>3&&v.length<=7)v=v.slice(0,3)+'-'+v.slice(3);
+  else if(v.length>7)v=v.slice(0,3)+'-'+v.slice(3,7)+'-'+v.slice(7,10);
+  el.value=v;
+  document.getElementById('joinBtn').disabled=v.replace(/-/g,'').length<6;
+}
+
+async function joinMeeting() {
+  const code = document.getElementById('codeInput').value.replace(/-/g,'');
+  if (!code) return;
+  
+  const btn = document.getElementById('joinBtn');
+  btn.disabled = true;
+  btn.textContent = 'Joining...';
+  
+  try {
+    // Verify meeting exists
+    const res = await fetch(`${API_URL}/meetings/${code}`, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    });
+    
+    if (res.ok) {
+      window.location.href = `meeting-dark.html?room=${code}`;
+    } else {
+      alert('Meeting not found. Check the code and try again.');
+      btn.disabled = false;
+      btn.textContent = 'Join Now';
+    }
+  } catch (err) {
+    console.error('Join failed:', err);
+    // Still allow joining even if backend is down
+    window.location.href = `meeting-dark.html?room=${code}`;
+  }
+}
+
+// Allow Enter key
+document.getElementById('codeInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !document.getElementById('joinBtn').disabled) {
+    joinMeeting();
+  }
+});
+
+console.log('✅ Join Meeting with REAL API validation');
+</script>
+</body>
+</html>

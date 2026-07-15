@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join Meeting - VCollab</title>
+    <link rel="stylesheet" href="css/join-meeting.css">
+</head>
+<body>
+
+<div class="container">
+    <div class="join-box">
+        <h1>Join Meeting</h1>
+        <p>Enter your meeting details to join.</p>
+
+        <div id="errorMessage" style="display: none; background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 15px;"></div>
+
+        <form id="joinForm" autocomplete="off">
+            <label>Meeting ID</label>
+            <input type="text" id="meetingId" name="meetingId" placeholder="Enter Meeting ID" autocomplete="new-password" required>
+
+            <label>Passcode (if required)</label>
+            <input type="password" id="passcode" name="passcode" placeholder="Enter Passcode" autocomplete="new-password">
+
+            <button type="submit" id="joinBtn">Join Meeting</button>
+        </form>
+
+        <a href="dashboard.html" class="back-btn">← Back to Dashboard</a>
+    </div>
+</div>
+
+<script src="js/api.js"></script>
+<script>
+// Check authentication
+if (!isAuthenticated()) {
+    window.location.href = 'login.html';
+}
+
+const joinForm = document.getElementById("joinForm");
+const joinBtn = document.getElementById("joinBtn");
+const errorMessage = document.getElementById("errorMessage");
+
+joinForm.addEventListener("submit", async function(event) {
+    event.preventDefault();
+    
+    const meetingId = document.getElementById("meetingId").value.trim();
+    const passcode = document.getElementById("passcode").value.trim();
+    
+    if (meetingId === "") {
+        errorMessage.textContent = "Please enter a meeting ID.";
+        errorMessage.style.display = 'block';
+        return;
+    }
+    
+    // Hide error
+    errorMessage.style.display = 'none';
+    
+    // Disable button
+    joinBtn.disabled = true;
+    joinBtn.textContent = "Joining...";
+    
+    // Call API
+    const result = await API.meetings.join(meetingId, passcode);
+    
+    if (result.success) {
+        // Save meeting ID for the meeting room
+        localStorage.setItem("currentMeetingId", meetingId);
+        
+        alert("Joining Meeting...");
+        window.location.href = "meeting.html";
+    } else {
+        errorMessage.textContent = result.message || "Failed to join meeting. Please check the meeting ID and passcode.";
+        errorMessage.style.display = 'block';
+        joinBtn.disabled = false;
+        joinBtn.textContent = "Join Meeting";
+    }
+});
+</script>
+
+</body>
+</html> 

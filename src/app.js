@@ -39,6 +39,9 @@ app.use(setSecurityHeaders);
 // CORS with origin validation
 app.use(cors(corsOptions));
 
+// Serve static frontend files
+app.use(express.static(path.join(__dirname, '../public')));
+
 // Body parsing with size limits
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
@@ -114,12 +117,24 @@ app.use("/api/uploads", uploadRoutes);
 app.use("/api/rooms", roomRoutes);
 app.use("/api/admin", adminRoutes);
 
-// 404 handler
-app.use((req, res) => {
-    logger.warn(`404 - Not Found: ${req.method} ${req.originalUrl} from ${req.ip}`);
+// Serve frontend for all non-API routes (SPA support)
+app.get('*', (req, res) => {
+    if (!req.path.startsWith('/api')) {
+        res.sendFile(path.join(__dirname, '../public/index.html'));
+    } else {
+        res.status(404).json({
+            success: false,
+            message: "API endpoint not found"
+        });
+    }
+});
+
+// 404 handler for API routes only
+app.use('/api/*', (req, res) => {
+    logger.warn(`404 - API Not Found: ${req.method} ${req.originalUrl} from ${req.ip}`);
     res.status(404).json({
         success: false,
-        message: "Endpoint not found"
+        message: "API endpoint not found"
     });
 });
 

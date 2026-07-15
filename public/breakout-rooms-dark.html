@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Breakout Rooms - VCollab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/dark-modern.css">
+<style>
+/* Breakout Rooms overrides for dark theme */
+body { background: var(--bg-primary); }
+.br-layout{flex:1;display:grid;grid-template-columns:1fr 320px;overflow:hidden;}
+.br-main{padding:var(--space-2xl);overflow-y:auto;}
+.timer-bar{background:var(--bg-card);border-radius:var(--radius-lg);padding:var(--space-lg) var(--space-xl);display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-2xl);border:1px solid var(--border-primary);}
+.room-card{background:var(--bg-card);border:1.5px solid var(--border-primary);border-radius:var(--radius-lg);padding:var(--space-lg);transition:all var(--transition-base);}
+.room-card:hover{box-shadow:var(--shadow-md);}
+.room-card.you-here{border-color:var(--accent-primary);background:rgba(99,102,241,.05);}
+.br-panel{background:var(--bg-secondary);border-left:1px solid var(--border-primary);padding:var(--space-lg);overflow-y:auto;}
+.unassigned-item{background:var(--bg-tertiary);border-radius:var(--radius-md);}
+<style>
+.br-layout{flex:1;display:grid;grid-template-columns:1fr 300px;overflow:hidden;}
+.br-main{padding:28px;overflow-y:auto;}
+.br-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:800;margin-bottom:4px;}
+.br-sub{font-size:13px;color:var(--text-secondary);margin-bottom:20px;}
+.timer-bar{background:#1a1f2e;border-radius:10px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.tb-label{font-size:12px;color:#9ca3af;margin-bottom:2px;}
+.tb-val{font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:800;color:white;}
+.timer-num{font-size:28px;font-weight:800;color:#6366f1;font-variant-numeric:tabular-nums;}
+.rooms-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
+.room-card{background:white;border:1.5px solid var(--border);border-radius:12px;padding:20px;transition:all .15s;}
+.room-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.08);}
+.room-card.active-room{border-color:rgba(99,102,241,.4);background:#fafbff;}
+.room-card.you-here{border-color:#6366f1;background:#eef2ff;}
+.room-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;}
+.room-name{font-size:16px;font-weight:800;}
+.room-count{font-size:12px;color:var(--text-secondary);margin-top:2px;}
+.room-badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;}
+.rb-active{background:#d1fae5;color:#059669;}
+.rb-you{background:#eef2ff;color:#6366f1;}
+.rb-empty{background:#f3f4f6;color:#9ca3af;}
+.p-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
+.p-chip{display:flex;align-items:center;gap:5px;background:#f4f6fa;border-radius:20px;padding:4px 10px;font-size:12px;font-weight:600;}
+.chip-av{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:white;}
+.room-actions{display:flex;gap:8px;}
+.r-btn{flex:1;padding:8px;border-radius:7px;font-size:12.5px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:white;transition:all .15s;}
+.r-btn:hover{border-color:#6366f1;color:#6366f1;}
+.r-btn-join{background:#6366f1;color:white;border-color:#6366f1;}
+.r-btn-join:hover{background:#4f46e5;}
+/* Right panel */
+.br-panel{background:white;border-left:1px solid var(--border);padding:20px;overflow-y:auto;}
+.bp-title{font-size:12px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px;}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border-light,#f3f4f6);}
+.toggle-row:last-child{border:none;}
+.tl{font-size:13px;font-weight:600;}
+.ts{font-size:11px;color:var(--text-secondary);}
+.toggle{width:40px;height:22px;background:#d1d5db;border-radius:11px;position:relative;cursor:pointer;border:none;transition:background .2s;}
+.toggle.on{background:#6366f1;}
+.toggle::after{content:'';position:absolute;width:16px;height:16px;border-radius:50%;background:white;top:3px;left:3px;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.toggle.on::after{transform:translateX(18px);}
+.unassigned-item{display:flex;align-items:center;gap:8px;padding:8px;background:#f9fafb;border-radius:8px;margin-bottom:6px;}
+.u-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;}
+.u-name{font-size:13px;font-weight:600;flex:1;}
+.u-assign{font-size:12px;color:#6366f1;font-weight:600;cursor:pointer;}
+.broadcast-box{background:#f4f6fa;border-radius:8px;padding:14px;margin-top:16px;}
+.broadcast-box textarea{width:100%;background:white;border:1px solid var(--border);border-radius:6px;padding:8px;font-size:13px;font-family:'Inter',sans-serif;outline:none;resize:none;min-height:60px;}
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div style="width:32px;height:32px;background:#6366f1;border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-size:15px;font-weight:800;">V</div>
+      <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:17px;font-weight:800;color:white;">VCollab</span>
+    </div>
+    <a href="dashboard-dark.html" class="sidebar-item"><span class="icon">🏠</span>Home</a>
+    <a href="meeting-dark.html" class="sidebar-item"><span class="icon">📅</span>Meetings</a>
+    <a href="chat-dark.html" class="sidebar-item"><span class="icon">💬</span>Chat</a>
+    <a href="whiteboard-dark.html" class="sidebar-item"><span class="icon">🖊</span>Whiteboard</a>
+    <div class="sidebar-divider"></div>
+    <a href="ai-copilot-dark.html" class="sidebar-item"><span class="icon">🤖</span>AI Assistant</a>
+  </aside>
+  <div class="main-content">
+    <div class="topbar">
+      <span style="font-size:14px;font-weight:700;">Breakout Rooms</span>
+      <div class="topbar-actions">
+        <span style="font-size:13px;color:var(--text-secondary);">24 participants · 4 rooms</span>
+        <button onclick="location.href='meeting-dark.html'" style="padding:6px 14px;background:#eef2ff;color:#6366f1;border:none;border-radius:6px;font-size:12.5px;font-weight:600;cursor:pointer;">← Main Room</button>
+        <button onclick="alert('All recalled!')" style="padding:6px 14px;background:#fef3c7;color:#b45309;border:none;border-radius:6px;font-size:12.5px;font-weight:600;cursor:pointer;">📢 Recall All</button>
+        <button onclick="addRoom()" style="padding:6px 14px;background:#6366f1;color:white;border:none;border-radius:6px;font-size:12.5px;font-weight:600;cursor:pointer;">+ Add Room</button>
+      </div>
+    </div>
+    <div class="br-layout">
+      <div class="br-main">
+        <div class="br-title">🚪 Breakout Rooms</div>
+        <div class="br-sub">Session active — participants split into groups</div>
+
+        <div class="timer-bar">
+          <div><div class="tb-label">Session Timer</div><div class="tb-val">Breakout Active</div></div>
+          <div style="text-align:right;"><div class="tb-label">Time Remaining</div><div class="timer-num" id="timerEl">14:32</div></div>
+          <button onclick="alert('Timer paused')" style="padding:7px 16px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:7px;color:white;font-size:12.5px;font-weight:600;cursor:pointer;">⏸ Pause</button>
+        </div>
+
+        <div class="rooms-grid">
+          <!-- Room 1 - you here -->
+          <div class="room-card you-here">
+            <div class="room-header">
+              <div><div class="room-name">🏗 Design Team</div><div class="room-count">Room 1 · 6 participants</div></div>
+              <span class="room-badge rb-you">📍 You're Here</span>
+            </div>
+            <div class="p-chips">
+              <div class="p-chip"><div class="chip-av" style="background:#6366f1;">N</div>Navdeep</div>
+              <div class="p-chip"><div class="chip-av" style="background:#f59e0b;">B</div>Bold</div>
+              <div class="p-chip"><div class="chip-av" style="background:#10b981;">A</div>Anaiya</div>
+              <div class="p-chip"><div class="chip-av" style="background:#3b82f6;">D</div>Daniel</div>
+              <div class="p-chip">+2 more</div>
+            </div>
+            <div class="room-actions">
+              <button class="r-btn" onclick="alert('Message sent to Room 1')">💬 Message</button>
+              <button class="r-btn" style="background:#eef2ff;color:#6366f1;border-color:#c7d2fe;">✓ Current Room</button>
+            </div>
+          </div>
+          <!-- Room 2 -->
+          <div class="room-card active-room">
+            <div class="room-header">
+              <div><div class="room-name">⚙ Engineering</div><div class="room-count">Room 2 · 7 participants</div></div>
+              <span class="room-badge rb-active">● Active</span>
+            </div>
+            <div class="p-chips">
+              <div class="p-chip"><div class="chip-av" style="background:#8b5cf6;">F</div>Frank</div>
+              <div class="p-chip"><div class="chip-av" style="background:#06b6d4;">G</div>Grace</div>
+              <div class="p-chip"><div class="chip-av" style="background:#ec4899;">H</div>Henry</div>
+              <div class="p-chip">+4 more</div>
+            </div>
+            <div class="room-actions">
+              <button class="r-btn" onclick="alert('Message sent to Room 2')">💬 Message</button>
+              <button class="r-btn r-btn-join" onclick="alert('Joining Room 2...')">🚪 Join Room</button>
+            </div>
+          </div>
+          <!-- Room 3 -->
+          <div class="room-card active-room">
+            <div class="room-header">
+              <div><div class="room-name">📊 Marketing</div><div class="room-count">Room 3 · 5 participants</div></div>
+              <span class="room-badge rb-active">● Active</span>
+            </div>
+            <div class="p-chips">
+              <div class="p-chip"><div class="chip-av" style="background:#ef4444;">I</div>Iris</div>
+              <div class="p-chip"><div class="chip-av" style="background:#10b981;">J</div>Jake</div>
+              <div class="p-chip">+3 more</div>
+            </div>
+            <div class="room-actions">
+              <button class="r-btn" onclick="alert('Message sent to Room 3')">💬 Message</button>
+              <button class="r-btn r-btn-join" onclick="alert('Joining Room 3...')">🚪 Join Room</button>
+            </div>
+          </div>
+          <!-- Room 4 - empty -->
+          <div class="room-card">
+            <div class="room-header">
+              <div><div class="room-name">💼 Strategy</div><div class="room-count">Room 4 · 0 participants</div></div>
+              <span class="room-badge rb-empty">○ Empty</span>
+            </div>
+            <div style="text-align:center;padding:16px 0;color:var(--text-tertiary);font-size:13px;">No participants assigned</div>
+            <div class="room-actions">
+              <button class="r-btn" style="opacity:.4;cursor:default;">💬 Message</button>
+              <button class="r-btn r-btn-join" onclick="alert('Joining Room 4...')">🚪 Join Room</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right panel -->
+      <div class="br-panel">
+        <div class="bp-title">Room Settings</div>
+        <div class="toggle-row"><div><div class="tl">Auto-close timer</div><div class="ts">End rooms together</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+        <div class="toggle-row"><div><div class="tl">Allow return</div><div class="ts">Participants can leave early</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+        <div class="toggle-row"><div><div class="tl">Auto-assign</div><div class="ts">Random assignment</div></div><button class="toggle" onclick="this.classList.toggle('on')"></button></div>
+        <div class="toggle-row"><div><div class="tl">Share timer</div><div class="ts">Show countdown to all</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+
+        <div style="margin-top:16px;">
+          <div class="bp-title">Unassigned (2)</div>
+          <div class="unassigned-item"><div class="u-av" style="background:#6366f1;">K</div><div class="u-name">Kevin R.</div><span class="u-assign" onclick="alert('Assign Kevin to a room')">Assign →</span></div>
+          <div class="unassigned-item"><div class="u-av" style="background:#10b981;">L</div><div class="u-name">Laura S.</div><span class="u-assign" onclick="alert('Assign Laura to a room')">Assign →</span></div>
+        </div>
+
+        <div class="broadcast-box">
+          <div style="font-size:13px;font-weight:700;margin-bottom:8px;">📢 Broadcast to All</div>
+          <textarea id="broadcastMsg" placeholder="Message all rooms..."></textarea>
+          <button onclick="sendBroadcast()" style="width:100%;margin-top:8px;padding:9px;background:#6366f1;color:white;border:none;border-radius:7px;font-size:12.5px;font-weight:600;cursor:pointer;">Send to All Rooms</button>
+        </div>
+
+        <button onclick="if(confirm('End all breakout rooms?'))location.href='meeting-dark.html'" style="width:100%;margin-top:12px;padding:10px;background:white;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text-secondary);">⏹ End All Breakouts</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+// ============================================================================
+// BREAKOUT ROOMS - FULL FUNCTIONALITY
+// ============================================================================
+
+// State management
+let breakoutState = {
+  timer: 872, // seconds remaining
+  timerRunning: true,
+  rooms: [
+    {
+      id: 1,
+      name: '🏗 Design Team',
+      participants: [
+        {id: 1, name: 'Navdeep', avatar: 'N', color: '#6366f1'},
+        {id: 2, name: 'Bold', avatar: 'B', color: '#f59e0b'},
+        {id: 3, name: 'Anaiya', avatar: 'A', color: '#10b981'},
+        {id: 4, name: 'Daniel', avatar: 'D', color: '#3b82f6'},
+        {id: 5, name: 'Meera', avatar: 'M', color: '#8b5cf6'},
+        {id: 6, name: 'Jasper', avatar: 'J', color: '#ec4899'}
+      ],
+      isCurrentRoom: true
+    },
+    {
+      id: 2,
+      name: '⚙ Engineering',
+      participants: [
+        {id: 7, name: 'Frank', avatar: 'F', color: '#8b5cf6'},
+        {id: 8, name: 'Grace', avatar: 'G', color: '#06b6d4'},
+        {id: 9, name: 'Henry', avatar: 'H', color: '#ec4899'},
+        {id: 10, name: 'Iris', avatar: 'I', color: '#ef4444'},
+        {id: 11, name: 'Jake', avatar: 'J', color: '#10b981'},
+        {id: 12, name: 'Kate', avatar: 'K', color: '#f59e0b'},
+        {id: 13, name: 'Leo', avatar: 'L', color: '#3b82f6'}
+      ],
+      isCurrentRoom: false
+    },
+    {
+      id: 3,
+      name: '📊 Marketing',
+      participants: [
+        {id: 14, name: 'Maya', avatar: 'M', color: '#ef4444'},
+        {id: 15, name: 'Noah', avatar: 'N', color: '#10b981'},
+        {id: 16, name: 'Olivia', avatar: 'O', color: '#f59e0b'},
+        {id: 17, name: 'Pete', avatar: 'P', color: '#8b5cf6'},
+        {id: 18, name: 'Quinn', avatar: 'Q', color: '#06b6d4'}
+      ],
+      isCurrentRoom: false
+    },
+    {
+      id: 4,
+      name: '💼 Strategy',
+      participants: [],
+      isCurrentRoom: false
+    }
+  ],
+  unassigned: [
+    {id: 19, name: 'Kevin R.', avatar: 'K', color: '#6366f1'},
+    {id: 20, name: 'Laura S.', avatar: 'L', color: '#10b981'}
+  ],
+  settings: {
+    autoClose: true,
+    allowReturn: true,
+    autoAssign: false,
+    shareTimer: true
+  }
+};
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+  startTimer();
+  renderRooms();
+  renderUnassigned();
+});
+
+// ============================================================================
+// TIMER FUNCTIONS
+// ============================================================================
+
+function pad(n) {
+  return String(n).padStart(2, '0');
+}
+
+function startTimer() {
+  setInterval(() => {
+    if (breakoutState.timerRunning && breakoutState.timer > 0) {
+      breakoutState.timer--;
+      updateTimerDisplay();
+      
+      // Alert when 1 minute remaining
+      if (breakoutState.timer === 60) {
+        showToast('⏰ 1 minute remaining in breakout rooms!', 'warning');
+      }
+      
+      // Auto-close when timer ends
+      if (breakoutState.timer === 0 && breakoutState.settings.autoClose) {
+        endAllBreakouts();
+      }
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const timerEl = document.getElementById('timerEl');
+  const minutes = Math.floor(breakoutState.timer / 60);
+  const seconds = breakoutState.timer % 60;
+  timerEl.textContent = pad(minutes) + ':' + pad(seconds);
+  
+  // Change color when time is low
+  if (breakoutState.timer < 60) {
+    timerEl.style.color = '#ef4444';
+  } else if (breakoutState.timer < 300) {
+    timerEl.style.color = '#f59e0b';
+  } else {
+    timerEl.style.color = '#6366f1';
+  }
+}
+
+function toggleTimer() {
+  breakoutState.timerRunning = !breakoutState.timerRunning;
+  const btn = event.target;
+  btn.textContent = breakoutState.timerRunning ? '⏸ Pause' : '▶ Resume';
+  showToast(breakoutState.timerRunning ? '▶ Timer resumed' : '⏸ Timer paused', 'info');
+}
+
+// ============================================================================
+// ROOM MANAGEMENT
+// ============================================================================
+
+function renderRooms() {
+  const grid = document.querySelector('.rooms-grid');
+  grid.innerHTML = '';
+  
+  breakoutState.rooms.forEach(room => {
+    const card = createRoomCard(room);
+    grid.appendChild(card);
+  });
+}
+
+function createRoomCard(room) {
+  const div = document.createElement('div');
+  div.className = 'room-card';
+  
+  if (room.isCurrentRoom) div.classList.add('you-here');
+  else if (room.participants.length > 0) div.classList.add('active-room');
+  
+  const badgeClass = room.isCurrentRoom ? 'rb-you' : (room.participants.length > 0 ? 'rb-active' : 'rb-empty');
+  const badgeText = room.isCurrentRoom ? '📍 You\'re Here' : (room.participants.length > 0 ? '● Active' : '○ Empty');
+  
+  // Participant chips (show first 3, then +N more)
+  let chipsHTML = '';
+  if (room.participants.length > 0) {
+    const visible = room.participants.slice(0, 3);
+    const remaining = room.participants.length - 3;
+    
+    visible.forEach(p => {
+      chipsHTML += `<div class="p-chip"><div class="chip-av" style="background:${p.color};">${p.avatar}</div>${p.name}</div>`;
+    });
+    
+    if (remaining > 0) {
+      chipsHTML += `<div class="p-chip">+${remaining} more</div>`;
+    }
+  } else {
+    chipsHTML = '<div style="text-align:center;padding:16px 0;color:var(--text-tertiary);font-size:13px;">No participants assigned</div>';
+  }
+  
+  div.innerHTML = `
+    <div class="room-header">
+      <div>
+        <div class="room-name">${room.name}</div>
+        <div class="room-count">Room ${room.id} · ${room.participants.length} participants</div>
+      </div>
+      <span class="room-badge ${badgeClass}">${badgeText}</span>
+    </div>
+    <div class="p-chips">${chipsHTML}</div>
+    <div class="room-actions">
+      <button class="r-btn" onclick="messageRoom(${room.id})" ${room.participants.length === 0 ? 'style="opacity:.4;cursor:default;" disabled' : ''}>💬 Message</button>
+      ${room.isCurrentRoom 
+        ? '<button class="r-btn" style="background:#eef2ff;color:#6366f1;border-color:#c7d2fe;">✓ Current Room</button>'
+        : `<button class="r-btn r-btn-join" onclick="joinRoom(${room.id})">🚪 Join Room</button>`
+      }
+    </div>
+  `;
+  
+  return div;
+}
+
+function addRoom() {
+  const newId = breakoutState.rooms.length + 1;
+  const newRoom = {
+    id: newId,
+    name: `💼 Room ${newId}`,
+    participants: [],
+    isCurrentRoom: false
+  };
+  
+  breakoutState.rooms.push(newRoom);
+  renderRooms();
+  updateParticipantCount();
+  showToast(`✅ Room ${newId} created successfully!`, 'success');
+}
+
+function joinRoom(roomId) {
+  // Mark previous current room as not current
+  breakoutState.rooms.forEach(r => r.isCurrentRoom = false);
+  
+  // Mark new room as current
+  const room = breakoutState.rooms.find(r => r.id === roomId);
+  if (room) {
+    room.isCurrentRoom = true;
+    renderRooms();
+    showToast(`🚪 Joined ${room.name}!`, 'success');
+    
+    // Simulate joining (in real app, would connect via WebRTC)
+    setTimeout(() => {
+      showToast('✅ Connected to room participants', 'success');
+    }, 500);
+  }
+}
+
+function messageRoom(roomId) {
+  const room = breakoutState.rooms.find(r => r.id === roomId);
+  if (!room || room.participants.length === 0) return;
+  
+  const msg = prompt(`Send message to ${room.name}:`);
+  if (msg && msg.trim()) {
+    showToast(`📨 Message sent to ${room.name}!`, 'success');
+    // In real app, would send via Socket.IO
+    console.log(`Message to room ${roomId}:`, msg);
+  }
+}
+
+function recallAll() {
+  if (confirm('Recall all participants to main room?')) {
+    showToast('📢 Recalling all participants...', 'info');
+    
+    setTimeout(() => {
+      // Move all participants to main room (in real app)
+      showToast('✅ All participants recalled to main room!', 'success');
+    }, 1000);
+  }
+}
+
+function endAllBreakouts() {
+  if (confirm('End all breakout rooms? Participants will return to main room.')) {
+    showToast('⏹ Ending all breakout rooms...', 'info');
+    
+    setTimeout(() => {
+      window.location.href = 'meeting-dark.html';
+    }, 1500);
+  }
+}
+
+// ============================================================================
+// UNASSIGNED PARTICIPANTS
+// ============================================================================
+
+function renderUnassigned() {
+  const container = document.querySelector('.br-panel > div:nth-child(2)');
+  if (!container) return;
+  
+  const title = container.querySelector('.bp-title');
+  title.textContent = `Unassigned (${breakoutState.unassigned.length})`;
+  
+  // Update count in topbar
+  updateParticipantCount();
+}
+
+function assignParticipant(participantId) {
+  const participant = breakoutState.unassigned.find(p => p.id === participantId);
+  if (!participant) return;
+  
+  // Show room selection dialog
+  const roomOptions = breakoutState.rooms.map(r => 
+    `${r.id}. ${r.name} (${r.participants.length} participants)`
+  ).join('\n');
+  
+  const roomNum = prompt(`Assign ${participant.name} to room:\n\n${roomOptions}\n\nEnter room number:`);
+  
+  if (roomNum) {
+    const roomId = parseInt(roomNum);
+    const room = breakoutState.rooms.find(r => r.id === roomId);
+    
+    if (room) {
+      // Remove from unassigned
+      breakoutState.unassigned = breakoutState.unassigned.filter(p => p.id !== participantId);
+      
+      // Add to room
+      room.participants.push(participant);
+      
+      // Re-render
+      renderRooms();
+      renderUnassigned();
+      
+      showToast(`✅ ${participant.name} assigned to ${room.name}!`, 'success');
+    } else {
+      showToast('❌ Invalid room number', 'error');
+    }
+  }
+}
+
+// Update the onclick in unassigned items
+window.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.u-assign').forEach((el, index) => {
+    el.onclick = () => assignParticipant(breakoutState.unassigned[index].id);
+  });
+});
+
+// ============================================================================
+// SETTINGS
+// ============================================================================
+
+function toggleSetting(setting) {
+  breakoutState.settings[setting] = !breakoutState.settings[setting];
+  const status = breakoutState.settings[setting] ? 'enabled' : 'disabled';
+  showToast(`${setting} ${status}`, 'info');
+}
+
+// Make toggles functional
+window.addEventListener('DOMContentLoaded', () => {
+  const toggles = document.querySelectorAll('.toggle');
+  const settings = ['autoClose', 'allowReturn', 'autoAssign', 'shareTimer'];
+  
+  toggles.forEach((toggle, index) => {
+    toggle.onclick = function() {
+      this.classList.toggle('on');
+      if (settings[index]) {
+        toggleSetting(settings[index]);
+      }
+    };
+  });
+});
+
+// ============================================================================
+// BROADCAST
+// ============================================================================
+
+function sendBroadcast() {
+  const msg = document.getElementById('broadcastMsg').value.trim();
+  if (!msg) {
+    showToast('❌ Please enter a message', 'error');
+    return;
+  }
+  
+  showToast('📢 Broadcasting to all rooms...', 'info');
+  
+  setTimeout(() => {
+    document.getElementById('broadcastMsg').value = '';
+    showToast(`✅ Broadcast sent to ${breakoutState.rooms.length} rooms!`, 'success');
+    
+    // In real app, would send via Socket.IO
+    console.log('Broadcast message:', msg);
+  }, 500);
+}
+
+// ============================================================================
+// UI UTILITIES
+// ============================================================================
+
+function updateParticipantCount() {
+  const total = breakoutState.rooms.reduce((sum, r) => sum + r.participants.length, 0) 
+                + breakoutState.unassigned.length;
+  const topbarCount = document.querySelector('.topbar-actions span');
+  if (topbarCount) {
+    topbarCount.textContent = `${total} participants · ${breakoutState.rooms.length} rooms`;
+  }
+}
+
+function showToast(message, type = 'info') {
+  // Create toast if it doesn't exist
+  let toast = document.getElementById('toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.style.cssText = 'position:fixed;top:80px;right:24px;background:#1a1f2e;color:white;padding:12px 20px;border-radius:8px;font-size:13.5px;font-weight:600;z-index:9999;opacity:0;transform:translateY(-10px);transition:all .3s;box-shadow:0 4px 12px rgba(0,0,0,.2);';
+    document.body.appendChild(toast);
+  }
+  
+  // Set color based on type
+  const colors = {
+    success: '#10b981',
+    error: '#ef4444',
+    warning: '#f59e0b',
+    info: '#6366f1'
+  };
+  toast.style.background = colors[type] || colors.info;
+  
+  // Show toast
+  toast.textContent = message;
+  toast.style.opacity = '1';
+  toast.style.transform = 'translateY(0)';
+  
+  // Hide after 3 seconds
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(-10px)';
+  }, 3000);
+}
+
+// Update button onclick handlers
+window.addEventListener('DOMContentLoaded', () => {
+  // Pause/Resume button
+  const pauseBtn = document.querySelector('.timer-bar button');
+  if (pauseBtn) {
+    pauseBtn.onclick = toggleTimer;
+  }
+  
+  // Main Room button
+  const mainRoomBtn = document.querySelector('.topbar-actions button:nth-child(2)');
+  if (mainRoomBtn) {
+    mainRoomBtn.onclick = () => {
+      if (confirm('Return to main room?')) {
+        window.location.href = 'meeting-dark.html';
+      }
+    };
+  }
+  
+  // Recall All button
+  const recallBtn = document.querySelector('.topbar-actions button:nth-child(3)');
+  if (recallBtn) {
+    recallBtn.onclick = recallAll;
+  }
+  
+  // Add Room button
+  const addRoomBtn = document.querySelector('.topbar-actions button:nth-child(4)');
+  if (addRoomBtn) {
+    addRoomBtn.onclick = addRoom;
+  }
+  
+  // End All Breakouts button
+  const endBtn = document.querySelector('.br-panel button:last-child');
+  if (endBtn) {
+    endBtn.onclick = endAllBreakouts;
+  }
+});
+
+console.log('✅ Breakout Rooms initialized');
+console.log('📊 Rooms:', breakoutState.rooms.length);
+console.log('👥 Total participants:', 
+  breakoutState.rooms.reduce((sum, r) => sum + r.participants.length, 0) + breakoutState.unassigned.length
+);
+</script>
+</body>
+</html>

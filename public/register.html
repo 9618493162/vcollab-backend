@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - VCollab</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        // Redirect to new modern register page
+        window.location.href = 'register-new.html';
+    </script>
+</head>
+<body>
+
+<div class="login-container">
+    <div class="login-box">
+        <h1>Create Account</h1>
+
+        <div id="errorMessage" style="display: none; background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 15px;"></div>
+        <div id="successMessage" style="display: none; background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 15px;"></div>
+
+        <form id="registerForm">
+            <input type="text" id="fullName" placeholder="Full Name" required>
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Password" minlength="6" required>
+            <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+            <button type="submit" id="registerBtn">Register</button>
+        </form>
+
+        <p>
+            Already have an account?
+            <a href="login.html">Login</a>
+        </p>
+    </div>
+</div>
+
+<script src="js/api.js"></script>
+<script>
+const registerForm = document.getElementById("registerForm");
+const registerBtn = document.getElementById("registerBtn");
+const errorMessage = document.getElementById("errorMessage");
+const successMessage = document.getElementById("successMessage");
+
+registerForm.addEventListener("submit", async function(event) {
+    event.preventDefault();
+    
+    const fullName = document.getElementById("fullName").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const confirmPassword = document.getElementById("confirmPassword").value;
+    
+    // Hide messages
+    errorMessage.style.display = 'none';
+    successMessage.style.display = 'none';
+    
+    // Validation
+    if (password !== confirmPassword) {
+        errorMessage.textContent = "Passwords do not match!";
+        errorMessage.style.display = 'block';
+        return;
+    }
+    
+    if (password.length < 6) {
+        errorMessage.textContent = "Password must be at least 6 characters long!";
+        errorMessage.style.display = 'block';
+        return;
+    }
+    
+    // Disable button
+    registerBtn.disabled = true;
+    registerBtn.textContent = "Registering...";
+    
+    // Call API
+    const result = await API.auth.register(fullName, email, password);
+    
+    if (result.success) {
+        successMessage.textContent = "Registration successful! Redirecting...";
+        successMessage.style.display = 'block';
+        
+        setTimeout(() => {
+            window.location.href = "dashboard.html";
+        }, 1500);
+    } else {
+        errorMessage.textContent = result.message || "Registration failed. Please try again.";
+        errorMessage.style.display = 'block';
+        registerBtn.disabled = false;
+        registerBtn.textContent = "Register";
+    }
+});
+</script>
+
+</body>
+</html>

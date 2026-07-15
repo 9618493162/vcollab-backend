@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Team Chat - VCollab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/dark-modern.css">
+<style>
+/* Team Chat overrides for dark theme */
+body { background: var(--bg-primary); }
+.chat-layout{flex:1;display:flex;overflow:hidden;}
+.channels{width:240px;background:var(--bg-secondary);border-right:1px solid var(--border-primary);display:flex;flex-direction:column;overflow:hidden;}
+.chat-main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.chat-topbar{padding:var(--space-md) var(--space-xl);border-bottom:1px solid var(--border-primary);background:var(--bg-card);}
+.messages-area{flex:1;overflow-y:auto;padding:var(--space-xl);display:flex;flex-direction:column;gap:2px;background:var(--bg-primary);}
+.msg-group:hover{background:var(--bg-hover);}
+.chat-input-wrap{padding:var(--space-md) var(--space-xl);border-top:1px solid var(--border-primary);background:var(--bg-card);}
+.chat-input-box{background:var(--bg-tertiary);border:1.5px solid var(--border-primary);}
+.dm-panel{width:280px;background:var(--bg-secondary);border-left:1px solid var(--border-primary);overflow-y:auto;padding:var(--space-lg);}
+<style>
+.chat-layout{flex:1;display:flex;overflow:hidden;}
+/* Channels sidebar */
+.channels{width:240px;background:#f9fafb;border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+.channels-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.ch-title{font-size:13px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.05em;}
+.ch-section{padding:8px 10px 4px;}
+.ch-section-label{font-size:11px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.05em;padding:4px 6px;margin-bottom:2px;}
+.ch-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:7px;cursor:pointer;transition:background .15s;font-size:13.5px;color:var(--text-secondary);}
+.ch-item:hover{background:rgba(0,0,0,.04);color:var(--text-primary);}
+.ch-item.active{background:#eef2ff;color:var(--indigo);font-weight:600;}
+.ch-unread{margin-left:auto;background:var(--indigo);color:white;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;}
+.ch-avatar{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;flex-shrink:0;}
+.ch-online{width:8px;height:8px;border-radius:50%;background:#10b981;border:1.5px solid #f9fafb;margin-left:auto;flex-shrink:0;}
+/* Main chat area */
+.chat-main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.chat-topbar{padding:12px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;background:white;}
+.chat-name{font-size:15px;font-weight:700;}
+.chat-desc{font-size:12px;color:var(--text-secondary);}
+.chat-tb-actions{margin-left:auto;display:flex;gap:6px;}
+.chat-tb-btn{padding:6px 12px;background:#f4f6fa;border:1px solid var(--border);border-radius:6px;font-size:12.5px;font-weight:600;cursor:pointer;color:var(--text-secondary);}
+.chat-tb-btn:hover{color:var(--indigo);border-color:var(--indigo);}
+/* Messages */
+.messages-area{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:2px;}
+.msg-date{text-align:center;font-size:11px;color:var(--text-tertiary);padding:8px 0;font-weight:600;}
+.msg-group{display:flex;gap:10px;padding:4px 0;}
+.msg-group:hover{background:#f9fafb;border-radius:8px;margin:0 -8px;padding:4px 8px;}
+.msg-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white;flex-shrink:0;margin-top:2px;}
+.msg-body{flex:1;}
+.msg-meta{display:flex;align-items:baseline;gap:8px;margin-bottom:4px;}
+.msg-sender{font-size:13.5px;font-weight:700;}
+.msg-time{font-size:11px;color:var(--text-tertiary);}
+.msg-text{font-size:14px;color:var(--text-primary);line-height:1.55;}
+.msg-file{display:inline-flex;align-items:center;gap:8px;background:#f4f6fa;border:1px solid var(--border);border-radius:8px;padding:8px 12px;margin-top:6px;max-width:260px;cursor:pointer;transition:border-color .15s;}
+.msg-file:hover{border-color:var(--indigo);}
+.msg-file-name{font-size:13px;font-weight:600;color:var(--text-primary);}
+.msg-file-size{font-size:11px;color:var(--text-secondary);}
+.msg-reactions{display:flex;gap:4px;margin-top:6px;}
+.reaction-pill{display:flex;align-items:center;gap:3px;background:#f4f6fa;border:1px solid var(--border);border-radius:12px;padding:2px 8px;font-size:13px;cursor:pointer;transition:all .15s;}
+.reaction-pill:hover{background:#eef2ff;border-color:#c7d2fe;}
+/* Input */
+.chat-input-wrap{padding:12px 20px;border-top:1px solid var(--border);background:white;}
+.chat-input-box{background:#f4f6fa;border:1.5px solid var(--border);border-radius:10px;transition:border .15s;}
+.chat-input-box:focus-within{border-color:var(--indigo);}
+.chat-input-toolbar{padding:6px 10px;display:flex;gap:4px;border-bottom:1px solid var(--border);}
+.tb-btn{width:28px;height:28px;background:none;border:none;border-radius:5px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;}
+.tb-btn:hover{background:rgba(0,0,0,.06);}
+.chat-input-row{display:flex;align-items:center;gap:8px;padding:6px 10px;}
+.chat-input-row input{flex:1;background:none;border:none;outline:none;font-size:14px;font-family:'Inter',sans-serif;}
+.send-btn{width:32px;height:32px;border-radius:8px;background:var(--indigo);border:none;color:white;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.send-btn:hover{background:var(--indigo-dark);}
+/* DM panel -->
+.dm-panel{width:280px;background:#f9fafb;border-left:1px solid var(--border);overflow-y:auto;padding:16px;}
+.dm-title{font-size:13px;font-weight:700;margin-bottom:14px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.05em;}
+.dm-item{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;cursor:pointer;margin-bottom:4px;transition:background .15s;}
+.dm-item:hover{background:rgba(0,0,0,.04);}
+.dm-info{flex:1;min-width:0;}
+.dm-name{font-size:13px;font-weight:600;}
+.dm-preview{font-size:12px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div style="width:32px;height:32px;background:#6366f1;border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-size:15px;font-weight:800;">V</div>
+      <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:17px;font-weight:800;color:white;">VCollab</span>
+    </div>
+    <a href="dashboard-dark.html" class="sidebar-item"><span class="icon">🏠</span>Home</a>
+    <a href="meeting-dark.html" class="sidebar-item"><span class="icon">📅</span>Meetings</a>
+    <a href="chat-dark.html" class="sidebar-item active"><span class="icon">💬</span>Chat<span class="badge">3</span></a>
+    <a href="kanban-dark.html" class="sidebar-item"><span class="icon">📋</span>Contacts</a>
+    <a href="whiteboard-dark.html" class="sidebar-item"><span class="icon">🖊</span>Whiteboard</a>
+    <div class="sidebar-divider"></div>
+    <a href="recording-player-dark.html" class="sidebar-item"><span class="icon">⏺</span>Recordings</a>
+    <a href="ai-copilot-dark.html" class="sidebar-item"><span class="icon">🤖</span>AI Assistant</a>
+  </aside>
+  <div class="main-content">
+    <div class="topbar">
+      <span style="font-size:14px;font-weight:700;">Messages</span>
+      <div class="topbar-actions">
+        <button onclick="location.href='meeting-dark.html'" style="padding:6px 14px;background:#6366f1;color:white;border:none;border-radius:6px;font-size:12.5px;font-weight:600;cursor:pointer;">📹 New Meeting</button>
+        <button class="topbar-icon-btn">🔔</button>
+        <div style="width:32px;height:32px;border-radius:50%;background:#6366f1;display:flex;align-items:center;justify-content:center;color:white;font-size:13px;font-weight:700;">N</div>
+      </div>
+    </div>
+    <div class="chat-layout">
+      <!-- Channels sidebar -->
+      <div class="channels">
+        <div class="channels-header">
+          <span class="ch-title">Channels</span>
+          <button style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--text-secondary);">+</button>
+        </div>
+        <div style="padding:10px;">
+          <input placeholder="🔍 Search..." style="width:100%;padding:7px 10px;background:white;border:1px solid var(--border);border-radius:7px;font-size:13px;outline:none;font-family:'Inter',sans-serif;">
+        </div>
+        <div class="ch-section">
+          <div class="ch-section-label">Channels</div>
+          <div class="ch-item active" onclick="switchChannel('Project Alpha',this)"><span>#</span> Project Alpha <span class="ch-unread">2</span></div>
+          <div class="ch-item" onclick="switchChannel('Design Team',this)"><span>#</span> Design Team</div>
+          <div class="ch-item" onclick="switchChannel('Engineering',this)"><span>#</span> Engineering <span class="ch-unread">1</span></div>
+          <div class="ch-item" onclick="switchChannel('General',this)"><span>#</span> General</div>
+          <div class="ch-item" onclick="switchChannel('Random',this)"><span>#</span> Random</div>
+        </div>
+        <div class="ch-section">
+          <div class="ch-section-label">Direct Messages</div>
+          <div class="ch-item" onclick="switchChannel('Anaiya Roy',this)"><div class="ch-avatar" style="background:#10b981;">A</div>Anaiya Roy<div class="ch-online"></div></div>
+          <div class="ch-item" onclick="switchChannel('Bold Sharma',this)"><div class="ch-avatar" style="background:#f59e0b;">B</div>Bold Sharma<div class="ch-online"></div></div>
+          <div class="ch-item" onclick="switchChannel('Daniel',this)"><div class="ch-avatar" style="background:#3b82f6;">D</div>Daniel</div>
+          <div class="ch-item" onclick="switchChannel('Meera K',this)"><div class="ch-avatar" style="background:#8b5cf6;">M</div>Meera K</div>
+        </div>
+      </div>
+
+      <!-- Chat main -->
+      <div class="chat-main">
+        <div class="chat-topbar">
+          <span style="font-size:16px;font-weight:700;">#</span>
+          <div>
+            <div class="chat-name" id="chatChannelName">Project Alpha</div>
+            <div class="chat-desc">12 members · Product development updates</div>
+          </div>
+          <div class="chat-tb-actions">
+            <button class="chat-tb-btn" onclick="location.href='meeting-dark.html'">📹 Video Call</button>
+            <button class="chat-tb-btn">📌 Pins</button>
+            <button class="chat-tb-btn">👥 Members</button>
+          </div>
+        </div>
+
+        <div class="messages-area" id="messagesArea">
+          <div class="msg-date">Today</div>
+          <div class="msg-group">
+            <div class="msg-av" style="background:#10b981;">A</div>
+            <div class="msg-body">
+              <div class="msg-meta"><span class="msg-sender">Anaiya Roy</span><span class="msg-time">10:24 AM</span></div>
+              <div class="msg-text">Hey team! Just uploaded the latest update. 🎉</div>
+              <div class="msg-file"><span style="font-size:20px;">📄</span><div><div class="msg-file-name">Update_doc.pptx</div><div class="msg-file-size">2.4 MB</div></div></div>
+              <div class="msg-reactions"><div class="reaction-pill">👍 3</div><div class="reaction-pill">🎉 2</div></div>
+            </div>
+          </div>
+          <div class="msg-group">
+            <div class="msg-av" style="background:#6366f1;">N</div>
+            <div class="msg-body">
+              <div class="msg-meta"><span class="msg-sender">Navdeep (You)</span><span class="msg-time">10:30 AM</span></div>
+              <div class="msg-text">That's the latest update. Can you review and share feedback?</div>
+            </div>
+          </div>
+          <div class="msg-group">
+            <div class="msg-av" style="background:#f59e0b;">B</div>
+            <div class="msg-body">
+              <div class="msg-meta"><span class="msg-sender">Bold Sharma</span><span class="msg-time">10:32 AM</span></div>
+              <div class="msg-text">On it! Will review by EOD 👌</div>
+            </div>
+          </div>
+          <div class="msg-group">
+            <div class="msg-av" style="background:#3b82f6;">D</div>
+            <div class="msg-body">
+              <div class="msg-meta"><span class="msg-sender">Daniel</span><span class="msg-time">10:45 AM</span></div>
+              <div class="msg-text">Also — should we schedule a sync before the deadline? The project discussion meeting went well, I think we can wrap up quickly.</div>
+            </div>
+          </div>
+          <div class="msg-group">
+            <div class="msg-av" style="background:#10b981;">A</div>
+            <div class="msg-body">
+              <div class="msg-meta"><span class="msg-sender">Anaiya Roy</span><span class="msg-time">10:47 AM</span></div>
+              <div class="msg-text">Good idea Daniel. Let's do Thursday 3pm?</div>
+              <div class="msg-reactions"><div class="reaction-pill">✅ 4</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chat-input-wrap">
+          <div class="chat-input-box">
+            <div class="chat-input-toolbar">
+              <button class="tb-btn" title="Bold"><strong>B</strong></button>
+              <button class="tb-btn" title="Italic"><em>I</em></button>
+              <button class="tb-btn">🔗</button>
+              <button class="tb-btn">📎</button>
+              <button class="tb-btn">🖼</button>
+              <button class="tb-btn">😊</button>
+            </div>
+            <div class="chat-input-row">
+              <input type="text" id="msgInput" placeholder="Type a message in #Project Alpha" onkeydown="if(event.key==='Enter')sendMsg()">
+              <button class="send-btn" onclick="sendMsg()">➤</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DM Panel -->
+      <div class="dm-panel">
+        <div class="dm-title">Team Members</div>
+        <div class="dm-item"><div class="ch-avatar" style="background:#10b981;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white;flex-shrink:0;">A</div><div class="dm-info"><div class="dm-name">Anaiya Roy</div><div class="dm-preview">Just uploaded the doc 🎉</div></div><div class="ch-online" style="flex-shrink:0;"></div></div>
+        <div class="dm-item"><div class="ch-avatar" style="background:#f59e0b;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white;flex-shrink:0;">B</div><div class="dm-info"><div class="dm-name">Bold Sharma</div><div class="dm-preview">On it! Will review by EOD 👌</div></div><div class="ch-online" style="flex-shrink:0;"></div></div>
+        <div class="dm-item"><div class="ch-avatar" style="background:#3b82f6;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white;flex-shrink:0;">D</div><div class="dm-info"><div class="dm-name">Daniel</div><div class="dm-preview">Should we schedule a sync?</div></div></div>
+        <div class="dm-item"><div class="ch-avatar" style="background:#8b5cf6;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white;flex-shrink:0;">M</div><div class="dm-info"><div class="dm-name">Meera K</div><div class="dm-preview">Thursday 3pm works ✅</div></div></div>
+        <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
+          <button onclick="location.href='meeting-dark.html'" style="width:100%;padding:10px;background:#6366f1;color:white;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">📹 Start Meeting</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+// ============================================================================
+// CHAT - FULL FUNCTIONALITY
+// ============================================================================
+
+// State management
+const chatState = {
+  currentChannel: 'Project Alpha',
+  channels: {
+    'Project Alpha': {
+      type: 'channel',
+      members: 12,
+      description: 'Product development updates',
+      messages: [
+        {id: 1, sender: 'Anaiya Roy', avatar: 'A', color: '#10b981', time: '10:24 AM', text: 'Hey team! Just uploaded the latest update. 🎉', file: {name: 'Update_doc.pptx', size: '2.4 MB'}, reactions: {thumbs: 3, party: 2}},
+        {id: 2, sender: 'Navdeep (You)', avatar: 'N', color: '#6366f1', time: '10:30 AM', text: 'That\'s the latest update. Can you review and share feedback?'},
+        {id: 3, sender: 'Bold Sharma', avatar: 'B', color: '#f59e0b', time: '10:32 AM', text: 'On it! Will review by EOD 👌'},
+        {id: 4, sender: 'Daniel', avatar: 'D', color: '#3b82f6', time: '10:45 AM', text: 'Also — should we schedule a sync before the deadline? The project discussion meeting went well, I think we can wrap up quickly.'},
+        {id: 5, sender: 'Anaiya Roy', avatar: 'A', color: '#10b981', time: '10:47 AM', text: 'Good idea Daniel. Let\'s do Thursday 3pm?', reactions: {check: 4}}
+      ]
+    },
+    'Design Team': {
+      type: 'channel',
+      members: 5,
+      description: 'Design collaboration',
+      messages: [
+        {id: 1, sender: 'Anaiya Roy', avatar: 'A', color: '#10b981', time: '9:15 AM', text: 'New mockups ready for review'}
+      ]
+    },
+    'Engineering': {
+      type: 'channel',
+      members: 8,
+      description: 'Development discussions',
+      messages: [
+        {id: 1, sender: 'Bold Sharma', avatar: 'B', color: '#f59e0b', time: '11:20 AM', text: 'API endpoint deployed to staging'}
+      ]
+    },
+    'Anaiya Roy': {
+      type: 'dm',
+      online: true,
+      messages: []
+    },
+    'Bold Sharma': {
+      type: 'dm',
+      online: true,
+      messages: []
+    }
+  }
+};
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+  renderMessages();
+  setupEventListeners();
+  setupSearch();
+});
+
+// ============================================================================
+// CHANNEL SWITCHING
+// ============================================================================
+
+function switchChannel(name, el) {
+  document.querySelectorAll('.ch-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+  chatState.currentChannel = name;
+  document.getElementById('chatChannelName').textContent = name;
+  
+  const channel = chatState.channels[name];
+  if (channel) {
+    const desc = document.querySelector('.chat-desc');
+    if (channel.type === 'channel') {
+      desc.textContent = `${channel.members} members · ${channel.description}`;
+    } else {
+      desc.textContent = channel.online ? '🟢 Online' : '⚪ Offline';
+    }
+  }
+  
+  renderMessages();
+  showToast(`Switched to ${name}`, 'info');
+}
+
+// ============================================================================
+// MESSAGE RENDERING
+// ============================================================================
+
+function renderMessages() {
+  const area = document.getElementById('messagesArea');
+  const channel = chatState.channels[chatState.currentChannel];
+  
+  if (!channel || !channel.messages || channel.messages.length === 0) {
+    area.innerHTML = '<div class="msg-date">Today</div><div style="text-align:center;padding:40px;color:var(--text-tertiary);font-size:14px;">No messages yet. Start the conversation! 💬</div>';
+    return;
+  }
+  
+  area.innerHTML = '<div class="msg-date">Today</div>';
+  
+  channel.messages.forEach(msg => {
+    const msgEl = createMessageElement(msg);
+    area.appendChild(msgEl);
+  });
+  
+  area.scrollTop = area.scrollHeight;
+}
+
+function createMessageElement(msg) {
+  const div = document.createElement('div');
+  div.className = 'msg-group';
+  
+  let reactionsHTML = '';
+  if (msg.reactions) {
+    const emojiMap = {thumbs: '👍', party: '🎉', check: '✅', heart: '❤️', laugh: '😂'};
+    reactionsHTML = '<div class="msg-reactions">';
+    Object.entries(msg.reactions).forEach(([key, count]) => {
+      reactionsHTML += `<div class="reaction-pill" onclick="toggleReaction(${msg.id}, '${key}')">${emojiMap[key]} ${count}</div>`;
+    });
+    reactionsHTML += '</div>';
+  }
+  
+  let fileHTML = '';
+  if (msg.file) {
+    fileHTML = `<div class="msg-file" onclick="downloadFile('${msg.file.name}')">
+      <span style="font-size:20px;">📄</span>
+      <div>
+        <div class="msg-file-name">${msg.file.name}</div>
+        <div class="msg-file-size">${msg.file.size}</div>
+      </div>
+    </div>`;
+  }
+  
+  div.innerHTML = `
+    <div class="msg-av" style="background:${msg.color};">${msg.avatar}</div>
+    <div class="msg-body">
+      <div class="msg-meta">
+        <span class="msg-sender">${msg.sender}</span>
+        <span class="msg-time">${msg.time}</span>
+      </div>
+      <div class="msg-text">${msg.text}</div>
+      ${fileHTML}
+      ${reactionsHTML}
+    </div>
+  `;
+  
+  return div;
+}
+
+// ============================================================================
+// SENDING MESSAGES
+// ============================================================================
+
+function sendMsg() {
+  const inp = document.getElementById('msgInput');
+  const text = inp.value.trim();
+  
+  if (!text) {
+    showToast('❌ Please enter a message', 'error');
+    return;
+  }
+  
+  const now = new Date();
+  const hours = now.getHours();
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  const ampm = hours < 12 ? 'AM' : 'PM';
+  const time = `${hours % 12 || 12}:${minutes} ${ampm}`;
+  
+  const newMsg = {
+    id: Date.now(),
+    sender: 'Navdeep (You)',
+    avatar: 'N',
+    color: '#6366f1',
+    time: time,
+    text: text
+  };
+  
+  const channel = chatState.channels[chatState.currentChannel];
+  if (channel) {
+    if (!channel.messages) channel.messages = [];
+    channel.messages.push(newMsg);
+  }
+  
+  inp.value = '';
+  renderMessages();
+  showToast('✅ Message sent', 'success');
+}
+
+// ============================================================================
+// REACTIONS
+// ============================================================================
+
+function toggleReaction(msgId, reactionType) {
+  const channel = chatState.channels[chatState.currentChannel];
+  if (!channel) return;
+  
+  const msg = channel.messages.find(m => m.id === msgId);
+  if (!msg) return;
+  
+  if (!msg.reactions) msg.reactions = {};
+  
+  if (msg.reactions[reactionType]) {
+    msg.reactions[reactionType]++;
+  } else {
+    msg.reactions[reactionType] = 1;
+  }
+  
+  renderMessages();
+  showToast('👍 Reaction added', 'success');
+}
+
+// ============================================================================
+// FILE HANDLING
+// ============================================================================
+
+function handleFileUpload() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const now = new Date();
+      const time = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')} ${now.getHours() < 12 ? 'AM' : 'PM'}`;
+      
+      const newMsg = {
+        id: Date.now(),
+        sender: 'Navdeep (You)',
+        avatar: 'N',
+        color: '#6366f1',
+        time: time,
+        text: 'Shared a file',
+        file: {
+          name: file.name,
+          size: formatFileSize(file.size)
+        }
+      };
+      
+      const channel = chatState.channels[chatState.currentChannel];
+      if (channel) {
+        if (!channel.messages) channel.messages = [];
+        channel.messages.push(newMsg);
+        renderMessages();
+        showToast('📎 File uploaded', 'success');
+      }
+    }
+  };
+  input.click();
+}
+
+function downloadFile(filename) {
+  showToast(`📥 Downloading ${filename}...`, 'info');
+  setTimeout(() => {
+    showToast('✅ Download complete!', 'success');
+  }, 1000);
+}
+
+function formatFileSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+// ============================================================================
+// EMOJI PICKER
+// ============================================================================
+
+function showEmojiPicker() {
+  const emojis = ['😊', '👍', '❤️', '😂', '🎉', '✅', '🔥', '👏', '💯', '🚀', '💪', '🙌'];
+  
+  const picker = document.createElement('div');
+  picker.style.cssText = 'position:absolute;bottom:60px;right:20px;background:white;border:1px solid var(--border);border-radius:10px;padding:10px;display:grid;grid-template-columns:repeat(6,1fr);gap:8px;box-shadow:0 4px 16px rgba(0,0,0,.1);z-index:1000;';
+  
+  emojis.forEach(emoji => {
+    const btn = document.createElement('button');
+    btn.textContent = emoji;
+    btn.style.cssText = 'width:36px;height:36px;border:none;background:none;font-size:20px;cursor:pointer;border-radius:6px;transition:background .15s;';
+    btn.onmouseover = () => btn.style.background = '#f4f6fa';
+    btn.onmouseout = () => btn.style.background = 'none';
+    btn.onclick = () => {
+      const inp = document.getElementById('msgInput');
+      inp.value += emoji;
+      inp.focus();
+      picker.remove();
+    };
+    picker.appendChild(btn);
+  });
+  
+  document.body.appendChild(picker);
+  
+  // Close on click outside
+  setTimeout(() => {
+    document.addEventListener('click', function closeEm(e) {
+      if (!picker.contains(e.target)) {
+        picker.remove();
+        document.removeEventListener('click', closeEm);
+      }
+    });
+  }, 100);
+}
+
+// ============================================================================
+// SEARCH
+// ============================================================================
+
+function setupSearch() {
+  const searchInput = document.querySelector('.channels input[type="text"]');
+  if (searchInput) {
+    searchInput.oninput = (e) => {
+      const query = e.target.value.toLowerCase();
+      document.querySelectorAll('.ch-item').forEach(item => {
+        const text = item.textContent.toLowerCase();
+        item.style.display = text.includes(query) ? '' : 'none';
+      });
+    };
+  }
+}
+
+// ============================================================================
+// EVENT LISTENERS
+// ============================================================================
+
+function setupEventListeners() {
+  // Toolbar buttons
+  const toolbarButtons = document.querySelectorAll('.tb-btn');
+  toolbarButtons.forEach((btn, index) => {
+    const actions = [
+      () => formatText('bold'),
+      () => formatText('italic'),
+      () => insertLink(),
+      () => handleFileUpload(),
+      () => insertImage(),
+      () => showEmojiPicker()
+    ];
+    
+    btn.onclick = actions[index] || (() => {});
+  });
+  
+  // Enter key to send
+  document.getElementById('msgInput').onkeydown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMsg();
+    }
+  };
+}
+
+function formatText(format) {
+  const inp = document.getElementById('msgInput');
+  const start = inp.selectionStart;
+  const end = inp.selectionEnd;
+  const text = inp.value;
+  const selected = text.substring(start, end);
+  
+  if (!selected) {
+    showToast('ℹ️ Select text first', 'info');
+    return;
+  }
+  
+  let formatted = selected;
+  if (format === 'bold') formatted = `**${selected}**`;
+  if (format === 'italic') formatted = `*${selected}*`;
+  
+  inp.value = text.substring(0, start) + formatted + text.substring(end);
+  inp.focus();
+}
+
+function insertLink() {
+  const url = prompt('Enter URL:');
+  if (url) {
+    const inp = document.getElementById('msgInput');
+    inp.value += ` ${url} `;
+    inp.focus();
+  }
+}
+
+function insertImage() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      showToast('🖼️ Image uploaded', 'success');
+      handleFileUpload();
+    }
+  };
+  input.click();
+}
+
+// ============================================================================
+// UI UTILITIES
+// ============================================================================
+
+function showToast(message, type = 'info') {
+  let toast = document.getElementById('toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.style.cssText = 'position:fixed;top:80px;right:24px;background:#1a1f2e;color:white;padding:12px 20px;border-radius:8px;font-size:13.5px;font-weight:600;z-index:9999;opacity:0;transform:translateY(-10px);transition:all .3s;box-shadow:0 4px 12px rgba(0,0,0,.2);';
+    document.body.appendChild(toast);
+  }
+  
+  const colors = {
+    success: '#10b981',
+    error: '#ef4444',
+    warning: '#f59e0b',
+    info: '#6366f1'
+  };
+  toast.style.background = colors[type] || colors.info;
+  
+  toast.textContent = message;
+  toast.style.opacity = '1';
+  toast.style.transform = 'translateY(0)';
+  
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(-10px)';
+  }, 3000);
+}
+
+console.log('✅ Chat initialized');
+console.log('📱 Current channel:', chatState.currentChannel);
+console.log('💬 Channels available:', Object.keys(chatState.channels).length);
+</script>
+</body>
+</html>

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Join a Meeting - VCollab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/dark-modern.css">
+<style>
+.join-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 144px);
+  padding: var(--space-xl);
+}
+
+.join-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--space-2xl);
+  max-width: 520px;
+  width: 100%;
+  text-align: center;
+  box-shadow: var(--shadow-xl);
+}
+
+.join-icon {
+  width: 80px;
+  height: 80px;
+  background: var(--accent-gradient);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  margin: 0 auto var(--space-lg);
+}
+
+.join-title {
+  font-size: 32px;
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.join-description {
+  font-size: var(--font-size-md);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-2xl);
+  line-height: 1.7;
+}
+
+.meeting-code-input {
+  width: 100%;
+  padding: 18px var(--space-lg);
+  font-size: 24px;
+  font-weight: var(--font-weight-bold);
+  text-align: center;
+  letter-spacing: 0.1em;
+  background: var(--bg-input);
+  border: 2px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  transition: all var(--transition-base);
+  margin-bottom: var(--space-md);
+}
+
+.meeting-code-input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.meeting-code-input::placeholder {
+  color: var(--text-muted);
+  font-weight: var(--font-weight-normal);
+  font-size: var(--font-size-md);
+  letter-spacing: 0;
+}
+
+.format-hint {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  margin-bottom: var(--space-xl);
+}
+
+.join-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin: var(--space-xl) 0;
+}
+
+.join-divider-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border-primary);
+}
+
+.join-divider-text {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+.calendar-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md);
+}
+
+.calendar-btn {
+  padding: var(--space-md);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+}
+
+.calendar-btn:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent-primary);
+}
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Ctext x='16' y='22' text-anchor='middle' fill='white' font-size='18' font-weight='bold'%3EV%3C/text%3E%3C/svg%3E" alt="VCollab">
+    <span class="sidebar-logo-text">VCollab</span>
+  </div>
+  
+  <nav class="sidebar-nav">
+    <ul>
+      <li class="sidebar-nav-item">
+        <a href="dashboard-new.html" class="sidebar-nav-link">
+          <span class="sidebar-nav-icon">🏠</span>
+          <span>Home</span>
+        </a>
+      </li>
+      <li class="sidebar-nav-item">
+        <a href="meeting-dark.html" class="sidebar-nav-link active">
+          <span class="sidebar-nav-icon">📹</span>
+          <span>Meetings</span>
+        </a>
+      </li>
+      <li class="sidebar-nav-item">
+        <a href="chat-dark.html" class="sidebar-nav-link">
+          <span class="sidebar-nav-icon">💬</span>
+          <span>Chat</span>
+        </a>
+      </li>
+      <li class="sidebar-nav-item">
+        <a href="whiteboard-dark.html" class="sidebar-nav-link">
+          <span class="sidebar-nav-icon">🎨</span>
+          <span>Whiteboard</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</aside>
+
+<!-- Top Bar -->
+<div class="topbar">
+  <div class="topbar-search">
+    <span class="topbar-search-icon">🔍</span>
+    <input type="text" class="topbar-search-input" placeholder="Search meetings...">
+  </div>
+  
+  <div class="topbar-actions">
+    <button class="topbar-icon-btn">🔔</button>
+    <button class="topbar-icon-btn">⚙️</button>
+    <div class="topbar-user">
+      <div class="topbar-user-avatar" style="background: var(--accent-gradient); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">N</div>
+    </div>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+  <div class="join-container">
+    <div class="join-card">
+      <div class="join-icon">🔗</div>
+      <h1 class="join-title">Join a Meeting</h1>
+      <p class="join-description">Enter a meeting code or link to join instantly</p>
+      
+      <input 
+        type="text" 
+        class="meeting-code-input" 
+        id="meetingCodeInput"
+        placeholder="Enter code or link"
+        oninput="formatMeetingCode(this)"
+        maxlength="20"
+      >
+      <div class="format-hint">e.g. abc-defg-hij or vcol.io/meeting</div>
+      
+      <button class="btn btn-primary btn-lg" id="joinButton" onclick="joinMeeting()" style="width: 100%;" disabled>
+        Join Meeting
+      </button>
+      
+      <div class="join-divider">
+        <div class="join-divider-line"></div>
+        <span class="join-divider-text">or join from your calendar</span>
+        <div class="join-divider-line"></div>
+      </div>
+      
+      <div class="calendar-buttons">
+        <button class="calendar-btn" onclick="alert('Google Calendar integration coming soon!')">
+          📅 Google Calendar
+        </button>
+        <button class="calendar-btn" onclick="alert('Outlook Calendar integration coming soon!')">
+          📆 Outlook Calendar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_URL = '/api';
+
+function formatMeetingCode(input) {
+  let value = input.value.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+  
+  // Format as abc-defg-hij
+  if (value.length > 3 && value.length <= 7) {
+    value = value.slice(0, 3) + '-' + value.slice(3);
+  } else if (value.length > 7) {
+    value = value.slice(0, 3) + '-' + value.slice(3, 7) + '-' + value.slice(7, 10);
+  }
+  
+  input.value = value;
+  
+  // Enable button if code is valid (at least 6 characters without dashes)
+  const cleanCode = value.replace(/-/g, '');
+  document.getElementById('joinButton').disabled = cleanCode.length < 6;
+}
+
+async function joinMeeting() {
+  const input = document.getElementById('meetingCodeInput');
+  const code = input.value.replace(/-/g, '');
+  
+  if (!code) {
+    alert('Please enter a meeting code');
+    return;
+  }
+  
+  const button = document.getElementById('joinButton');
+  button.disabled = true;
+  button.textContent = 'Joining...';
+  
+  try {
+    // Verify meeting exists
+    const res = await fetch(`${API_URL}/meetings/${code}`, {
+      headers: { 
+        'Authorization': `Bearer ${localStorage.getItem('token')}` 
+      }
+    });
+    
+    if (res.ok) {
+      window.location.href = `meeting-dark.html?room=${code}`;
+    } else {
+      alert('Meeting not found. Please check the code and try again.');
+      button.disabled = false;
+      button.textContent = 'Join Meeting';
+    }
+  } catch (err) {
+    console.error('Join failed:', err);
+    // Allow joining even if backend is down
+    window.location.href = `meeting-dark.html?room=${code}`;
+  }
+}
+
+// Allow Enter key to join
+document.getElementById('meetingCodeInput').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter' && !document.getElementById('joinButton').disabled) {
+    joinMeeting();
+  }
+});
+
+console.log('✅ Join Meeting page initialized with modern dark theme');
+</script>
+
+</body>
+</html>

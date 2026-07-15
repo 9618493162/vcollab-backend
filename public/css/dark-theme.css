@@ -1,0 +1,124 @@
+/* VCollab Neo Glassmorphism Theme - Enterprise SaaS Design */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    /* Background Colors - Midnight Blue Palette */
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-tertiary: #334155;
+    
+    /* Glassmorphism Backgrounds */
+    --glass-bg: rgba(30, 41, 59, 0.7);
+    --glass-border: rgba(148, 163, 184, 0.1);
+    
+    /* Primary Brand Colors - Purple + Violet Gradient */
+    --primary: #8b5cf6;
+    --primary-hover: #7c3aed;
+    --primary-light: rgba(139, 92, 246, 0.15);
+    --primary-gradient: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    
+    /* Secondary Purple Shades */
+    --violet: #7c3aed;
+    --purple: #a855f7;
+    --indigo: #6366f1;
+    
+    /* Text Colors */
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --text-tertiary: #94a3b8;
+    --text-muted: #64748b;
+    
+    /* Accent Colors */
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --info: #3b82f6;
+    
+    /* Border & Divider */
+    --border-color: rgba(148, 163, 184, 0.12);
+    --border-glass: rgba(255, 255, 255, 0.1);
+    
+    /* Shadows - Neo Style */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.2);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.3);
+    --shadow-glass: 0 8px 32px rgba(139, 92, 246, 0.15);
+    
+    /* Glassmorphism Effects */
+    --blur-sm: blur(8px);
+    --blur-md: blur(16px);
+    --blur-lg: blur(24px);
+    
+    /* Border Radius */
+    --radius-sm: 12px;
+    --radius-md: 16px;
+    --radius-lg: 20px;
+    --radius-xl: 24px;
+    
+    /* Typography */
+    --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-display: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-primary);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Glassmorphism Card Component */
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: var(--blur-md);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-glass);
+}
+
+/* Button Styles */
+.btn {
+    font-family: var(--font-primary);
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-primary {
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(139, 92, 246, 0.4);
+}
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+}
