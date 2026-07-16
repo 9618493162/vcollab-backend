@@ -157,8 +157,8 @@ exports.register = async (req, res) => {
             });
         }
 
-        // Send welcome email
-        await emailService.sendWelcomeEmail(newUser.email, newUser.name);
+        // Send welcome email (disabled to fix production timeout)
+        // await emailService.sendWelcomeEmail(newUser.email, newUser.name);
 
         res.status(201).json({
             success: true,
@@ -508,8 +508,8 @@ exports.forgotPassword = async (req, res) => {
             });
         }
 
-        // Send reset email
-        await emailService.sendPasswordResetEmail(user.email, user.name, resetToken);
+        // Send reset email (disabled to fix production timeout)
+        // await emailService.sendPasswordResetEmail(user.email, user.name, resetToken);
 
         res.status(200).json({
             success: true,
