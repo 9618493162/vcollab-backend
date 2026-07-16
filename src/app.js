@@ -7,6 +7,7 @@ const recordingRoutes = require("./routes/recordingRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
 const roomRoutes = require("./routes/roomRoutes");
+const aiRoutes = require("./routes/aiRoutes");
 const { apiLimiter } = require("./middleware/rateLimiter");
 
 // Security imports
@@ -116,6 +117,7 @@ app.use("/api/recordings", recordingRoutes);
 app.use("/api/uploads", uploadRoutes);
 app.use("/api/rooms", roomRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/ai", aiRoutes);
 
 // 404 handler for API routes only  
 // Temporarily disabled to fix path error
