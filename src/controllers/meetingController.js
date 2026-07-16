@@ -8,23 +8,21 @@ const generateMeetingId = () => {
 // Create Meeting
 exports.createMeeting = async (req, res) => {
     try {
-        const { title, description, date, time, type, passcode } = req.body;
+        const { title, description, scheduledDate, scheduledTime, type, passcode } = req.body;
         
         const meetingId = generateMeetingId();
 
+        // Use correct field names based on database schema
         const { data: meeting, error } = await supabase
             .from("meetings")
             .insert([
                 {
                     meeting_id: meetingId,
-                    title,
-                    description,
+                    title: title || 'Quick Meeting',
+                    description: description || '',
                     host_id: req.user.id,
-                    date,
-                    time,
-                    type: type || "Public",
-                    passcode: passcode || "",
-                    status: "scheduled",
+                    host_email: req.user.email,
+                    status: type === 'instant' ? 'active' : 'scheduled',
                     created_at: new Date().toISOString()
                 }
             ])
@@ -32,11 +30,12 @@ exports.createMeeting = async (req, res) => {
             .single();
 
         if (error) {
+            console.error("Supabase insert error:", error);
             throw error;
         }
 
         // Add host as participant
-        await supabase
+        const { error: participantError } = await supabase
             .from("meeting_participants")
             .insert([
                 {
@@ -44,6 +43,11 @@ exports.createMeeting = async (req, res) => {
                     user_id: req.user.id
                 }
             ]);
+
+        if (participantError) {
+            console.error("Add participant error:", participantError);
+            // Don't fail the whole request for this
+        }
 
         res.status(201).json({
             success: true,
@@ -53,9 +57,8 @@ exports.createMeeting = async (req, res) => {
                 meetingId: meeting.meeting_id,
                 title: meeting.title,
                 description: meeting.description,
-                date: meeting.date,
-                time: meeting.time,
-                type: meeting.type
+                status: meeting.status,
+                createdAt: meeting.created_at
             }
         });
 
@@ -64,7 +67,8 @@ exports.createMeeting = async (req, res) => {
         res.status(500).json({ 
             success: false,
             message: "Failed to create meeting",
-            error: error.message 
+            error: error.message,
+            details: error.details || error.hint || null
         });
     }
 };
@@ -149,24 +153,42 @@ exports.getMeetings = async (req, res) => {
             .eq("user_id", req.user.id);
 
         const meetingIds = participantMeetings?.map(p => p.meeting_id) || [];
-
-        const { data: meetings, error } = await supabase
+        
+        let query = supabase
             .from("meetings")
-            .select(`
-                *,
-                host:users!meetings_host_id_fkey(id, full_name, email)
-            `)
-            .or(`host_id.eq.${req.user.id},id.in.(${meetingIds.join(",")})`)
-            .order("date", { ascending: false });
+            .select("*")
+            .order("created_at", { ascending: false });
+
+        // Filter to meetings where user is host or participant
+        if (meetingIds.length > 0) {
+            query = query.or(`host_id.eq.${req.user.id},id.in.(${meetingIds.join(",")})`);
+        } else {
+            query = query.eq("host_id", req.user.id);
+        }
+
+        const { data: meetings, error } = await query;
 
         if (error && error.code !== 'PGRST116') { // Ignore "no rows" error
+            console.error("Get meetings error:", error);
             throw error;
         }
 
+        // Transform meetings to match frontend expectations
+        const transformedMeetings = (meetings || []).map(meeting => ({
+            id: meeting.id,
+            meetingId: meeting.meeting_id,
+            title: meeting.title,
+            description: meeting.description,
+            status: meeting.status,
+            createdAt: meeting.created_at,
+            hostId: meeting.host_id,
+            hostEmail: meeting.host_email
+        }));
+
         res.status(200).json({
             success: true,
-            count: meetings?.length || 0,
-            meetings: meetings || []
+            count: transformedMeetings.length,
+            meetings: transformedMeetings
         });
 
     } catch (error) {
