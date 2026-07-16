@@ -306,33 +306,58 @@ exports.login = async (req, res) => {
 // Get User Profile
 exports.getProfile = async (req, res) => {
     try {
-        let user;
-        try {
-            user = await User.findById(req.user.id).select("-password");
-        } catch (err) {
-            // MongoDB not available, check in-memory
-            user = inMemoryUsers.find(u => u._id === req.user.id);
-            if (user) {
-                const { password, ...userWithoutPassword } = user;
-                user = userWithoutPassword;
+        let user = null;
+
+        // Try Supabase first
+        if (supabase) {
+            try {
+                const { data, error } = await supabase
+                    .from("users")
+                    .select("id, full_name, email, created_at")
+                    .eq("id", req.user.id)
+                    .single();
+                if (!error && data) {
+                    user = {
+                        id: data.id,
+                        fullName: data.full_name,
+                        email: data.email,
+                        createdAt: data.created_at
+                    };
+                }
+            } catch (err) {
+                console.warn("Supabase getProfile error:", err.message);
             }
         }
 
+        // Fallback: try MongoDB
         if (!user) {
-            return res.status(404).json({ 
-                success: false,
-                message: "User not found" 
-            });
+            try {
+                const dbUser = await User.findById(req.user.id).select("-password");
+                if (dbUser) {
+                    user = {
+                        id: dbUser._id.toString(),
+                        fullName: dbUser.name,
+                        email: dbUser.email,
+                        createdAt: dbUser.createdAt
+                    };
+                }
+            } catch (err) {
+                // MongoDB not available
+            }
+        }
+
+        // Fallback: use data from JWT (auth middleware already validated it)
+        if (!user) {
+            user = {
+                id: req.user.id,
+                fullName: req.user.fullName,
+                email: req.user.email
+            };
         }
 
         res.status(200).json({
             success: true,
-            user: {
-                id: user._id,
-                fullName: user.name,
-                email: user.email,
-                createdAt: user.createdAt
-            }
+            user
         });
 
     } catch (error) {
