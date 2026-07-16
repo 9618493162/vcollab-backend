@@ -83,10 +83,14 @@ exports.register = async (req, res) => {
                 });
             }
 
+            // Generate unique ID
+            const userId = Date.now().toString();
+            
             // Insert user into Supabase
             const { data: supabaseUser, error: supabaseError } = await supabase
                 .from("users")
                 .insert([{
+                    id: userId,
                     full_name: fullName,
                     email,
                     password: hashedPassword,
