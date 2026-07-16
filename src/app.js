@@ -160,3 +160,5 @@ app.use((err, req, res, next) => {
 logger.info('Application middleware configured successfully');
 
 module.exports = app;
+
+// Deploy trigger: 2026-07-16T20:45 - force Railway redeploy with correct Supabase key
