@@ -157,8 +157,12 @@ exports.register = async (req, res) => {
             });
         }
 
-        // Send welcome email (disabled to fix production timeout)
-        // await emailService.sendWelcomeEmail(newUser.email, newUser.name);
+        // Send welcome email (will be sent once Gmail is configured in Railway)
+        try {
+            await emailService.sendWelcomeEmail(newUser.email, newUser.name);
+        } catch (emailError) {
+            console.log('Email sending skipped:', emailError.message);
+        }
 
         res.status(201).json({
             success: true,
@@ -508,8 +512,12 @@ exports.forgotPassword = async (req, res) => {
             });
         }
 
-        // Send reset email (disabled to fix production timeout)
-        // await emailService.sendPasswordResetEmail(user.email, user.name, resetToken);
+        // Send reset email (will be sent once Gmail is configured in Railway)
+        try {
+            await emailService.sendPasswordResetEmail(user.email, user.name, resetToken);
+        } catch (emailError) {
+            console.log('Email sending skipped:', emailError.message);
+        }
 
         res.status(200).json({
             success: true,
