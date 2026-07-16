@@ -67,6 +67,28 @@ io.on("connection", (socket) => {
         socket.to(roomId).emit("ice-candidate", data, socket.id);
     });
 
+    // New WebRTC signaling events (for webrtc.ts service)
+    socket.on("webrtc-offer", (data) => {
+        socket.to(data.userId).emit("webrtc-offer", {
+            userId: socket.id,
+            offer: data.offer
+        });
+    });
+
+    socket.on("webrtc-answer", (data) => {
+        socket.to(data.userId).emit("webrtc-answer", {
+            userId: socket.id,
+            answer: data.answer
+        });
+    });
+
+    socket.on("webrtc-ice-candidate", (data) => {
+        socket.to(data.userId).emit("webrtc-ice-candidate", {
+            userId: socket.id,
+            candidate: data.candidate
+        });
+    });
+
     // Media state changes
     socket.on("toggle-video", (roomId, enabled) => {
         roomController.updateParticipantMedia(roomId, socket.id, 'video', enabled);

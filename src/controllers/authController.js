@@ -43,6 +43,15 @@ exports.register = async (req, res) => {
             });
         }
 
+        // Validate password strength
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/;
+        if (!passwordRegex.test(password)) {
+            return res.status(400).json({
+                success: false,
+                message: "Password must be at least 8 characters and include uppercase, lowercase, number, and special character (@$!%*?&#)"
+            });
+        }
+
         // Check if user exists
         let existingUser;
         try {
