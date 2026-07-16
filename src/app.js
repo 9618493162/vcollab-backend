@@ -117,25 +117,20 @@ app.use("/api/uploads", uploadRoutes);
 app.use("/api/rooms", roomRoutes);
 app.use("/api/admin", adminRoutes);
 
-// Serve frontend for all non-API routes (SPA support)
-app.get('*', (req, res) => {
-    if (!req.path.startsWith('/api')) {
-        res.sendFile(path.join(__dirname, '../public/index.html'));
-    } else {
-        res.status(404).json({
-            success: false,
-            message: "API endpoint not found"
-        });
-    }
-});
+// 404 handler for API routes only  
+// Temporarily disabled to fix path error
+// app.use('/api', (req, res) => {
+//     logger.warn(`404 - API Not Found: ${req.method} ${req.originalUrl} from ${req.ip}`);
+//     res.status(404).json({
+//         success: false,
+//         message: "API endpoint not found"
+//     });
+// });
 
-// 404 handler for API routes only
-app.use('/api/*', (req, res) => {
-    logger.warn(`404 - API Not Found: ${req.method} ${req.originalUrl} from ${req.ip}`);
-    res.status(404).json({
-        success: false,
-        message: "API endpoint not found"
-    });
+// Serve frontend for all non-API routes (SPA support)
+// Express 5 fix: use regex instead of * wildcard
+app.get(/^\/(?!api).*/, (req, res) => {
+    res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
 // Global error handling middleware
