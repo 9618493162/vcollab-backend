@@ -21,6 +21,7 @@ exports.createMeeting = async (req, res) => {
                     title: title || 'Quick Meeting',
                     description: description || '',
                     host_id: req.user.id,
+                    host_name: req.user.fullName || 'Host',
                     status: type === 'instant' ? 'active' : 'scheduled',
                     created_at: new Date().toISOString()
                 }
