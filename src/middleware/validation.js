@@ -96,7 +96,7 @@ const validateCreateMeeting = [
         .matches(/^([01]\d|2[0-3]):([0-5]\d)$/).withMessage('Invalid time format (HH:MM)'),
     body('type')
         .optional()
-        .isIn(['Public', 'Private']).withMessage('Type must be Public or Private'),
+        .isIn(['Public', 'Private', 'instant', 'scheduled']).withMessage('Type must be Public, Private, instant, or scheduled'),
     body('passcode')
         .optional()
         .trim()

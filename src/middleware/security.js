@@ -141,6 +141,9 @@ const corsOptions = {
             'http://127.0.0.1:3000',
             'http://localhost:5173',
             'http://127.0.0.1:5173',
+            // Current production frontend
+            'https://vcollab-react.vercel.app',
+            // Legacy frontend URLs
             'https://vcollab-frontend.vercel.app',
             'https://vcollab-frontend-b092nji47-ggundrathinavadeep-4146s-projects.vercel.app',
             'https://vcollab-frontend-py4x87l13-ggundrathinavadeep-4146s-projects.vercel.app',
@@ -150,6 +153,9 @@ const corsOptions = {
 
         // Allow requests with no origin (mobile apps, Postman, etc.)
         if (!origin) return callback(null, true);
+
+        // Allow all vercel preview deployments for this project
+        if (origin.endsWith('.vercel.app')) return callback(null, true);
 
         if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV === 'development') {
             callback(null, true);
