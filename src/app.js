@@ -92,7 +92,7 @@ app.get('/health', (req, res) => {
 app.use('/api/', apiLimiter);
 
 // Routes
-app.get("/", (req, res) => {
+app.get("/api", (req, res) => {
     res.json({
         success: true,
         message: "VCollab Backend API v1.0",
