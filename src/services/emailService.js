@@ -6,8 +6,12 @@ let transporter = null;
 const initTransporter = () => {
     if (transporter) return transporter;
 
-    // Check if email is configured
-    if (!process.env.EMAIL_HOST || !process.env.EMAIL_USER) {
+    // Check if email is configured with valid credentials (not placeholder)
+    if (!process.env.EMAIL_HOST || 
+        !process.env.EMAIL_USER || 
+        process.env.EMAIL_USER.includes('your-email') ||
+        !process.env.EMAIL_PASSWORD ||
+        process.env.EMAIL_PASSWORD.includes('your-')) {
         console.log('⚠️ Email service not configured - emails will be logged only');
         return null;
     }
@@ -20,7 +24,11 @@ const initTransporter = () => {
             auth: {
                 user: process.env.EMAIL_USER,
                 pass: process.env.EMAIL_PASSWORD
-            }
+            },
+            // Add timeout to prevent hanging
+            connectionTimeout: 3000,
+            greetingTimeout: 3000,
+            socketTimeout: 3000
         });
         console.log('✅ Email service configured');
         return transporter;
