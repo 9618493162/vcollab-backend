@@ -15,4 +15,8 @@ router.post("/join", auth, validateJoinMeeting, meetingController.joinMeeting);
 router.get("/list", auth, meetingController.getMeetings);
 router.get("/:meetingId", auth, validateMeetingId, meetingController.getMeetingById);
 
+// Sprint 5 - Enterprise Features
+router.post("/:meetingId/verify-password", auth, meetingController.verifyMeetingPassword);
+router.get("/:meetingId/analytics", auth, meetingController.getMeetingAnalytics);
+
 module.exports = router;

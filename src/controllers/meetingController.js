@@ -236,3 +236,134 @@ exports.getMeetingById = async (req, res) => {
         });
     }
 };
+
+// Sprint 5 - Verify Meeting Password
+exports.verifyMeetingPassword = async (req, res) => {
+    try {
+        const { meetingId } = req.params;
+        const { password } = req.body;
+
+        if (!password) {
+            return res.status(400).json({
+                success: false,
+                message: "Password is required"
+            });
+        }
+
+        const { data: meeting, error } = await supabase
+            .from("meetings")
+            .select("id, meeting_id, password")
+            .eq("meeting_id", meetingId)
+            .single();
+
+        if (error || !meeting) {
+            return res.status(404).json({
+                success: false,
+                message: "Meeting not found"
+            });
+        }
+
+        // Check if meeting has password protection
+        if (!meeting.password) {
+            return res.status(200).json({
+                success: true,
+                message: "Meeting is not password protected"
+            });
+        }
+
+        // Verify password (in production, use bcrypt for hashed passwords)
+        if (meeting.password !== password) {
+            return res.status(401).json({
+                success: false,
+                message: "Incorrect password"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Password verified successfully"
+        });
+
+    } catch (error) {
+        console.error("Verify password error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to verify password",
+            error: error.message
+        });
+    }
+};
+
+// Sprint 5 - Get Meeting Analytics
+exports.getMeetingAnalytics = async (req, res) => {
+    try {
+        const { meetingId } = req.params;
+
+        // Get meeting
+        const { data: meeting, error: meetingError } = await supabase
+            .from("meetings")
+            .select("id, created_at, status")
+            .eq("meeting_id", meetingId)
+            .single();
+
+        if (meetingError || !meeting) {
+            return res.status(404).json({
+                success: false,
+                message: "Meeting not found"
+            });
+        }
+
+        // Get participants count
+        const { data: participants, error: participantsError } = await supabase
+            .from("meeting_participants")
+            .select("id, joined_at, left_at")
+            .eq("meeting_id", meeting.id);
+
+        // Get chat messages count (if you have a messages table)
+        const { data: messages, error: messagesError } = await supabase
+            .from("chat_messages")
+            .select("id")
+            .eq("meeting_id", meeting.id);
+
+        // Calculate analytics
+        const totalParticipants = participants?.length || 0;
+        const peakParticipants = totalParticipants; // In real-time, track concurrent participants
+
+        // Calculate total meeting duration
+        let totalMinutes = 0;
+        let averageDuration = 0;
+        
+        if (participants && participants.length > 0) {
+            participants.forEach(p => {
+                if (p.joined_at && p.left_at) {
+                    const duration = (new Date(p.left_at) - new Date(p.joined_at)) / 1000 / 60;
+                    totalMinutes += duration;
+                }
+            });
+            averageDuration = totalMinutes / participants.length;
+        }
+
+        // Video on percentage (mock data - in real app, track this in real-time)
+        const videoOnPercentage = 75;
+
+        res.status(200).json({
+            success: true,
+            analytics: {
+                totalParticipants,
+                peakParticipants,
+                totalMinutes: Math.round(totalMinutes),
+                totalMessages: messages?.length || 0,
+                videoOnPercentage,
+                averageDuration: Math.round(averageDuration)
+            }
+        });
+
+    } catch (error) {
+        console.error("Get analytics error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to get meeting analytics",
+            error: error.message
+        });
+    }
+};
