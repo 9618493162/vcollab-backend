@@ -1,40 +1,41 @@
-const jwt = require("jsonwebtoken");
 const supabase = require("../config/supabase");
-
-// Shared in-memory user store (same reference as authController)
-// This is populated when Supabase is unavailable
 const User = require("../models/User");
+const { verifyAuthToken } = require("../utils/verifyToken");
 
 const auth = async (req, res, next) => {
     try {
         const token = req.header("Authorization")?.replace("Bearer ", "");
 
         if (!token) {
-            return res.status(401).json({ 
+            return res.status(401).json({
                 success: false,
-                message: "Authentication required" 
+                message: "Authentication required",
             });
         }
 
-        // Verify token
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || "default-secret");
-        
+        const tokenUser = await verifyAuthToken(token);
+        if (!tokenUser) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid or expired token",
+            });
+        }
+
         let user = null;
 
-        // Try Supabase first
         if (supabase) {
             try {
                 const { data, error } = await supabase
                     .from("users")
                     .select("id, full_name, email")
-                    .eq("id", decoded.id)
+                    .eq("id", tokenUser.id)
                     .single();
-                
+
                 if (!error && data) {
                     user = {
                         id: data.id,
                         fullName: data.full_name,
-                        email: data.email
+                        email: data.email,
                     };
                 } else if (error) {
                     console.warn("Supabase auth lookup failed:", error.message);
@@ -44,41 +45,32 @@ const auth = async (req, res, next) => {
             }
         }
 
-        // Fallback: try MongoDB
         if (!user) {
             try {
-                const dbUser = await User.findById(decoded.id).select("id name email");
+                const dbUser = await User.findById(tokenUser.id).select("id name email");
                 if (dbUser) {
                     user = {
                         id: dbUser._id.toString(),
                         fullName: dbUser.name,
-                        email: dbUser.email
+                        email: dbUser.email,
                     };
                 }
-            } catch (err) {
+            } catch (_) {
                 // MongoDB not available
             }
         }
 
-        // Fallback: trust the token itself (in-memory users don't persist across restarts)
-        // This allows meeting creation etc. to work even if DB lookup fails
         if (!user) {
-            console.warn(`⚠️ User ${decoded.id} not found in DB - using token claims`);
-            user = {
-                id: decoded.id,
-                fullName: decoded.fullName || "User",
-                email: decoded.email || ""
-            };
+            user = tokenUser;
         }
 
         req.user = user;
         next();
-
     } catch (error) {
         console.error("Auth middleware error:", error.message);
-        res.status(401).json({ 
+        res.status(401).json({
             success: false,
-            message: "Invalid or expired token" 
+            message: "Invalid or expired token",
         });
     }
 };

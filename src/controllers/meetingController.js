@@ -36,7 +36,7 @@ exports.createMeeting = async (req, res) => {
 
         // Add host as participant
         const { error: participantError } = await supabase
-            .from("meeting_participants")
+            .from("participants")
             .insert([
                 {
                     meeting_id: meeting.id,
@@ -101,7 +101,7 @@ exports.joinMeeting = async (req, res) => {
 
         // Check if already a participant
         const { data: existingParticipant } = await supabase
-            .from("meeting_participants")
+            .from("participants")
             .select("*")
             .eq("meeting_id", meeting.id)
             .eq("user_id", req.user.id)
@@ -110,7 +110,7 @@ exports.joinMeeting = async (req, res) => {
         // Add user to participants if not already added
         if (!existingParticipant) {
             await supabase
-                .from("meeting_participants")
+                .from("participants")
                 .insert([
                     {
                         meeting_id: meeting.id,
@@ -148,7 +148,7 @@ exports.getMeetings = async (req, res) => {
     try {
         // Get meetings where user is host or participant
         const { data: participantMeetings } = await supabase
-            .from("meeting_participants")
+            .from("participants")
             .select("meeting_id")
             .eq("user_id", req.user.id);
 
@@ -315,7 +315,7 @@ exports.getMeetingAnalytics = async (req, res) => {
 
         // Get participants count
         const { data: participants, error: participantsError } = await supabase
-            .from("meeting_participants")
+            .from("participants")
             .select("id, joined_at, left_at")
             .eq("meeting_id", meeting.id);
 

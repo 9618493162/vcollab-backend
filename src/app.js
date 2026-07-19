@@ -9,6 +9,7 @@ const uploadRoutes = require("./routes/uploadRoutes");
 const roomRoutes = require("./routes/roomRoutes");
 const aiRoutes = require("./routes/aiRoutes");
 const userRoutes = require("./routes/userRoutes");
+const livekitRoutes = require("./routes/livekitRoutes");
 const { apiLimiter } = require("./middleware/rateLimiter");
 
 // Security imports
@@ -120,6 +121,7 @@ app.use("/api/rooms", roomRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/livekit", livekitRoutes);
 
 // 404 handler for API routes only  
 // Temporarily disabled to fix path error

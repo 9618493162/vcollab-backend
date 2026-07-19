@@ -32,7 +32,12 @@ router.post("/login",
     authController.login
 );
 
-router.post("/refresh-token", 
+router.post("/oauth-sync",
+    authLimiter,
+    authController.oauthSync
+);
+
+router.post("/refresh-token",
     securityEventLogger('token_refresh'),
     authController.refreshToken
 );

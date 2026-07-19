@@ -1,0 +1,59 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/index.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/health.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/livekit-config.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/livekit-token.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/oauth-sync.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/meetings-create.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/health",
+      "dest": "api/health.js"
+    },
+    {
+      "src": "/api/livekit/config",
+      "dest": "api/livekit-config.js"
+    },
+    {
+      "src": "/api/livekit/token",
+      "dest": "api/livekit-token.js"
+    },
+    {
+      "src": "/api/auth/oauth-sync",
+      "dest": "api/oauth-sync.js"
+    },
+    {
+      "src": "/api/meetings/create",
+      "dest": "api/meetings-create.js"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "api/index.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "api/index.js"
+    }
+  ]
+}

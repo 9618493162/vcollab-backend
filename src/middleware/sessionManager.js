@@ -21,8 +21,13 @@ const sessionConfig = {
 
 // Initialize session store
 const initializeSessionStore = (mongoUri) => {
-    if (!mongoUri) {
-        logger.warn('MongoDB URI not provided, using in-memory session store (not recommended for production)');
+    // In serverless environments, skip MongoDB sessions
+    if (process.env.VERCEL === '1' || !mongoUri) {
+        if (process.env.VERCEL === '1') {
+            logger.info('Serverless environment detected, using memory session store');
+        } else {
+            logger.warn('MongoDB URI not provided, using in-memory session store (not recommended for production)');
+        }
         return sessionConfig;
     }
 
@@ -151,8 +156,10 @@ const cleanupExpiredSessions = () => {
     logger.info('Session cleanup task executed');
 };
 
-// Run cleanup every hour
-setInterval(cleanupExpiredSessions, 60 * 60 * 1000);
+// Run cleanup every hour (only in non-serverless environments)
+if (process.env.VERCEL !== '1') {
+    setInterval(cleanupExpiredSessions, 60 * 60 * 1000);
+}
 
 module.exports = {
     sessionMiddleware,

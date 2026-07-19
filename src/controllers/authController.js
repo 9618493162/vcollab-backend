@@ -13,10 +13,12 @@ let inMemoryRefreshTokens = [];
 let inMemoryPasswordResets = [];
 
 // Generate JWT Access Token (short-lived)
-const generateAccessToken = (userId) => {
-    return jwt.sign({ id: userId }, process.env.JWT_SECRET || "default-secret", {
-        expiresIn: "15m" // Short-lived for security
-    });
+const generateAccessToken = (userId, fullName, email) => {
+    return jwt.sign(
+        { id: userId, fullName, email },
+        process.env.JWT_SECRET || "default-secret",
+        { expiresIn: "15m" }
+    );
 };
 
 // Generate JWT Refresh Token (long-lived)
@@ -146,7 +148,7 @@ exports.register = async (req, res) => {
         }
 
         // Generate tokens
-        const accessToken = generateAccessToken(newUser._id);
+        const accessToken = generateAccessToken(newUser._id, newUser.name, newUser.email);
         const refreshToken = generateRefreshToken(newUser._id);
 
         // Store refresh token
@@ -261,7 +263,7 @@ exports.login = async (req, res) => {
         }
 
         // Generate tokens
-        const accessToken = generateAccessToken(user._id);
+        const accessToken = generateAccessToken(user._id, user.name, user.email);
         const refreshToken = generateRefreshToken(user._id);
 
         // Store refresh token
@@ -299,6 +301,59 @@ exports.login = async (req, res) => {
             success: false,
             message: "Login failed",
             error: error.message 
+        });
+    }
+};
+
+// Exchange Supabase OAuth token for backend JWT
+exports.oauthSync = async (req, res) => {
+    try {
+        const token = req.header("Authorization")?.replace("Bearer ", "");
+        const { verifyAuthToken } = require("../utils/verifyToken");
+        const user = await verifyAuthToken(token);
+
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid authentication token",
+            });
+        }
+
+        const accessToken = generateAccessToken(user.id, user.fullName, user.email);
+        const refreshToken = generateRefreshToken(user.id);
+
+        try {
+            await RefreshToken.create({
+                token: refreshToken,
+                userId: user.id,
+                expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+            });
+        } catch (err) {
+            inMemoryRefreshTokens.push({
+                token: refreshToken,
+                userId: user.id,
+                expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+                isRevoked: false,
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "OAuth session synced",
+            accessToken,
+            refreshToken,
+            user: {
+                id: user.id,
+                fullName: user.fullName,
+                email: user.email,
+            },
+        });
+    } catch (error) {
+        console.error("OAuth sync error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to sync OAuth session",
+            error: error.message,
         });
     }
 };
@@ -410,7 +465,7 @@ exports.refreshToken = async (req, res) => {
         }
 
         // Generate new tokens
-        const newAccessToken = generateAccessToken(decoded.id);
+        const newAccessToken = generateAccessToken(decoded.id, decoded.fullName, decoded.email);
         const newRefreshToken = generateRefreshToken(decoded.id);
 
         // Revoke old refresh token (token rotation)
