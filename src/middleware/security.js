@@ -135,35 +135,7 @@ const detectSuspiciousActivity = (req, res, next) => {
 
 // CORS security with origin validation
 const corsOptions = {
-    origin: function (origin, callback) {
-        const allowedOrigins = [
-            'http://localhost:3000',
-            'http://127.0.0.1:3000',
-            'http://localhost:5173',
-            'http://127.0.0.1:5173',
-            // Current production frontend
-            'https://vcollab-react.vercel.app',
-            // Legacy frontend URLs
-            'https://vcollab-frontend.vercel.app',
-            'https://vcollab-frontend-b092nji47-ggundrathinavadeep-4146s-projects.vercel.app',
-            'https://vcollab-frontend-py4x87l13-ggundrathinavadeep-4146s-projects.vercel.app',
-            'https://vcollab-frontend-drdqpabn9-ggundrathinavadeep-4146s-projects.vercel.app',
-            process.env.FRONTEND_URL
-        ].filter(Boolean);
-
-        // Allow requests with no origin (mobile apps, Postman, etc.)
-        if (!origin) return callback(null, true);
-
-        // Allow all vercel preview deployments for this project
-        if (origin.endsWith('.vercel.app')) return callback(null, true);
-
-        if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV === 'development') {
-            callback(null, true);
-        } else {
-            console.warn(`🚨 CORS blocked request from origin: ${origin}`);
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
+    origin: '*', // Allow all origins temporarily for Railway deployment
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
