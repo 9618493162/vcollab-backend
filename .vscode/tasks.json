@@ -1,0 +1,14 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "build",
+			"path": "vcollab-react",
+			"group": "build",
+			"problemMatcher": [],
+			"label": "npm: build - vcollab-react",
+			"detail": "tsc && vite build"
+		}
+	]
+}

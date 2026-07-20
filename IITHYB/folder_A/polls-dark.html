@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Polls & Q&A - VCollab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/dark-modern.css">
+<style>
+/* Polls & Q&A overrides for dark theme */
+body { background: var(--bg-primary); }
+.polls-layout{flex:1;display:grid;grid-template-columns:1fr 340px;overflow:hidden;}
+.polls-main{padding:var(--space-2xl);overflow-y:auto;}
+.poll-card{background:var(--bg-card);border:1px solid var(--border-primary);border-radius:var(--radius-lg);padding:var(--space-lg);margin-bottom:var(--space-md);transition:all var(--transition-base);}
+.poll-card:hover{box-shadow:var(--shadow-md);}
+.qa-card{background:var(--bg-card);border:1px solid var(--border-primary);border-radius:var(--radius-lg);padding:var(--space-md);margin-bottom:var(--space-sm);transition:all var(--transition-base);}
+.qa-card:hover{box-shadow:var(--shadow-md);}
+.polls-panel{background:var(--bg-secondary);border-left:1px solid var(--border-primary);padding:var(--space-lg);overflow-y:auto;}
+.form-input,.form-textarea,.form-select{background:var(--bg-tertiary);border:1.5px solid var(--border-primary);color:var(--text-primary);}
+<style>
+.polls-layout{flex:1;display:grid;grid-template-columns:1fr 320px;overflow:hidden;}
+.polls-main{padding:28px;overflow-y:auto;}
+.polls-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:800;margin-bottom:4px;}
+.polls-sub{font-size:13px;color:var(--text-secondary);margin-bottom:24px;}
+/* Tabs */
+.tabs{display:flex;gap:2px;background:#f3f4f6;border-radius:8px;padding:3px;margin-bottom:24px;width:fit-content;border:1px solid var(--border);}
+.tab{padding:7px 20px;text-align:center;font-size:13px;font-weight:600;border-radius:6px;cursor:pointer;color:var(--text-secondary);transition:all .15s;}
+.tab.active{background:white;color:var(--text-primary);box-shadow:0 1px 4px rgba(0,0,0,.08);}
+/* Poll card */
+.poll-card{background:white;border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:14px;transition:box-shadow .15s;}
+.poll-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.06);}
+.poll-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;}
+.poll-question{font-size:15px;font-weight:700;margin-bottom:14px;line-height:1.4;}
+.poll-status{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;}
+.ps-live{background:#fee2e2;color:#ef4444;}
+.ps-ended{background:#f3f4f6;color:#9ca3af;}
+.poll-option{margin-bottom:10px;cursor:pointer;}
+.option-top{display:flex;justify-content:space-between;font-size:13px;font-weight:600;margin-bottom:5px;}
+.option-bar{height:8px;background:#f3f4f6;border-radius:4px;overflow:hidden;}
+.option-fill{height:100%;border-radius:4px;background:#6366f1;transition:width .6s ease;}
+.option-fill.winner{background:linear-gradient(90deg,#6366f1,#8b5cf6);}
+.poll-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid var(--border-light,#f3f4f6);font-size:12px;color:var(--text-secondary);}
+/* Q&A card */
+.qa-card{background:white;border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:10px;transition:box-shadow .15s;}
+.qa-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.06);}
+.qa-top{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.qa-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;}
+.qa-name{font-size:13px;font-weight:700;}
+.qa-time{font-size:11px;color:var(--text-tertiary);}
+.qa-q{font-size:14px;line-height:1.55;margin-bottom:10px;}
+.qa-actions{display:flex;gap:12px;}
+.qa-btn{display:flex;align-items:center;gap:5px;font-size:12.5px;font-weight:600;color:var(--text-secondary);background:none;border:none;cursor:pointer;padding:0;transition:color .15s;}
+.qa-btn:hover{color:var(--indigo);}
+.qa-btn.voted{color:var(--indigo);}
+/* Right panel */
+.polls-panel{background:white;border-left:1px solid var(--border);padding:20px;overflow-y:auto;}
+.pp-title{font-size:13px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:14px;}
+.form-group{margin-bottom:14px;}
+.form-label{display:block;font-size:11px;font-weight:700;color:var(--text-secondary);margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em;}
+.form-input,.form-textarea,.form-select{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;font-family:'Inter',sans-serif;outline:none;transition:border .15s;background:white;}
+.form-input:focus,.form-textarea:focus{border-color:#6366f1;}
+.form-textarea{resize:vertical;min-height:64px;}
+.opt-row{display:flex;gap:6px;margin-bottom:6px;}
+.opt-row input{flex:1;}
+.remove-opt{width:28px;height:28px;background:#fee2e2;border:none;border-radius:6px;color:#ef4444;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.add-opt{width:100%;padding:7px;background:#f4f6fa;border:1.5px dashed var(--border);border-radius:7px;color:var(--text-secondary);font-size:12.5px;font-weight:600;cursor:pointer;transition:all .15s;}
+.add-opt:hover{border-color:#6366f1;color:#6366f1;background:#eef2ff;}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px;}
+.stat-box{background:#f4f6fa;border-radius:8px;padding:12px;text-align:center;}
+.stat-n{font-size:22px;font-weight:800;color:#6366f1;}
+.stat-l{font-size:11px;color:var(--text-secondary);margin-top:2px;}
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div style="width:32px;height:32px;background:#6366f1;border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-size:15px;font-weight:800;">V</div>
+      <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:17px;font-weight:800;color:white;">VCollab</span>
+    </div>
+    <a href="dashboard-dark.html" class="sidebar-item"><span class="icon">🏠</span>Home</a>
+    <a href="meeting-dark.html" class="sidebar-item"><span class="icon">📅</span>Meetings</a>
+    <a href="chat-dark.html" class="sidebar-item"><span class="icon">💬</span>Chat</a>
+    <a href="kanban-dark.html" class="sidebar-item"><span class="icon">📋</span>Contacts</a>
+    <a href="whiteboard-dark.html" class="sidebar-item"><span class="icon">🖊</span>Whiteboard</a>
+    <div class="sidebar-divider"></div>
+    <a href="ai-copilot-dark.html" class="sidebar-item"><span class="icon">🤖</span>AI Assistant</a>
+    <a href="admin-dashboard.html" class="sidebar-item"><span class="icon">📊</span>Analytics</a>
+    <a href="profile-dark.html" class="sidebar-item"><span class="icon">⚙️</span>Settings</a>
+  </aside>
+  <div class="main-content">
+    <div class="topbar">
+      <span style="font-size:14px;font-weight:700;">Polls &amp; Q&amp;A</span>
+      <div class="topbar-actions">
+        <button onclick="location.href='meeting-dark.html'" style="padding:6px 14px;background:#eef2ff;color:#6366f1;border:none;border-radius:6px;font-size:12.5px;font-weight:600;cursor:pointer;">← Back to Meeting</button>
+        <button class="topbar-icon-btn">🔔</button>
+        <div style="width:32px;height:32px;border-radius:50%;background:#6366f1;display:flex;align-items:center;justify-content:center;color:white;font-size:13px;font-weight:700;">N</div>
+      </div>
+    </div>
+    <div class="polls-layout">
+      <div class="polls-main">
+        <div class="polls-title">📊 Polls &amp; Q&amp;A</div>
+        <div class="polls-sub">Project Discussion · 24 participants</div>
+        <div class="tabs">
+          <div class="tab active" onclick="switchTab('polls',this)">Polls</div>
+          <div class="tab" onclick="switchTab('qa',this)">Q&amp;A</div>
+          <div class="tab" onclick="switchTab('results',this)">Results</div>
+        </div>
+
+        <!-- Polls tab -->
+        <div id="tab-polls">
+          <div class="poll-card">
+            <div class="poll-top">
+              <div style="font-size:11px;color:var(--text-tertiary);">Navdeep · 2 min ago</div>
+              <span class="poll-status ps-live">🔴 LIVE</span>
+            </div>
+            <div class="poll-question">Which feature do you like the most?</div>
+            <div class="poll-option" onclick="vote(this)">
+              <div class="option-top"><span>AI Summary</span><span>48%</span></div>
+              <div class="option-bar"><div class="option-fill winner" style="width:48%"></div></div>
+            </div>
+            <div class="poll-option" onclick="vote(this)">
+              <div class="option-top"><span>Live Translation</span><span>30%</span></div>
+              <div class="option-bar"><div class="option-fill" style="width:30%"></div></div>
+            </div>
+            <div class="poll-option" onclick="vote(this)">
+              <div class="option-top"><span>Whiteboard</span><span>16%</span></div>
+              <div class="option-bar"><div class="option-fill" style="width:16%"></div></div>
+            </div>
+            <div class="poll-option" onclick="vote(this)">
+              <div class="option-top"><span>AI Copilot</span><span>6%</span></div>
+              <div class="option-bar"><div class="option-fill" style="width:6%"></div></div>
+            </div>
+            <div class="poll-footer"><span>👥 Total votes: 50</span><span>⏱ End Poll</span></div>
+          </div>
+          <div class="poll-card">
+            <div class="poll-top">
+              <div style="font-size:11px;color:var(--text-tertiary);">Bold Sharma · 8 min ago</div>
+              <span class="poll-status ps-ended">✓ ENDED</span>
+            </div>
+            <div class="poll-question">Best sprint length for our team?</div>
+            <div class="poll-option">
+              <div class="option-top"><span>1 week</span><span>22%</span></div>
+              <div class="option-bar"><div class="option-fill" style="width:22%;background:#d1d5db;"></div></div>
+            </div>
+            <div class="poll-option">
+              <div class="option-top"><span>2 weeks</span><span>67%</span></div>
+              <div class="option-bar"><div class="option-fill winner" style="width:67%"></div></div>
+            </div>
+            <div class="poll-option">
+              <div class="option-top"><span>4 weeks</span><span>11%</span></div>
+              <div class="option-bar"><div class="option-fill" style="width:11%;background:#d1d5db;"></div></div>
+            </div>
+            <div class="poll-footer"><span>👥 18 votes</span><span style="color:#10b981;font-weight:600;">2 weeks won ✓</span></div>
+          </div>
+        </div>
+
+        <!-- Q&A tab (hidden) -->
+        <div id="tab-qa" style="display:none;">
+          <div class="qa-card">
+            <div class="qa-top">
+              <div class="qa-av" style="background:#10b981;">A</div>
+              <div><div class="qa-name">Anaiya Roy</div><div class="qa-time">3 min ago</div></div>
+              <span class="poll-status ps-live" style="margin-left:auto;">Live</span>
+            </div>
+            <div class="qa-q">Can you elaborate on performance benchmarks for glassmorphism effects on lower-end devices?</div>
+            <div class="qa-actions">
+              <button class="qa-btn voted" onclick="toggleVote(this)">👍 <span>14</span> Upvotes</button>
+              <button class="qa-btn" onclick="this.textContent='✅ Answered';this.style.color='#10b981'">✅ Mark Answered</button>
+              <button class="qa-btn">💬 Reply</button>
+            </div>
+          </div>
+          <div class="qa-card">
+            <div class="qa-top">
+              <div class="qa-av" style="background:#f59e0b;">B</div>
+              <div><div class="qa-name">Bold Sharma</div><div class="qa-time">7 min ago</div></div>
+            </div>
+            <div class="qa-q">Will the design system support dark mode switching?</div>
+            <div class="qa-actions">
+              <button class="qa-btn" onclick="toggleVote(this)">👍 <span>9</span> Upvotes</button>
+              <button class="qa-btn">✅ Mark Answered</button>
+              <button class="qa-btn">💬 Reply</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Results tab (hidden) -->
+        <div id="tab-results" style="display:none;">
+          <div class="poll-card">
+            <div style="font-size:15px;font-weight:700;margin-bottom:16px;">📈 Session Statistics</div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+              <div class="stat-box"><div class="stat-n">3</div><div class="stat-l">Polls Run</div></div>
+              <div class="stat-box"><div class="stat-n">68</div><div class="stat-l">Total Votes</div></div>
+              <div class="stat-box"><div class="stat-n">12</div><div class="stat-l">Questions</div></div>
+              <div class="stat-box"><div class="stat-n">87%</div><div class="stat-l">Engagement</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right panel -->
+      <div class="polls-panel">
+        <div class="pp-title">Create Poll</div>
+        <div class="form-group">
+          <label class="form-label">Question</label>
+          <textarea class="form-textarea" placeholder="Ask the audience..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Options</label>
+          <div id="optList">
+            <div class="opt-row"><input class="form-input opt-input" value="Option 1"><button class="remove-opt" onclick="this.parentElement.remove()">×</button></div>
+            <div class="opt-row"><input class="form-input opt-input" value="Option 2"><button class="remove-opt" onclick="this.parentElement.remove()">×</button></div>
+          </div>
+          <button class="add-opt" onclick="addOpt()">+ Add Option</button>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Duration</label>
+          <select class="form-select"><option>No limit</option><option>1 min</option><option selected>5 min</option><option>10 min</option></select>
+        </div>
+        <button onclick="launchPoll()" style="width:100%;padding:11px;background:#6366f1;color:white;border:none;border-radius:8px;font-size:13.5px;font-weight:700;cursor:pointer;margin-bottom:16px;">🚀 Launch Poll</button>
+
+        <div style="border-top:1px solid var(--border);padding-top:16px;">
+          <div class="pp-title">Submit a Question</div>
+          <div class="form-group">
+            <textarea class="form-textarea" id="qaInput" placeholder="Type your question for the host..."></textarea>
+          </div>
+          <button onclick="submitQ()" style="width:100%;padding:10px;background:white;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">❓ Submit Question</button>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-box"><div class="stat-n">24</div><div class="stat-l">Participants</div></div>
+          <div class="stat-box"><div class="stat-n">2</div><div class="stat-l">Active Polls</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+// ============================================================================
+// POLLS & Q&A - FULL FUNCTIONALITY
+// ============================================================================
+
+const pollsState = {
+  currentTab: 'polls',
+  polls: [
+    {
+      id: 1,
+      question: 'Which feature do you like the most?',
+      author: 'Navdeep',
+      time: '2 min ago',
+      status: 'live',
+      options: [
+        { text: 'AI Summary', votes: 24, percentage: 48 },
+        { text: 'Live Translation', votes: 15, percentage: 30 },
+        { text: 'Whiteboard', votes: 8, percentage: 16 },
+        { text: 'AI Copilot', votes: 3, percentage: 6 }
+      ],
+      totalVotes: 50,
+      voted: false,
+      userVote: null
+    },
+    {
+      id: 2,
+      question: 'Best sprint length for our team?',
+      author: 'Bold Sharma',
+      time: '8 min ago',
+      status: 'ended',
+      options: [
+        { text: '1 week', votes: 4, percentage: 22 },
+        { text: '2 weeks', votes: 12, percentage: 67 },
+        { text: '4 weeks', votes: 2, percentage: 11 }
+      ],
+      totalVotes: 18,
+      voted: true,
+      userVote: 1
+    }
+  ],
+  questions: [
+    {
+      id: 1,
+      author: 'Anaiya Roy',
+      avatar: 'A',
+      color: '#10b981',
+      time: '3 min ago',
+      question: 'Can you elaborate on performance benchmarks for glassmorphism effects on lower-end devices?',
+      upvotes: 14,
+      voted: true,
+      answered: false
+    },
+    {
+      id: 2,
+      author: 'Bold Sharma',
+      avatar: 'B',
+      color: '#f59e0b',
+      time: '7 min ago',
+      question: 'Will the design system support dark mode switching?',
+      upvotes: 9,
+      voted: false,
+      answered: false
+    }
+  ],
+  participants: 24
+};
+
+// ============================================================================
+// TAB SWITCHING
+// ============================================================================
+
+function switchTab(name, el) {
+  pollsState.currentTab = name;
+  
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  
+  ['polls', 'qa', 'results'].forEach(k => {
+    const tab = document.getElementById('tab-' + k);
+    if (tab) tab.style.display = k === name ? 'block' : 'none';
+  });
+  
+  showToast(`📑 Switched to ${name.charAt(0).toUpperCase() + name.slice(1)}`, 'info');
+}
+
+// ============================================================================
+// VOTING
+// ============================================================================
+
+function vote(el) {
+  const card = el.closest('.poll-card');
+  const allOptions = card.querySelectorAll('.poll-option');
+  const clickedIndex = Array.from(allOptions).indexOf(el);
+  
+  // Remove winner class from all
+  card.querySelectorAll('.option-fill').forEach(f => {
+    f.classList.remove('winner');
+    f.style.background = '#6366f1';
+  });
+  
+  // Add winner to clicked
+  const fill = el.querySelector('.option-fill');
+  fill.classList.add('winner');
+  
+  // Animate vote count
+  const optionTop = el.querySelector('.option-top span:last-child');
+  const currentPercent = parseInt(optionTop.textContent);
+  const newPercent = currentPercent + 1;
+  optionTop.textContent = newPercent + '%';
+  
+  // Animate bar
+  fill.style.width = newPercent + '%';
+  
+  // Update total votes
+  const footer = card.querySelector('.poll-footer span:first-child');
+  const currentVotes = parseInt(footer.textContent.match(/\d+/)[0]);
+  footer.textContent = `👥 Total votes: ${currentVotes + 1}`;
+  
+  showToast('✅ Vote recorded!', 'success');
+}
+
+// ============================================================================
+// Q&A
+// ============================================================================
+
+function toggleVote(btn) {
+  btn.classList.toggle('voted');
+  const span = btn.querySelector('span');
+  const currentVotes = parseInt(span.textContent);
+  
+  if (btn.classList.contains('voted')) {
+    span.textContent = currentVotes + 1;
+    showToast('👍 Upvoted!', 'success');
+  } else {
+    span.textContent = currentVotes - 1;
+    showToast('Upvote removed', 'info');
+  }
+}
+
+function markAnswered(btn) {
+  btn.textContent = '✅ Answered';
+  btn.style.color = '#10b981';
+  btn.disabled = true;
+  showToast('✅ Marked as answered', 'success');
+}
+
+function replyToQuestion(questionId) {
+  const reply = prompt('Your reply:');
+  if (reply && reply.trim()) {
+    showToast('💬 Reply sent!', 'success');
+  }
+}
+
+function submitQ() {
+  const input = document.getElementById('qaInput');
+  if (!input || !input.value.trim()) {
+    showToast('⚠️ Please enter a question', 'warning');
+    return;
+  }
+  
+  const question = input.value.trim();
+  
+  // Add to Q&A list
+  const qaTab = document.getElementById('tab-qa');
+  const newCard = document.createElement('div');
+  newCard.className = 'qa-card';
+  newCard.innerHTML = `
+    <div class="qa-top">
+      <div class="qa-av" style="background:#6366f1;">N</div>
+      <div><div class="qa-name">You</div><div class="qa-time">Just now</div></div>
+      <span class="poll-status ps-live" style="margin-left:auto;">Live</span>
+    </div>
+    <div class="qa-q">${escapeHtml(question)}</div>
+    <div class="qa-actions">
+      <button class="qa-btn voted" onclick="toggleVote(this)">👍 <span>1</span> Upvotes</button>
+      <button class="qa-btn" onclick="markAnswered(this)">✅ Mark Answered</button>
+      <button class="qa-btn">💬 Reply</button>
+    </div>
+  `;
+  
+  qaTab.insertBefore(newCard, qaTab.firstChild);
+  
+  input.value = '';
+  showToast('❓ Question submitted!', 'success');
+  
+  // Switch to Q&A tab
+  const qaTabBtn = document.querySelector('.tab:nth-child(2)');
+  if (qaTabBtn) {
+    switchTab('qa', qaTabBtn);
+  }
+}
+
+// ============================================================================
+// CREATE POLL
+// ============================================================================
+
+function addOpt() {
+  const list = document.getElementById('optList');
+  const optCount = list.children.length;
+  
+  const div = document.createElement('div');
+  div.className = 'opt-row';
+  div.innerHTML = `
+    <input class="form-input opt-input" placeholder="Option ${optCount + 1}">
+    <button class="remove-opt" onclick="removeOpt(this)">×</button>
+  `;
+  
+  list.appendChild(div);
+  div.querySelector('input').focus();
+}
+
+function removeOpt(btn) {
+  const list = document.getElementById('optList');
+  if (list.children.length <= 2) {
+    showToast('⚠️ Must have at least 2 options', 'warning');
+    return;
+  }
+  
+  btn.parentElement.remove();
+  showToast('Option removed', 'info');
+}
+
+function launchPoll() {
+  const questionTextarea = document.querySelector('.polls-panel textarea');
+  const question = questionTextarea ? questionTextarea.value.trim() : '';
+  
+  if (!question) {
+    showToast('⚠️ Please enter a question', 'warning');
+    return;
+  }
+  
+  const optInputs = document.querySelectorAll('.opt-input');
+  const options = Array.from(optInputs).map(inp => inp.value.trim()).filter(v => v);
+  
+  if (options.length < 2) {
+    showToast('⚠️ Need at least 2 options', 'warning');
+    return;
+  }
+  
+  // Create new poll card
+  const pollsTab = document.getElementById('tab-polls');
+  const newPoll = document.createElement('div');
+  newPoll.className = 'poll-card';
+  newPoll.innerHTML = `
+    <div class="poll-top">
+      <div style="font-size:11px;color:var(--text-tertiary);">You · Just now</div>
+      <span class="poll-status ps-live">🔴 LIVE</span>
+    </div>
+    <div class="poll-question">${escapeHtml(question)}</div>
+    ${options.map(opt => `
+      <div class="poll-option" onclick="vote(this)">
+        <div class="option-top"><span>${escapeHtml(opt)}</span><span>0%</span></div>
+        <div class="option-bar"><div class="option-fill" style="width:0%"></div></div>
+      </div>
+    `).join('')}
+    <div class="poll-footer">
+      <span>👥 Total votes: 0</span>
+      <span style="color:#ef4444;cursor:pointer;" onclick="endPoll(this)">⏱ End Poll</span>
+    </div>
+  `;
+  
+  pollsTab.insertBefore(newPoll, pollsTab.firstChild);
+  
+  // Clear form
+  questionTextarea.value = '';
+  document.getElementById('optList').innerHTML = `
+    <div class="opt-row"><input class="form-input opt-input" value="Option 1"><button class="remove-opt" onclick="removeOpt(this)">×</button></div>
+    <div class="opt-row"><input class="form-input opt-input" value="Option 2"><button class="remove-opt" onclick="removeOpt(this)">×</button></div>
+  `;
+  
+  showToast(`🚀 Poll launched to ${pollsState.participants} participants!`, 'success');
+}
+
+function endPoll(btn) {
+  if (!confirm('End this poll? No more votes will be accepted.')) return;
+  
+  const card = btn.closest('.poll-card');
+  const status = card.querySelector('.poll-status');
+  status.textContent = '✓ ENDED';
+  status.className = 'poll-status ps-ended';
+  
+  btn.textContent = 'Poll Ended';
+  btn.style.color = '#9ca3af';
+  btn.style.cursor = 'default';
+  btn.onclick = null;
+  
+  // Highlight winner
+  const options = card.querySelectorAll('.poll-option');
+  let maxPercent = 0;
+  let winnerOption = null;
+  
+  options.forEach(opt => {
+    const percent = parseInt(opt.querySelector('.option-top span:last-child').textContent);
+    if (percent > maxPercent) {
+      maxPercent = percent;
+      winnerOption = opt;
+    }
+  });
+  
+  if (winnerOption) {
+    const winnerText = winnerOption.querySelector('.option-top span:first-child').textContent;
+    btn.textContent = `${winnerText} won ✓`;
+    btn.style.color = '#10b981';
+    btn.style.fontWeight = '600';
+  }
+  
+  showToast('⏱ Poll ended', 'success');
+}
+
+// ============================================================================
+// UTILITIES
+// ============================================================================
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+function showToast(message, type = 'info') {
+  let toast = document.getElementById('toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.style.cssText = 'position:fixed;top:80px;right:24px;background:#1a1f2e;color:white;padding:12px 20px;border-radius:8px;font-size:13.5px;font-weight:600;z-index:9999;opacity:0;transform:translateY(-10px);transition:all .3s;box-shadow:0 4px 12px rgba(0,0,0,.2);';
+    document.body.appendChild(toast);
+  }
+  
+  const colors = {
+    success: '#10b981',
+    error: '#ef4444',
+    warning: '#f59e0b',
+    info: '#6366f1'
+  };
+  toast.style.background = colors[type] || colors.info;
+  
+  toast.textContent = message;
+  toast.style.opacity = '1';
+  toast.style.transform = 'translateY(0)';
+  
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(-10px)';
+  }, 3000);
+}
+
+// ============================================================================
+// KEYBOARD SHORTCUTS
+// ============================================================================
+
+document.addEventListener('keydown', (e) => {
+  if (e.ctrlKey || e.metaKey) {
+    switch(e.key) {
+      case 'Enter':
+        if (e.target.matches('#qaInput')) {
+          e.preventDefault();
+          submitQ();
+        }
+        break;
+    }
+  }
+});
+
+// Allow Enter in Q&A input
+const qaInput = document.getElementById('qaInput');
+if (qaInput) {
+  qaInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      submitQ();
+    }
+  });
+}
+
+console.log('✅ Polls & Q&A ready');
+console.log('📊 Features: Voting, Q&A, Real-time results');
+</script>
+</body>
+</html>

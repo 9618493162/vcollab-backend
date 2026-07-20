@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>VCollab - All Features</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:#f4f6fa;color:#111827;min-height:100vh;}
+.topbar{background:#1a1f2e;padding:0 48px;height:60px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;}
+.logo{display:flex;align-items:center;gap:8px;text-decoration:none;}
+.logo-icon{width:30px;height:30px;background:#6366f1;border-radius:7px;display:flex;align-items:center;justify-content:center;color:white;font-size:14px;font-weight:800;}
+.logo-text{font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:800;color:white;}
+.top-actions{margin-left:auto;display:flex;gap:10px;}
+.tb-btn{padding:7px 16px;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:'Inter',sans-serif;}
+.tb-btn-outline{background:rgba(255,255,255,.1);color:white;border:1px solid rgba(255,255,255,.15);}
+.tb-btn-primary{background:#6366f1;color:white;}
+
+.hero{background:linear-gradient(135deg,#1a1f2e 0%,#252c3f 100%);padding:56px 48px;text-align:center;}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(99,102,241,.2);border:1px solid rgba(99,102,241,.3);color:#a5b4fc;border-radius:20px;padding:5px 16px;font-size:12px;font-weight:700;margin-bottom:16px;}
+.hero-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:40px;font-weight:800;color:white;margin-bottom:10px;}
+.hero-desc{font-size:16px;color:#9ca3af;margin-bottom:24px;}
+.progress-wrap{max-width:400px;margin:0 auto 20px;}
+.progress-label{display:flex;justify-content:space-between;font-size:12px;color:#9ca3af;margin-bottom:6px;}
+.progress-bar{height:8px;background:rgba(255,255,255,.1);border-radius:4px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,#6366f1,#8b5cf6);border-radius:4px;width:100%;transition:width 1s ease;}
+.complete-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);color:#34d399;border-radius:20px;padding:6px 18px;font-size:13px;font-weight:700;}
+
+.content{max-width:1200px;margin:0 auto;padding:40px 48px;}
+.section{margin-bottom:40px;}
+.section-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;font-weight:800;color:#374151;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.section-line{flex:1;height:1px;background:#e5e7eb;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;}
+.nav-card{background:white;border:1.5px solid #e5e7eb;border-radius:12px;padding:18px;text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:8px;transition:all .15s;cursor:pointer;}
+.nav-card:hover{box-shadow:0 6px 20px rgba(0,0,0,.08);border-color:#6366f1;transform:translateY(-2px);}
+.nc-icon{font-size:26px;}
+.nc-title{font-size:14px;font-weight:700;color:#111827;}
+.nc-desc{font-size:12px;color:#6b7280;line-height:1.5;}
+.nc-status{margin-top:4px;}
+.badge-done{display:inline-flex;align-items:center;gap:4px;background:#d1fae5;color:#059669;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;}
+
+footer{background:#1a1f2e;color:#9ca3af;padding:20px 48px;display:flex;align-items:center;justify-content:space-between;font-size:13px;}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a href="index-new.html" class="logo">
+    <div class="logo-icon">V</div>
+    <span class="logo-text">VCollab</span>
+  </a>
+  <div class="top-actions">
+    <button class="tb-btn tb-btn-outline" onclick="location.href='index-new.html'">🏠 Landing Page</button>
+    <button class="tb-btn tb-btn-primary" onclick="location.href='dashboard-dark.html'">Open App →</button>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-badge">✨ All Features Built</div>
+  <div class="hero-title">VCollab · Complete UI</div>
+  <div class="hero-desc">18 screens matching the reference design — light theme, dark sidebar, indigo accents</div>
+  <div class="progress-wrap">
+    <div class="progress-label"><span>Progress</span><span>18/18 Complete</span></div>
+    <div class="progress-bar"><div class="progress-fill"></div></div>
+  </div>
+  <div class="complete-badge">✅ 18/18 Features Complete · 100%</div>
+</div>
+
+<div class="content">
+  <!-- Core Pages -->
+  <div class="section">
+    <div class="section-title">🎯 Core Pages <div class="section-line"></div></div>
+    <div class="grid">
+      <a href="index-new.html" class="nav-card"><div class="nc-icon">🏠</div><div class="nc-title">Landing Page</div><div class="nc-desc">Hero, features, CTA with enterprise SaaS design</div><div class="nc-status"><span class="badge-done">✓ Complete</span></div></a>
+      <a href="dashboard-dark.html" class="nav-card"><div class="nc-icon">📊</div><div class="nc-title">Dashboard</div><div class="nc-desc">Meetings, recordings, AI assistant, quick stats</div><div class="nc-status"><span class="badge-done">✓ Complete</span></div></a>
+      <a href="join-meeting-dark.html" class="nav-card"><div class="nc-icon">🔗</div><div class="nc-title">Join Meeting</div><div class="nc-desc">Enter code or link, calendar integration</div><div class="nc-status"><span class="badge-done">✓ Complete</span></div></a>
+      <a href="create-meeting-dark.html" class="nav-card"><div class="nc-icon">📅</div><div class="nc-title">Schedule Meeting</div><div class="nc-desc">Date/time, participants, toggles, repeat</div><div class="nc-status"><span class="badge-done">✓ Complete</span></div></a>
+    </div>
+  </div>
+
+  <!-- Meeting Features -->
+  <div class="section">
+    <div class="section-title">🎥 Meeting Features <div class="section-line"></div></div>
+    <div class="grid">
+      <a href="meeting-dark.html" class="nav-card"><div class="nc-icon">📹</div><div class="nc-title">Meeting Room</div><div class="nc-desc">6-tile video grid, participants panel, chat, controls</div><div class="nc-status"><span class="badge-done">✓ Complete</span></div></a>
+      <a href="ai-copilot-dark.html" class="nav-card"><div class="nc-icon">🤖</div><div class="nc-title">AI Copilot</div><div class="nc-desc">Summary, transcript, action items, AI chat</div><div class="nc-status"><span class="badge-done">✓ Complete</span></div></a>
+      <a href="whiteboard-dark.html" class="nav-card"><div class="nc-icon">🖊</div><div class="nc-title">Whiteboard</div><div class="nc-desc">Canvas, sticky notes, shapes, collaborators</div><div class="nc-status"><span class="badge-done">✓ Complete</span></div></a>
+      <a href="translation-dark.html" class="nav-card"><div class="nc-icon">🌐</div><div class="nc-title">Live Translation</div><div class="nc-desc">Real-time captions in 50+ languages</div><div class="nc-status"><span class="badge-done">✓ Complete</span></div></a>
+      <a href="polls-dark.html" class="nav-card"><div class="nc-icon">📊</div><div class="nc-title">Polls &amp; Q&amp;A</div><div class="nc-desc">Live polls, voting bars, Q&A with upvotes</div><div class="nc-status"><span class="badge-done">✓ Complete</span></div></a>
+      <a href="screen-share-dark.html" class="nav-card"><div class="nc-icon">🖥</div><div class="nc-title">Screen Share</div><div class="nc-desc">Annotation toolbar, quality stats, source selector</div><div class="nc-status"><span class="badge-done">✓ Complete</span></div></a>
+      <a href="breakout-rooms-dark.html" class="nav-card"><div class="nc-icon">🚪</div><div class="nc-title">Breakout Rooms</div><div class="nc-desc">4 rooms, timer, broadcast, assign participants</div><div class="nc-status"><span class="badge-done">✓ Complete</span></div></a>
+      <a href="recording-player-dark.html" class="nav-card"><div class="nc-icon">⏺</div><div class="nc-title">Recording Player</div><div class="nc-desc">Playback, waveform, transcript, AI summary</div><div class="nc-status"><span class="badge-done">✓ Complete</span></div></a>
+    </div>
+  </div>
+
+  <!-- Collaboration -->
+  <div class="section">
+    <div class="section-title">💬 Collaboration <div class="section-line"></div></div>
+    <div class="grid">
+      <a href="chat-dark.html" class="nav-card"><div class="nc-icon">💬</div><div class="nc-title">Team Chat</div><div class="nc-desc">Channels, DMs, file sharing, reactions</div><div class="nc-status"><span class="badge-done">✓ Complete</span></div></a>
+      <a href="kanban-dark.html" class="nav-card"><div class="nc-icon">📋</div><div class="nc-title">Kanban Board</div><div class="nc-desc">4 columns, drag-and-drop, priorities, assignees</div><div class="nc-status"><span class="badge-done">✓ Complete</span></div></a>
+    </div>
+  </div>
+
+  <!-- Admin & Settings -->
+  <div class="section">
+    <div class="section-title">⚙ Admin &amp; Settings <div class="section-line"></div></div>
+    <div class="grid">
+      <a href="profile-dark.html" class="nav-card"><div class="nc-icon">👤</div><div class="nc-title">User Profile</div><div class="nc-desc">Personal info, notifications, security settings</div><div class="nc-status"><span class="badge-done">✓ Complete</span></div></a>
+      <a href="admin-dashboard.html" class="nav-card"><div class="nc-icon">📈</div><div class="nc-title">Admin Dashboard</div><div class="nc-desc">Stats, bar charts, donut chart, user table</div><div class="nc-status"><span class="badge-done">✓ Complete</span></div></a>
+      <a href="mobile-view-dark.html" class="nav-card"><div class="nc-icon">📱</div><div class="nc-title">Mobile View</div><div class="nc-desc">Phone frame with touch-optimized meeting UI</div><div class="nc-status"><span class="badge-done">✓ Complete</span></div></a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span><strong style="color:white;">VCollab</strong> · 18/18 Features Complete</span>
+  <span>Light theme · Dark sidebar · Indigo accents · Inter / Plus Jakarta Sans</span>
+  <a href="dashboard-dark.html" style="color:#6366f1;text-decoration:none;font-weight:700;">Open App →</a>
+</footer>
+</body>
+</html>

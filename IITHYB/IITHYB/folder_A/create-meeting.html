@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Meeting - VCollab</title>
+
+    <link rel="stylesheet" href="css/create-meeting.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Create a Meeting</h1>
+
+    <form id="meetingForm">
+
+        <label>Meeting Title</label>
+        <input type="text" placeholder="Enter meeting title">
+
+        <label>Description</label>
+        <textarea placeholder="Meeting Description"></textarea>
+
+        <label>Date</label>
+        <input type="date">
+
+        <label>Time</label>
+        <input type="time">
+
+        <label>Meeting Type</label>
+
+        <select>
+            <option>Public</option>
+            <option>Private</option>
+        </select>
+
+        <button type="submit">
+            Create Meeting
+        </button>
+
+    </form>
+
+    <br>
+
+    <a href="dashboard.html" class="back-btn">
+        ← Back to Dashboard
+    </a>
+
+</div>
+
+<script src="js/create-meeting.js"></script>
+
+</body>
+</html>

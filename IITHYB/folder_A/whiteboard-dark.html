@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Whiteboard - VCollab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/dark-modern.css">
+<style>
+/* Whiteboard overrides for dark theme */
+body { background: var(--bg-primary); }
+.wb-layout{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.wb-topbar{height:64px;background:var(--bg-secondary);border-bottom:1px solid var(--border-primary);display:flex;align-items:center;padding:0 var(--space-lg);gap:var(--space-md);flex-shrink:0;}
+.wb-body{flex:1;display:flex;overflow:hidden;position:relative;}
+.wb-tools{width:56px;background:var(--bg-secondary);border-right:1px solid var(--border-primary);display:flex;flex-direction:column;align-items:center;padding:var(--space-md) 0;gap:4px;}
+.tool-btn{width:40px;height:40px;border-radius:var(--radius-md);background:none;border:none;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all var(--transition-base);color:var(--text-secondary);}
+.tool-btn:hover{background:var(--bg-hover);color:var(--text-primary);}
+.tool-btn.active{background:var(--accent-primary);color:white;}
+.wb-canvas-wrap{flex:1;background:var(--bg-tertiary);position:relative;overflow:hidden;}
+canvas{display:block;cursor:crosshair;}
+.wb-right{width:260px;background:var(--bg-secondary);border-left:1px solid var(--border-primary);padding:var(--space-lg);overflow-y:auto;}
+<style>
+.wb-layout{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.wb-topbar{height:52px;background:white;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0;}
+.wb-title{font-size:14px;font-weight:700;}
+.wb-body{flex:1;display:flex;overflow:hidden;position:relative;}
+/* Left toolbar */
+.wb-tools{width:52px;background:white;border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:4px;}
+.tool-btn{width:38px;height:38px;border-radius:8px;background:none;border:none;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .15s;color:var(--text-secondary);position:relative;}
+.tool-btn:hover{background:#f4f6fa;color:var(--text-primary);}
+.tool-btn.active{background:#eef2ff;color:var(--indigo);}
+.tool-sep{width:28px;height:1px;background:var(--border);margin:4px 0;}
+.tool-color{width:24px;height:24px;border-radius:50%;border:2px solid var(--border);cursor:pointer;flex-shrink:0;}
+/* Canvas area */
+.wb-canvas-wrap{flex:1;background:#f8f9fb;position:relative;overflow:hidden;}
+canvas{display:block;cursor:crosshair;}
+/* Sticky notes on canvas */
+.sticky{position:absolute;border-radius:8px;padding:12px;font-size:13px;line-height:1.5;min-width:120px;min-height:80px;cursor:move;box-shadow:0 2px 8px rgba(0,0,0,.12);font-family:'Inter',sans-serif;}
+.sticky-yellow{background:#fef08a;border:1px solid #eab308;}
+.sticky-blue{background:#bfdbfe;border:1px solid #3b82f6;}
+.sticky-green{background:#bbf7d0;border:1px solid #22c55e;}
+.sticky-pink{background:#fce7f3;border:1px solid #ec4899;}
+/* Diagram elements */
+.wb-shape{position:absolute;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;cursor:move;user-select:none;}
+/* Right panel */
+.wb-right{width:220px;background:white;border-left:1px solid var(--border);padding:14px;overflow-y:auto;}
+.wb-right-title{font-size:12px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;}
+.color-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:14px;}
+.clr{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .15s;}
+.clr:hover,.clr.selected{border-color:var(--text-primary);}
+.size-row{display:flex;gap:6px;margin-bottom:14px;}
+.size-opt{flex:1;padding:6px;background:#f4f6fa;border:1.5px solid var(--border);border-radius:6px;text-align:center;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;}
+.size-opt.active,.size-opt:hover{border-color:var(--indigo);color:var(--indigo);background:#eef2ff;}
+.participant-wb{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border-light,#f3f4f6);}
+.participant-wb:last-child{border-bottom:none;}
+.p-dot{width:8px;height:8px;border-radius:50%;background:#10b981;flex-shrink:0;}
+/* Top toolbar */
+.tb-top-right{margin-left:auto;display:flex;gap:8px;align-items:center;}
+.wb-btn{padding:6px 14px;border-radius:7px;font-size:12.5px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:white;color:var(--text-primary);transition:all .15s;}
+.wb-btn:hover{border-color:var(--indigo);color:var(--indigo);}
+.wb-btn-primary{background:var(--indigo);color:white;border-color:var(--indigo);}
+.wb-btn-primary:hover{background:var(--indigo-dark);}
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div style="width:32px;height:32px;background:#6366f1;border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-size:15px;font-weight:800;">V</div>
+      <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:17px;font-weight:800;color:white;">VCollab</span>
+    </div>
+    <a href="dashboard-dark.html" class="sidebar-item"><span class="icon">🏠</span>Home</a>
+    <a href="meeting-dark.html" class="sidebar-item"><span class="icon">📅</span>Meetings</a>
+    <a href="chat-dark.html" class="sidebar-item"><span class="icon">💬</span>Chat</a>
+    <a href="kanban-dark.html" class="sidebar-item"><span class="icon">📋</span>Contacts</a>
+    <a href="whiteboard-dark.html" class="sidebar-item active"><span class="icon">🖊</span>Whiteboard</a>
+    <div class="sidebar-divider"></div>
+    <a href="recording-player-dark.html" class="sidebar-item"><span class="icon">⏺</span>Recordings</a>
+    <a href="ai-copilot-dark.html" class="sidebar-item"><span class="icon">🤖</span>AI Assistant</a>
+  </aside>
+  <div class="main-content">
+    <div class="wb-layout">
+      <!-- Whiteboard topbar -->
+      <div class="wb-topbar">
+        <span style="font-size:18px;">🖊</span>
+        <div class="wb-title">Brainstorming — VCollab Platform</div>
+        <span style="font-size:12px;color:var(--text-secondary);">Auto-saved</span>
+        <div class="tb-top-right">
+          <div style="display:flex;gap:-6px;">
+            <div style="width:28px;height:28px;border-radius:50%;background:#6366f1;border:2px solid white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;margin-left:-6px;">N</div>
+            <div style="width:28px;height:28px;border-radius:50%;background:#10b981;border:2px solid white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;margin-left:-6px;">A</div>
+            <div style="width:28px;height:28px;border-radius:50%;background:#f59e0b;border:2px solid white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;margin-left:-6px;">B</div>
+          </div>
+          <button class="wb-btn" onclick="location.href='meeting-dark.html'">← Meeting</button>
+          <button class="wb-btn" onclick="undo()">↩ Undo</button>
+          <button class="wb-btn" onclick="redo()">↪ Redo</button>
+          <button class="wb-btn" onclick="saveBoard()">💾 Save</button>
+          <button class="wb-btn" onclick="exportBoard()">⬇ Export</button>
+          <button class="wb-btn-primary wb-btn" onclick="shareBoard()">🔗 Share</button>
+        </div>
+      </div>
+
+      <div class="wb-body">
+        <!-- Left tools -->
+        <div class="wb-tools">
+          <button class="tool-btn active" id="tool-select" onclick="setTool('select',this)" title="Select">↖</button>
+          <button class="tool-btn" id="tool-pen" onclick="setTool('pen',this)" title="Pen">✏️</button>
+          <button class="tool-btn" id="tool-text" onclick="setTool('text',this)" title="Text">T</button>
+          <button class="tool-btn" id="tool-shape" onclick="setTool('shape',this)" title="Shape">⬜</button>
+          <button class="tool-btn" id="tool-arrow" onclick="setTool('arrow',this)" title="Arrow">↗</button>
+          <button class="tool-btn" id="tool-sticky" onclick="addSticky()" title="Sticky Note">📝</button>
+          <div class="tool-sep"></div>
+          <button class="tool-btn" onclick="clearCanvas()" title="Erase">🗑</button>
+          <div class="tool-sep"></div>
+          <button class="tool-btn" onclick="zoomIn()" title="Zoom In">🔍</button>
+          <button class="tool-btn" onclick="zoomOut()" title="Zoom Out">🔎</button>
+        </div>
+
+        <!-- Canvas -->
+        <div class="wb-canvas-wrap" id="canvasWrap">
+          <canvas id="wb" style="position:absolute;top:0;left:0;"></canvas>
+
+          <!-- Sticky notes -->
+          <div class="sticky sticky-yellow" style="top:60px;left:80px;" draggable="true">
+            <div style="font-weight:700;margin-bottom:4px;font-size:12px;">New Features</div>
+            <div style="font-size:11px;">• AI Summary<br>• Live Translation<br>• Smart Search</div>
+          </div>
+          <div class="sticky sticky-blue" style="top:60px;left:260px;" draggable="true">
+            <div style="font-weight:700;margin-bottom:4px;font-size:12px;">Improvement</div>
+            <div style="font-size:11px;">• UI/UX<br>• Performance<br>• Reliability</div>
+          </div>
+          <div class="sticky sticky-green" style="top:60px;left:440px;" draggable="true">
+            <div style="font-weight:700;margin-bottom:4px;font-size:12px;">Ideas</div>
+            <div style="font-size:11px;">• Translations<br>• Voice Notes<br>• Mobile Apps</div>
+          </div>
+
+          <!-- Central diagram -->
+          <div style="position:absolute;top:200px;left:50%;transform:translateX(-50%);">
+            <div style="position:relative;width:500px;height:260px;">
+              <!-- Center node -->
+              <div style="position:absolute;top:90px;left:180px;width:140px;height:80px;background:white;border:2px solid #6366f1;border-radius:10px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:13px;font-weight:700;box-shadow:0 2px 8px rgba(99,102,241,.2);">VCollab Platform</div>
+              <!-- Left node -->
+              <div style="position:absolute;top:100px;left:10px;width:110px;height:60px;background:#eef2ff;border:1.5px solid #6366f1;border-radius:8px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:12px;font-weight:600;color:#4f46e5;">Users</div>
+              <!-- Right node -->
+              <div style="position:absolute;top:100px;left:380px;width:110px;height:60px;background:#d1fae5;border:1.5px solid #10b981;border-radius:8px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:12px;font-weight:600;color:#065f46;">Teams</div>
+              <!-- Bottom node -->
+              <div style="position:absolute;top:210px;left:185px;width:130px;height:50px;background:#f3f4f6;border:1.5px solid #9ca3af;border-radius:8px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:12px;font-weight:600;color:#374151;">AI</div>
+              <!-- Smiley -->
+              <div style="position:absolute;top:85px;right:0;font-size:24px;">😊</div>
+              <!-- Arrow labels -->
+              <div style="position:absolute;top:120px;left:125px;font-size:10px;color:#6b7280;transform:rotate(-5deg);">→ joins</div>
+              <div style="position:absolute;top:120px;left:325px;font-size:10px;color:#6b7280;transform:rotate(5deg);">→ manages</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right panel -->
+        <div class="wb-right">
+          <div class="wb-right-title">Drawing</div>
+          <div class="color-grid">
+            <div class="clr selected" style="background:#111827;" onclick="setColor('#111827',this)"></div>
+            <div class="clr" style="background:#6366f1;" onclick="setColor('#6366f1',this)"></div>
+            <div class="clr" style="background:#ef4444;" onclick="setColor('#ef4444',this)"></div>
+            <div class="clr" style="background:#10b981;" onclick="setColor('#10b981',this)"></div>
+            <div class="clr" style="background:#f59e0b;" onclick="setColor('#f59e0b',this)"></div>
+            <div class="clr" style="background:#3b82f6;" onclick="setColor('#3b82f6',this)"></div>
+            <div class="clr" style="background:#8b5cf6;" onclick="setColor('#8b5cf6',this)"></div>
+            <div class="clr" style="background:#ec4899;" onclick="setColor('#ec4899',this)"></div>
+            <div class="clr" style="background:#06b6d4;" onclick="setColor('#06b6d4',this)"></div>
+            <div class="clr" style="background:#ffffff;border:1.5px solid #d1d5db;" onclick="setColor('#ffffff',this)"></div>
+          </div>
+          <div class="wb-right-title">Stroke Size</div>
+          <div class="size-row">
+            <div class="size-opt active" onclick="setSize(2,this)">S</div>
+            <div class="size-opt" onclick="setSize(4,this)">M</div>
+            <div class="size-opt" onclick="setSize(8,this)">L</div>
+          </div>
+          <div class="wb-right-title">Collaborators</div>
+          <div class="participant-wb"><div style="width:26px;height:26px;border-radius:50%;background:#6366f1;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;">N</div><div style="font-size:13px;font-weight:600;flex:1;">Navdeep</div><div class="p-dot"></div></div>
+          <div class="participant-wb"><div style="width:26px;height:26px;border-radius:50%;background:#10b981;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;">A</div><div style="font-size:13px;font-weight:600;flex:1;">Anaiya</div><div class="p-dot"></div></div>
+          <div class="participant-wb"><div style="width:26px;height:26px;border-radius:50%;background:#f59e0b;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;">B</div><div style="font-size:13px;font-weight:600;flex:1;">Bold</div><div class="p-dot" style="background:#9ca3af;"></div></div>
+          <div style="margin-top:14px;">
+            <button style="width:100%;padding:8px;background:#eef2ff;color:#6366f1;border:none;border-radius:7px;font-size:12.5px;font-weight:600;cursor:pointer;">+ Invite to Board</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+// ============================================================================
+// WHITEBOARD - FULL FUNCTIONALITY
+// ============================================================================
+
+const canvas = document.getElementById('wb');
+const wrap = document.getElementById('canvasWrap');
+const ctx = canvas.getContext('2d');
+
+// State management
+const whiteboardState = {
+  drawing: false,
+  tool: 'select',
+  color: '#111827',
+  size: 2,
+  startX: 0,
+  startY: 0,
+  history: [],
+  historyStep: -1,
+  maxHistory: 50,
+  shapes: [],
+  selectedShape: null
+};
+
+// Initialize
+function init() {
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+  setupCanvasEvents();
+  setupDraggableStickies();
+  saveState();
+  console.log('✅ Whiteboard initialized');
+}
+
+function resizeCanvas() {
+  const tempCanvas = document.createElement('canvas');
+  tempCanvas.width = canvas.width;
+  tempCanvas.height = canvas.height;
+  const tempCtx = tempCanvas.getContext('2d');
+  tempCtx.drawImage(canvas, 0, 0);
+  
+  canvas.width = wrap.clientWidth;
+  canvas.height = wrap.clientHeight;
+  
+  ctx.drawImage(tempCanvas, 0, 0);
+}
+
+// ============================================================================
+// CANVAS EVENTS
+// ============================================================================
+
+function setupCanvasEvents() {
+  canvas.addEventListener('mousedown', handleMouseDown);
+  canvas.addEventListener('mousemove', handleMouseMove);
+  canvas.addEventListener('mouseup', handleMouseUp);
+  canvas.addEventListener('mouseleave', handleMouseUp);
+}
+
+function handleMouseDown(e) {
+  const pos = getMousePos(e);
+  whiteboardState.startX = pos.x;
+  whiteboardState.startY = pos.y;
+  whiteboardState.drawing = true;
+  
+  if (whiteboardState.tool === 'pen') {
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+  } else if (whiteboardState.tool === 'text') {
+    addTextBox(pos.x, pos.y);
+    whiteboardState.drawing = false;
+  }
+}
+
+function handleMouseMove(e) {
+  if (!whiteboardState.drawing) return;
+  
+  const pos = getMousePos(e);
+  
+  if (whiteboardState.tool === 'pen') {
+    ctx.lineTo(pos.x, pos.y);
+    ctx.strokeStyle = whiteboardState.color;
+    ctx.lineWidth = whiteboardState.size;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+  } else if (whiteboardState.tool === 'shape') {
+    redrawCanvas();
+    drawRect(whiteboardState.startX, whiteboardState.startY, pos.x - whiteboardState.startX, pos.y - whiteboardState.startY);
+  } else if (whiteboardState.tool === 'arrow') {
+    redrawCanvas();
+    drawArrow(whiteboardState.startX, whiteboardState.startY, pos.x, pos.y);
+  }
+}
+
+function handleMouseUp(e) {
+  if (whiteboardState.drawing && whiteboardState.tool !== 'select') {
+    whiteboardState.drawing = false;
+    saveState();
+  }
+}
+
+function getMousePos(e) {
+  const rect = canvas.getBoundingClientRect();
+  return {
+    x: e.clientX - rect.left,
+    y: e.clientY - rect.top
+  };
+}
+
+// ============================================================================
+// DRAWING FUNCTIONS
+// ============================================================================
+
+function drawRect(x, y, width, height) {
+  ctx.strokeStyle = whiteboardState.color;
+  ctx.lineWidth = whiteboardState.size;
+  ctx.strokeRect(x, y, width, height);
+}
+
+function drawArrow(fromX, fromY, toX, toY) {
+  const headlen = 15;
+  const angle = Math.atan2(toY - fromY, toX - fromX);
+  
+  ctx.beginPath();
+  ctx.moveTo(fromX, fromY);
+  ctx.lineTo(toX, toY);
+  ctx.strokeStyle = whiteboardState.color;
+  ctx.lineWidth = whiteboardState.size;
+  ctx.stroke();
+  
+  ctx.beginPath();
+  ctx.moveTo(toX, toY);
+  ctx.lineTo(toX - headlen * Math.cos(angle - Math.PI / 6), toY - headlen * Math.sin(angle - Math.PI / 6));
+  ctx.lineTo(toX - headlen * Math.cos(angle + Math.PI / 6), toY - headlen * Math.sin(angle + Math.PI / 6));
+  ctx.lineTo(toX, toY);
+  ctx.fillStyle = whiteboardState.color;
+  ctx.fill();
+}
+
+function redrawCanvas() {
+  if (whiteboardState.history.length > 0 && whiteboardState.historyStep >= 0) {
+    const img = new Image();
+    img.src = whiteboardState.history[whiteboardState.historyStep];
+    img.onload = () => ctx.drawImage(img, 0, 0);
+  }
+}
+
+// ============================================================================
+// TOOLS
+// ============================================================================
+
+function setTool(tool, btn) {
+  whiteboardState.tool = tool;
+  document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  
+  if (tool === 'pen') {
+    canvas.style.cursor = 'crosshair';
+  } else if (tool === 'select') {
+    canvas.style.cursor = 'default';
+  } else {
+    canvas.style.cursor = 'crosshair';
+  }
+  
+  showToast(`🖊️ ${tool.charAt(0).toUpperCase() + tool.slice(1)} tool selected`, 'info');
+}
+
+function setColor(newColor, el) {
+  whiteboardState.color = newColor;
+  document.querySelectorAll('.clr').forEach(d => d.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function setSize(newSize, el) {
+  whiteboardState.size = newSize;
+  document.querySelectorAll('.size-opt').forEach(d => d.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ============================================================================
+// STICKY NOTES
+// ============================================================================
+
+function addSticky() {
+  const colors = ['yellow', 'blue', 'green', 'pink'];
+  const color = colors[Math.floor(Math.random() * colors.length)];
+  
+  const sticky = document.createElement('div');
+  sticky.className = `sticky sticky-${color}`;
+  sticky.style.cssText = `top:${100 + Math.random() * 200}px;left:${100 + Math.random() * 300}px;`;
+  sticky.contentEditable = true;
+  sticky.textContent = 'New note...';
+  
+  sticky.addEventListener('focus', function() {
+    if (this.textContent === 'New note...') {
+      this.textContent = '';
+    }
+  });
+  
+  makeDraggable(sticky);
+  wrap.appendChild(sticky);
+  
+  showToast('📝 Sticky note added', 'success');
+}
+
+function setupDraggableStickies() {
+  document.querySelectorAll('.sticky').forEach(sticky => {
+    makeDraggable(sticky);
+  });
+}
+
+function makeDraggable(element) {
+  let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+  
+  element.onmousedown = dragMouseDown;
+  
+  function dragMouseDown(e) {
+    if (e.target.contentEditable === 'true' && e.target === element) {
+      return;
+    }
+    e.preventDefault();
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    document.onmouseup = closeDragElement;
+    document.onmousemove = elementDrag;
+  }
+  
+  function elementDrag(e) {
+    e.preventDefault();
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    element.style.top = (element.offsetTop - pos2) + 'px';
+    element.style.left = (element.offsetLeft - pos1) + 'px';
+  }
+  
+  function closeDragElement() {
+    document.onmouseup = null;
+    document.onmousemove = null;
+  }
+}
+
+function addTextBox(x, y) {
+  const text = prompt('Enter text:');
+  if (!text) return;
+  
+  ctx.font = `${whiteboardState.size * 6}px Inter`;
+  ctx.fillStyle = whiteboardState.color;
+  ctx.fillText(text, x, y);
+  saveState();
+  
+  showToast('📝 Text added', 'success');
+}
+
+// ============================================================================
+// HISTORY (UNDO/REDO)
+// ============================================================================
+
+function saveState() {
+  whiteboardState.historyStep++;
+  
+  if (whiteboardState.historyStep < whiteboardState.history.length) {
+    whiteboardState.history.length = whiteboardState.historyStep;
+  }
+  
+  whiteboardState.history.push(canvas.toDataURL());
+  
+  if (whiteboardState.history.length > whiteboardState.maxHistory) {
+    whiteboardState.history.shift();
+    whiteboardState.historyStep--;
+  }
+}
+
+function undo() {
+  if (whiteboardState.historyStep > 0) {
+    whiteboardState.historyStep--;
+    restoreState();
+    showToast('↩️ Undo', 'info');
+  } else {
+    showToast('⚠️ Nothing to undo', 'warning');
+  }
+}
+
+function redo() {
+  if (whiteboardState.historyStep < whiteboardState.history.length - 1) {
+    whiteboardState.historyStep++;
+    restoreState();
+    showToast('↪️ Redo', 'info');
+  } else {
+    showToast('⚠️ Nothing to redo', 'warning');
+  }
+}
+
+function restoreState() {
+  const img = new Image();
+  img.src = whiteboardState.history[whiteboardState.historyStep];
+  img.onload = () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0);
+  };
+}
+
+// ============================================================================
+// CLEAR
+// ============================================================================
+
+function clearCanvas() {
+  if (confirm('Clear entire whiteboard? This cannot be undone.')) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    document.querySelectorAll('.sticky').forEach(s => s.remove());
+    saveState();
+    showToast('🗑️ Whiteboard cleared', 'success');
+  }
+}
+
+// ============================================================================
+// ZOOM
+// ============================================================================
+
+let zoomLevel = 1;
+
+function zoomIn() {
+  zoomLevel = Math.min(3, zoomLevel + 0.1);
+  wrap.style.transform = `scale(${zoomLevel})`;
+  wrap.style.transformOrigin = 'top left';
+  showToast(`🔍 Zoom: ${Math.round(zoomLevel * 100)}%`, 'info');
+}
+
+function zoomOut() {
+  zoomLevel = Math.max(0.5, zoomLevel - 0.1);
+  wrap.style.transform = `scale(${zoomLevel})`;
+  wrap.style.transformOrigin = 'top left';
+  showToast(`🔎 Zoom: ${Math.round(zoomLevel * 100)}%`, 'info');
+}
+
+// ============================================================================
+// SAVE & EXPORT
+// ============================================================================
+
+function saveBoard() {
+  const boardData = {
+    canvas: canvas.toDataURL(),
+    stickies: Array.from(document.querySelectorAll('.sticky')).map(s => ({
+      className: s.className,
+      style: s.style.cssText,
+      content: s.innerHTML
+    })),
+    timestamp: new Date().toISOString()
+  };
+  
+  localStorage.setItem('whiteboard-vcollab', JSON.stringify(boardData));
+  showToast('💾 Whiteboard saved!', 'success');
+}
+
+function exportBoard() {
+  const link = document.createElement('a');
+  link.download = `VCollab-Whiteboard-${Date.now()}.png`;
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+  
+  showToast('⬇️ Whiteboard exported!', 'success');
+}
+
+function shareBoard() {
+  const shareUrl = `${window.location.origin}/whiteboard-dark.html?board=${Date.now()}`;
+  
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      showToast('🔗 Share link copied!', 'success');
+    });
+  } else {
+    prompt('Share this link:', shareUrl);
+  }
+}
+
+// ============================================================================
+// UI UTILITIES
+// ============================================================================
+
+function showToast(message, type = 'info') {
+  let toast = document.getElementById('toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.style.cssText = 'position:fixed;top:80px;right:24px;background:#1a1f2e;color:white;padding:12px 20px;border-radius:8px;font-size:13.5px;font-weight:600;z-index:9999;opacity:0;transform:translateY(-10px);transition:all .3s;box-shadow:0 4px 12px rgba(0,0,0,.2);';
+    document.body.appendChild(toast);
+  }
+  
+  const colors = {
+    success: '#10b981',
+    error: '#ef4444',
+    warning: '#f59e0b',
+    info: '#6366f1'
+  };
+  toast.style.background = colors[type] || colors.info;
+  
+  toast.textContent = message;
+  toast.style.opacity = '1';
+  toast.style.transform = 'translateY(0)';
+  
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(-10px)';
+  }, 3000);
+}
+
+// ============================================================================
+// KEYBOARD SHORTCUTS
+// ============================================================================
+
+document.addEventListener('keydown', (e) => {
+  if (e.ctrlKey || e.metaKey) {
+    switch(e.key) {
+      case 'z':
+        e.preventDefault();
+        undo();
+        break;
+      case 'y':
+        e.preventDefault();
+        redo();
+        break;
+      case 's':
+        e.preventDefault();
+        saveBoard();
+        break;
+    }
+  }
+});
+
+// Initialize on load
+init();
+
+console.log('✅ Whiteboard ready');
+console.log('🎨 Tools:', ['select', 'pen', 'text', 'shape', 'arrow', 'sticky']);
+console.log('⌨️ Shortcuts: Ctrl+Z (undo), Ctrl+Y (redo), Ctrl+S (save)');
+</script>
+</body>
+</html>

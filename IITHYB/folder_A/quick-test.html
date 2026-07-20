@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quick Meeting Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+        .test-result {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .pass { background: #28a745; }
+        .fail { background: #dc3545; }
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        video {
+            width: 100%;
+            max-width: 600px;
+            background: #000;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Quick Meeting Room Test</h1>
+    
+    <div id="results"></div>
+    
+    <button onclick="testEverything()">▶️ Run All Tests</button>
+    <button onclick="startVideo()">📹 Test Camera</button>
+    <button onclick="goToMeeting()">🚀 Go To Meeting Room</button>
+    
+    <br><br>
+    <video id="testVideo" autoplay playsinline muted></video>
+    
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+        const resultsDiv = document.getElementById('results');
+        
+        function showResult(test, passed, details = '') {
+            const div = document.createElement('div');
+            div.className = `test-result ${passed ? 'pass' : 'fail'}`;
+            div.innerHTML = `${passed ? '✅' : '❌'} ${test}<br><small>${details}</small>`;
+            resultsDiv.appendChild(div);
+        }
+        
+        async function testEverything() {
+            resultsDiv.innerHTML = '<h2>Running tests...</h2>';
+            
+            // Test 1: Check APIs
+            const hasGetUserMedia = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+            showResult('getUserMedia API', hasGetUserMedia, hasGetUserMedia ? 'Camera API available' : 'Camera API NOT available - may be HTTPS issue');
+            
+            // Test 2: Check Socket.IO
+            const hasSocketIO = typeof io !== 'undefined';
+            showResult('Socket.IO Library', hasSocketIO, hasSocketIO ? 'Socket.IO loaded from CDN' : 'Socket.IO failed to load');
+            
+            // Test 3: Test Camera
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                document.getElementById('testVideo').srcObject = stream;
+                showResult('Camera & Microphone', true, 'Successfully accessed camera and microphone');
+            } catch (error) {
+                showResult('Camera & Microphone', false, `Error: ${error.message}`);
+            }
+            
+            // Test 4: Test Socket.IO Connection
+            if (hasSocketIO) {
+                const socket = io('http://localhost:5002');
+                
+                socket.on('connect', () => {
+                    showResult('Backend Connection', true, 'Successfully connected to backend on port 5002');
+                    socket.disconnect();
+                });
+                
+                socket.on('connect_error', (error) => {
+                    showResult('Backend Connection', false, `Cannot connect to backend: ${error.message}`);
+                });
+                
+                setTimeout(() => {
+                    if (!socket.connected) {
+                        showResult('Backend Connection', false, 'Connection timeout - is backend running?');
+                    }
+                }, 3000);
+            }
+            
+            // Test 5: Check localStorage
+            try {
+                localStorage.setItem('test', '1');
+                localStorage.removeItem('test');
+                const hasAuth = !!localStorage.getItem('authToken');
+                showResult('Local Storage', true, hasAuth ? 'Auth token found' : 'No auth token (you need to login first)');
+            } catch (error) {
+                showResult('Local Storage', false, 'localStorage not available');
+            }
+        }
+        
+        async function startVideo() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { width: 1280, height: 720 }, 
+                    audio: true 
+                });
+                document.getElementById('testVideo').srcObject = stream;
+                alert('✅ Camera working! You should see your video below.');
+            } catch (error) {
+                alert('❌ Camera error: ' + error.message);
+            }
+        }
+        
+        function goToMeeting() {
+            // Set a test meeting ID
+            localStorage.setItem('currentMeetingId', 'test-room-' + Date.now());
+            // Go to meeting page
+            window.location.href = 'meeting.html';
+        }
+        
+        // Auto-run tests on load
+        setTimeout(testEverything, 500);
+    </script>
+</body>
+</html>

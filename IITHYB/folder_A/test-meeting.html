@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Meeting - Debug</title>
+    <style>
+        body {
+            margin: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a1a;
+            color: white;
+        }
+        .debug-panel {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            background: #333;
+        }
+        .status.success {
+            background: #28a745;
+        }
+        .status.error {
+            background: #dc3545;
+        }
+        video {
+            width: 400px;
+            height: 300px;
+            background: #000;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Meeting Debug Test</h1>
+    
+    <div class="debug-panel">
+        <h2>Status Checks:</h2>
+        <div id="statusChecks"></div>
+    </div>
+
+    <div class="debug-panel">
+        <h2>Camera Test:</h2>
+        <video id="testVideo" autoplay playsinline muted></video>
+        <br>
+        <button onclick="testCamera()">Test Camera</button>
+        <button onclick="testAudio()">Test Microphone</button>
+        <button onclick="testSocketIO()">Test Socket.IO</button>
+    </div>
+
+    <div class="debug-panel">
+        <h2>Console Output:</h2>
+        <div id="console" style="background: #000; padding: 10px; border-radius: 5px; max-height: 300px; overflow-y: auto; font-family: monospace; font-size: 12px;"></div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+        const consoleDiv = document.getElementById('console');
+        const statusDiv = document.getElementById('statusChecks');
+
+        function log(message, type = 'info') {
+            const line = document.createElement('div');
+            line.style.color = type === 'error' ? '#ff6b6b' : type === 'success' ? '#51cf66' : '#74c0fc';
+            line.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            consoleDiv.appendChild(line);
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+            console.log(message);
+        }
+
+        function addStatus(text, success) {
+            const status = document.createElement('div');
+            status.className = `status ${success ? 'success' : 'error'}`;
+            status.textContent = success ? `✅ ${text}` : `❌ ${text}`;
+            statusDiv.appendChild(status);
+        }
+
+        // Initial checks
+        log('Starting diagnostic tests...', 'info');
+
+        // Check if getUserMedia is available
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            addStatus('getUserMedia API available', true);
+            log('✓ getUserMedia API is available', 'success');
+        } else {
+            addStatus('getUserMedia API NOT available', false);
+            log('✗ getUserMedia API is NOT available', 'error');
+        }
+
+        // Check if Socket.IO loaded
+        if (typeof io !== 'undefined') {
+            addStatus('Socket.IO library loaded', true);
+            log('✓ Socket.IO library loaded', 'success');
+        } else {
+            addStatus('Socket.IO library NOT loaded', false);
+            log('✗ Socket.IO library NOT loaded', 'error');
+        }
+
+        // Check if running on localhost
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            addStatus('Running on localhost', true);
+            log('✓ Running on localhost', 'success');
+        } else {
+            addStatus('NOT running on localhost (may cause HTTPS issues)', false);
+            log('⚠ NOT running on localhost', 'error');
+        }
+
+        // Test camera
+        async function testCamera() {
+            log('Testing camera access...', 'info');
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                const video = document.getElementById('testVideo');
+                video.srcObject = stream;
+                log('✓ Camera access granted!', 'success');
+                addStatus('Camera working', true);
+            } catch (error) {
+                log(`✗ Camera error: ${error.message}`, 'error');
+                addStatus(`Camera failed: ${error.message}`, false);
+            }
+        }
+
+        // Test audio
+        async function testAudio() {
+            log('Testing microphone access...', 'info');
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
+                log('✓ Microphone access granted!', 'success');
+                addStatus('Microphone working', true);
+                stream.getTracks().forEach(track => track.stop());
+            } catch (error) {
+                log(`✗ Microphone error: ${error.message}`, 'error');
+                addStatus(`Microphone failed: ${error.message}`, false);
+            }
+        }
+
+        // Test Socket.IO
+        function testSocketIO() {
+            log('Testing Socket.IO connection to localhost:5002...', 'info');
+            try {
+                const socket = io('http://localhost:5002', {
+                    transports: ['websocket', 'polling']
+                });
+
+                socket.on('connect', () => {
+                    log('✓ Socket.IO connected successfully!', 'success');
+                    addStatus('Socket.IO connection working', true);
+                    socket.disconnect();
+                });
+
+                socket.on('connect_error', (error) => {
+                    log(`✗ Socket.IO connection error: ${error.message}`, 'error');
+                    addStatus(`Socket.IO failed: ${error.message}`, false);
+                });
+
+                socket.on('disconnect', () => {
+                    log('Socket.IO disconnected', 'info');
+                });
+
+                // Timeout after 5 seconds
+                setTimeout(() => {
+                    if (!socket.connected) {
+                        log('✗ Socket.IO connection timeout - backend may not be running', 'error');
+                        addStatus('Socket.IO timeout - backend not responding', false);
+                        socket.disconnect();
+                    }
+                }, 5000);
+            } catch (error) {
+                log(`✗ Socket.IO error: ${error.message}`, 'error');
+                addStatus(`Socket.IO error: ${error.message}`, false);
+            }
+        }
+
+        // Auto-test on load
+        setTimeout(() => {
+            log('Running automatic tests...', 'info');
+            testSocketIO();
+        }, 1000);
+    </script>
+</body>
+</html>

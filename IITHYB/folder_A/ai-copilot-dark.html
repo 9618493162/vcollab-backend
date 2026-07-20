@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AI Copilot - VCollab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/dark-modern.css">
+<style>
+/* AI Copilot overrides for dark theme */
+body { background: var(--bg-primary); }
+.ai-layout{flex:1;display:grid;grid-template-columns:1fr 360px;overflow:hidden;}
+.ai-main{padding:var(--space-2xl);overflow-y:auto;}
+.summary-box{background:var(--bg-card);border:1px solid var(--border-primary);border-radius:var(--radius-lg);padding:var(--space-lg);margin-bottom:var(--space-md);}
+.sum-label{font-size:var(--font-size-xs);font-weight:var(--font-weight-bold);text-transform:uppercase;letter-spacing:.06em;color:var(--text-secondary);margin-bottom:var(--space-md);}
+.sum-text{font-size:var(--font-size-sm);color:var(--text-primary);line-height:1.7;}
+.action-item{display:flex;align-items:flex-start;gap:var(--space-md);padding:var(--space-md);background:var(--bg-tertiary);border:1px solid var(--border-primary);border-radius:var(--radius-md);margin-bottom:var(--space-sm);transition:all var(--transition-base);}
+.action-item:hover{background:var(--bg-hover);box-shadow:var(--shadow-sm);}
+.ai-chat{background:var(--bg-secondary);border-left:1px solid var(--border-primary);display:flex;flex-direction:column;overflow:hidden;}
+.ai-msg.user .ai-bubble{background:var(--accent-primary);color:white;}
+.ai-msg.bot .ai-bubble{background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border-primary);}
+<style>
+.ai-layout{flex:1;display:grid;grid-template-columns:1fr 340px;overflow:hidden;}
+.ai-main{padding:28px;overflow-y:auto;}
+.ai-header{display:flex;align-items:center;gap:12px;margin-bottom:24px;}
+.ai-icon{width:44px;height:44px;border-radius:10px;background:#eef2ff;display:flex;align-items:center;justify-content:center;font-size:22px;}
+.ai-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:800;}
+.ai-sub{font-size:13px;color:var(--text-secondary);}
+/* Tabs */
+.tabs{display:flex;gap:2px;background:#f3f4f6;border-radius:8px;padding:3px;margin-bottom:24px;border:1px solid var(--border);}
+.tab{flex:1;padding:8px 0;text-align:center;font-size:13px;font-weight:600;border-radius:6px;cursor:pointer;color:var(--text-secondary);transition:all .15s;}
+.tab.active{background:white;color:var(--text-primary);box-shadow:0 1px 4px rgba(0,0,0,.08);}
+/* Summary box */
+.summary-box{background:white;border:1px solid var(--border);border-radius:12px;padding:22px;margin-bottom:16px;}
+.sum-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-secondary);margin-bottom:10px;}
+.sum-text{font-size:14px;color:var(--text-primary);line-height:1.7;}
+/* Action items */
+.action-item{display:flex;align-items:flex-start;gap:10px;padding:12px;background:white;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;transition:box-shadow .15s;}
+.action-item:hover{box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.action-check{width:18px;height:18px;border-radius:4px;border:2px solid var(--border);cursor:pointer;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;}
+.action-check.done{background:var(--indigo);border-color:var(--indigo);color:white;font-size:11px;}
+.action-text{font-size:13.5px;flex:1;}
+.action-assignee{font-size:12px;color:var(--text-secondary);margin-top:3px;display:flex;align-items:center;gap:5px;}
+.action-av{width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:white;}
+/* AI Chat panel */
+.ai-chat{background:white;border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+.ai-chat-header{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.ai-chat-title{font-size:14px;font-weight:700;}
+.ai-chat-sub{font-size:12px;color:var(--text-secondary);}
+.ai-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;}
+.ai-msg{max-width:90%;}
+.ai-msg.user{align-self:flex-end;}
+.ai-msg.bot{align-self:flex-start;}
+.ai-bubble{padding:10px 13px;border-radius:10px;font-size:13px;line-height:1.6;}
+.ai-msg.user .ai-bubble{background:var(--indigo);color:white;border-radius:10px 10px 2px 10px;}
+.ai-msg.bot .ai-bubble{background:#f4f6fa;color:var(--text-primary);border-radius:10px 10px 10px 2px;border:1px solid var(--border);}
+.ai-msg-time{font-size:10px;color:var(--text-tertiary);margin-top:3px;text-align:right;}
+.ai-chat-input{padding:12px 16px;border-top:1px solid var(--border);}
+.ai-input-wrap{display:flex;align-items:center;gap:8px;background:#f4f6fa;border:1px solid var(--border);border-radius:24px;padding:5px 5px 5px 14px;}
+.ai-input-wrap input{flex:1;background:none;border:none;outline:none;font-size:13px;font-family:'Inter',sans-serif;}
+.ai-send{width:30px;height:30px;border-radius:50%;background:var(--indigo);border:none;color:white;cursor:pointer;font-size:13px;}
+.ai-send:hover{background:var(--indigo-dark);}
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div style="width:32px;height:32px;background:#6366f1;border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-size:15px;font-weight:800;">V</div>
+      <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:17px;font-weight:800;color:white;">VCollab</span>
+    </div>
+    <a href="dashboard-dark.html" class="sidebar-item"><span class="icon">🏠</span>Home</a>
+    <a href="meeting-dark.html" class="sidebar-item"><span class="icon">📅</span>Meetings</a>
+    <a href="chat-dark.html" class="sidebar-item"><span class="icon">💬</span>Chat</a>
+    <a href="kanban-dark.html" class="sidebar-item"><span class="icon">📋</span>Contacts</a>
+    <a href="whiteboard-dark.html" class="sidebar-item"><span class="icon">🖊</span>Whiteboard</a>
+    <div class="sidebar-divider"></div>
+    <a href="recording-player-dark.html" class="sidebar-item"><span class="icon">⏺</span>Recordings</a>
+    <a href="ai-copilot-dark.html" class="sidebar-item active"><span class="icon">🤖</span>AI Assistant</a>
+    <div class="sidebar-divider"></div>
+    <a href="admin-dashboard.html" class="sidebar-item"><span class="icon">📊</span>Analytics</a>
+    <a href="profile-dark.html" class="sidebar-item"><span class="icon">⚙️</span>Settings</a>
+  </aside>
+  <div class="main-content">
+    <div class="topbar">
+      <span style="font-size:14px;font-weight:700;">AI Copilot</span>
+      <div class="topbar-actions">
+        <button onclick="location.href='meeting-dark.html'" style="padding:6px 14px;background:#eef2ff;color:#6366f1;border:none;border-radius:6px;font-size:12.5px;font-weight:600;cursor:pointer;">← Back to Meeting</button>
+        <button class="topbar-icon-btn">🔔</button>
+        <div style="width:32px;height:32px;border-radius:50%;background:#6366f1;display:flex;align-items:center;justify-content:center;color:white;font-size:13px;font-weight:700;">N</div>
+      </div>
+    </div>
+    <div class="ai-layout">
+      <!-- Main content -->
+      <div class="ai-main">
+        <div class="ai-header">
+          <div class="ai-icon">🤖</div>
+          <div><div class="ai-title">AI Copilot</div><div class="ai-sub">Project Discussion · Mar 15, 2025 · 58 min</div></div>
+          <div style="margin-left:auto;display:flex;gap:8px;">
+            <button onclick="copyContent()" style="padding:7px 14px;background:white;border:1.5px solid var(--border);border-radius:7px;font-size:12.5px;font-weight:600;cursor:pointer;">📋 Copy</button>
+            <button onclick="exportContent()" style="padding:7px 14px;background:#6366f1;color:white;border:none;border-radius:7px;font-size:12.5px;font-weight:600;cursor:pointer;">⬇ Export</button>
+          </div>
+        </div>
+
+        <div class="tabs">
+          <div class="tab active" onclick="switchTab('summary',this)">Summary</div>
+          <div class="tab" onclick="switchTab('transcript',this)">Transcript</div>
+          <div class="tab" onclick="switchTab('notes',this)">Notes</div>
+          <div class="tab" onclick="switchTab('tasks',this)">Tasks</div>
+        </div>
+
+        <!-- Summary Tab -->
+        <div id="tab-summary">
+          <div class="summary-box">
+            <div class="sum-label">Meeting Summary</div>
+            <div class="sum-text">Discussed the product roadmap, key milestones, and upcoming features. Team aligned on Q1 goals including the launch of the new dashboard, improved AI capabilities, and mobile app improvements. Key decisions were made about the design system and tech stack.</div>
+          </div>
+          <div class="summary-box">
+            <div class="sum-label">Action Items</div>
+            <div class="action-item">
+              <div class="action-check" onclick="this.classList.toggle('done');this.textContent=this.classList.contains('done')?'✓':''"></div>
+              <div><div class="action-text">Design new dashboard UI — <strong>Anaiya</strong></div><div class="action-assignee"><div class="action-av" style="background:#10b981;">A</div>Due: Mar 20</div></div>
+            </div>
+            <div class="action-item">
+              <div class="action-check done">✓</div>
+              <div><div class="action-text" style="text-decoration:line-through;color:var(--text-secondary);">Finalize backend API docs — <strong>Navdeep</strong></div><div class="action-assignee"><div class="action-av" style="background:#6366f1;">N</div>Done</div></div>
+            </div>
+            <div class="action-item">
+              <div class="action-check" onclick="this.classList.toggle('done');this.textContent=this.classList.contains('done')?'✓':''"></div>
+              <div><div class="action-text">Update pitch deck — <strong>Navdeep</strong></div><div class="action-assignee"><div class="action-av" style="background:#6366f1;">N</div>Due: Mar 22</div></div>
+            </div>
+            <div class="action-item">
+              <div class="action-check" onclick="this.classList.toggle('done');this.textContent=this.classList.contains('done')?'✓':''"></div>
+              <div><div class="action-text">Review marketing plan — <strong>Meera</strong></div><div class="action-assignee"><div class="action-av" style="background:#8b5cf6;">M</div>Due: Mar 25</div></div>
+            </div>
+            <button onclick="location.href='kanban-dark.html'" style="width:100%;margin-top:8px;padding:8px;background:#eef2ff;color:#6366f1;border:none;border-radius:7px;font-size:12.5px;font-weight:600;cursor:pointer;">Add Task →</button>
+          </div>
+          <div class="summary-box">
+            <div class="sum-label">Key Decisions</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div style="display:flex;gap:8px;align-items:flex-start;"><span style="color:#6366f1;font-weight:700;flex-shrink:0;">•</span><span style="font-size:14px;">Adopt Inter + Plus Jakarta Sans as design system typography</span></div>
+              <div style="display:flex;gap:8px;align-items:flex-start;"><span style="color:#6366f1;font-weight:700;flex-shrink:0;">•</span><span style="font-size:14px;">Q1 launch target: April 15, 2025</span></div>
+              <div style="display:flex;gap:8px;align-items:flex-start;"><span style="color:#6366f1;font-weight:700;flex-shrink:0;">•</span><span style="font-size:14px;">Prioritize mobile-first approach for v2</span></div>
+            </div>
+          </div>
+          <div class="summary-box">
+            <div class="sum-label">Sentiment Analysis</div>
+            <div style="display:flex;gap:16px;">
+              <div style="flex:1;text-align:center;"><div style="font-size:22px;">😊</div><div style="font-size:18px;font-weight:800;color:#10b981;">72%</div><div style="font-size:11px;color:var(--text-secondary);">Positive</div></div>
+              <div style="flex:1;text-align:center;"><div style="font-size:22px;">😐</div><div style="font-size:18px;font-weight:800;color:#f59e0b;">21%</div><div style="font-size:11px;color:var(--text-secondary);">Neutral</div></div>
+              <div style="flex:1;text-align:center;"><div style="font-size:22px;">😟</div><div style="font-size:18px;font-weight:800;color:#ef4444;">7%</div><div style="font-size:11px;color:var(--text-secondary);">Concern</div></div>
+            </div>
+          </div>
+        </div>
+        <!-- Transcript Tab (hidden) -->
+        <div id="tab-transcript" style="display:none;">
+          <div class="summary-box">
+            <div style="display:flex;flex-direction:column;gap:14px;">
+              <div style="display:flex;gap:10px;"><span style="font-size:11px;font-weight:700;color:#6366f1;white-space:nowrap;padding-top:2px;min-width:38px;">00:00</span><div><div style="font-size:12px;font-weight:700;color:var(--text-secondary);margin-bottom:2px;">Navdeep</div><div style="font-size:13.5px;line-height:1.6;">Alright everyone, let's get started. Today we're reviewing the Q1 product roadmap.</div></div></div>
+              <div style="display:flex;gap:10px;"><span style="font-size:11px;font-weight:700;color:#6366f1;white-space:nowrap;padding-top:2px;min-width:38px;">01:20</span><div><div style="font-size:12px;font-weight:700;color:var(--text-secondary);margin-bottom:2px;">Bold Sharma</div><div style="font-size:13.5px;line-height:1.6;">I've finished the backend APIs for the dashboard. Documentation is being prepared.</div></div></div>
+              <div style="display:flex;gap:10px;"><span style="font-size:11px;font-weight:700;color:#6366f1;white-space:nowrap;padding-top:2px;min-width:38px;">03:45</span><div><div style="font-size:12px;font-weight:700;color:var(--text-secondary);margin-bottom:2px;">Anaiya Roy</div><div style="font-size:13.5px;line-height:1.6;">The design mockups are 80% done. Will share by end of week.</div></div></div>
+            </div>
+          </div>
+        </div>
+        <!-- Notes Tab -->
+        <div id="tab-notes" style="display:none;">
+          <div class="summary-box">
+            <textarea style="width:100%;min-height:200px;background:none;border:none;outline:none;font-size:14px;font-family:'Inter',sans-serif;line-height:1.7;resize:none;">Meeting Notes:
+- Roadmap reviewed ✓
+- Dashboard design in progress
+- API docs needed by Mar 18
+- Next sync: Mar 22</textarea>
+          </div>
+        </div>
+        <!-- Tasks Tab -->
+        <div id="tab-tasks" style="display:none;">
+          <div class="summary-box">
+            <div class="sum-label">Extracted Tasks</div>
+            <div class="action-item"><div class="action-check" onclick="this.classList.toggle('done');this.textContent=this.classList.contains('done')?'✓':''"></div><div><div class="action-text">Design new dashboard UI</div><div class="action-assignee"><div class="action-av" style="background:#10b981;">A</div>Anaiya · Due Mar 20</div></div></div>
+            <div class="action-item"><div class="action-check" onclick="this.classList.toggle('done');this.textContent=this.classList.contains('done')?'✓':''"></div><div><div class="action-text">Update pitch deck slides</div><div class="action-assignee"><div class="action-av" style="background:#6366f1;">N</div>Navdeep · Due Mar 22</div></div></div>
+            <div class="action-item"><div class="action-check" onclick="this.classList.toggle('done');this.textContent=this.classList.contains('done')?'✓':''"></div><div><div class="action-text">Review marketing plan</div><div class="action-assignee"><div class="action-av" style="background:#8b5cf6;">M</div>Meera · Due Mar 25</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Chat -->
+      <div class="ai-chat">
+        <div class="ai-chat-header">
+          <div style="width:32px;height:32px;border-radius:8px;background:#eef2ff;display:flex;align-items:center;justify-content:center;font-size:16px;">🤖</div>
+          <div><div class="ai-chat-title">Ask AI anything</div><div class="ai-chat-sub">about this meeting</div></div>
+        </div>
+        <div class="ai-messages" id="aiMessages">
+          <div class="ai-msg bot"><div class="ai-bubble">Hi! I've analyzed your meeting. You can ask me about key decisions, action items, or anything discussed. 👋</div><div class="ai-msg-time">AI Assistant</div></div>
+          <div class="ai-msg user"><div class="ai-bubble">What are the main action items?</div></div>
+          <div class="ai-msg bot"><div class="ai-bubble">There are 4 action items:<br><br>1. Design new dashboard UI → Anaiya (Mar 20)<br>2. Update pitch deck → Navdeep (Mar 22)<br>3. Review marketing plan → Meera (Mar 25)<br>4. Finalize API docs → Navdeep ✓ Done</div><div class="ai-msg-time">AI Assistant</div></div>
+        </div>
+        <div class="ai-chat-input">
+          <div class="ai-input-wrap">
+            <input type="text" placeholder="Ask AI about this meeting..." id="aiInput" onkeydown="if(event.key==='Enter')askAI()">
+            <button class="ai-send" onclick="askAI()">➤</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+// ============================================================================
+// AI COPILOT - FULL FUNCTIONALITY
+// ============================================================================
+
+const aiState = {
+  currentTab: 'summary',
+  messages: [],
+  meetingData: {
+    title: 'Project Discussion',
+    date: 'Mar 15, 2025',
+    duration: '58 min',
+    summary: 'Discussed the product roadmap, key milestones, and upcoming features. Team aligned on Q1 goals including the launch of the new dashboard, improved AI capabilities, and mobile app improvements.',
+    actionItems: [
+      { id: 1, text: 'Design new dashboard UI', assignee: 'Anaiya', due: 'Mar 20', done: false },
+      { id: 2, text: 'Finalize backend API docs', assignee: 'Navdeep', due: 'Mar 18', done: true },
+      { id: 3, text: 'Update pitch deck', assignee: 'Navdeep', due: 'Mar 22', done: false },
+      { id: 4, text: 'Review marketing plan', assignee: 'Meera', due: 'Mar 25', done: false }
+    ],
+    transcript: [
+      { time: '00:00', speaker: 'Navdeep', text: "Alright everyone, let's get started. Today we're reviewing the Q1 product roadmap." },
+      { time: '01:20', speaker: 'Bold Sharma', text: "I've finished the backend APIs for the dashboard. Documentation is being prepared." },
+      { time: '03:45', speaker: 'Anaiya Roy', text: 'The design mockups are 80% done. Will share by end of week.' },
+      { time: '05:10', speaker: 'Navdeep', text: 'Great progress everyone. Let's ensure we meet the April 15 launch date.' }
+    ]
+  }
+};
+
+// ============================================================================
+// TAB SWITCHING
+// ============================================================================
+
+function switchTab(name, el) {
+  aiState.currentTab = name;
+  
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  if (el) el.classList.add('active');
+  
+  ['summary', 'transcript', 'notes', 'tasks'].forEach(n => {
+    const tab = document.getElementById('tab-' + n);
+    if (tab) tab.style.display = n === name ? 'block' : 'none';
+  });
+  
+  showToast(`📑 Switched to ${name.charAt(0).toUpperCase() + name.slice(1)}`, 'info');
+}
+
+// ============================================================================
+// COPY & EXPORT
+// ============================================================================
+
+function copyContent() {
+  let content = '';
+  
+  if (aiState.currentTab === 'summary') {
+    content = generateSummaryText();
+  } else if (aiState.currentTab === 'transcript') {
+    content = generateTranscriptText();
+  } else if (aiState.currentTab === 'notes') {
+    const notesTextarea = document.querySelector('#tab-notes textarea');
+    content = notesTextarea ? notesTextarea.value : '';
+  } else if (aiState.currentTab === 'tasks') {
+    content = generateTasksText();
+  }
+  
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(content).then(() => {
+      showToast('📋 Copied to clipboard!', 'success');
+    }).catch(() => {
+      showToast('❌ Copy failed', 'error');
+    });
+  } else {
+    const textarea = document.createElement('textarea');
+    textarea.value = content;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+    showToast('📋 Copied to clipboard!', 'success');
+  }
+}
+
+function exportContent() {
+  const content = generateFullReport();
+  const blob = new Blob([content], { type: 'text/markdown' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `VCollab-AI-Summary-${Date.now()}.md`;
+  link.click();
+  URL.revokeObjectURL(url);
+  
+  showToast('⬇️ Exported successfully!', 'success');
+}
+
+function generateSummaryText() {
+  return `MEETING SUMMARY
+${aiState.meetingData.title}
+Date: ${aiState.meetingData.date}
+Duration: ${aiState.meetingData.duration}
+
+${aiState.meetingData.summary}
+
+ACTION ITEMS:
+${aiState.meetingData.actionItems.map((item, i) => 
+  `${i + 1}. ${item.text} — ${item.assignee} (Due: ${item.due}) ${item.done ? '✓' : ''}`
+).join('\n')}`;
+}
+
+function generateTranscriptText() {
+  return `MEETING TRANSCRIPT
+${aiState.meetingData.title}
+
+${aiState.meetingData.transcript.map(entry => 
+  `[${entry.time}] ${entry.speaker}: ${entry.text}`
+).join('\n\n')}`;
+}
+
+function generateTasksText() {
+  return `TASKS FROM MEETING
+
+${aiState.meetingData.actionItems.map((item, i) => 
+  `${i + 1}. ${item.text}
+   Assigned to: ${item.assignee}
+   Due: ${item.due}
+   Status: ${item.done ? 'Done ✓' : 'Pending'}`
+).join('\n\n')}`;
+}
+
+function generateFullReport() {
+  return `# ${aiState.meetingData.title}
+**Date:** ${aiState.meetingData.date}  
+**Duration:** ${aiState.meetingData.duration}  
+**Generated by VCollab AI Copilot**
+
+---
+
+## Summary
+
+${aiState.meetingData.summary}
+
+## Action Items
+
+${aiState.meetingData.actionItems.map((item, i) => 
+  `${i + 1}. **${item.text}**  
+   - Assignee: ${item.assignee}  
+   - Due: ${item.due}  
+   - Status: ${item.done ? '✅ Done' : '⏳ Pending'}`
+).join('\n\n')}
+
+## Transcript
+
+${aiState.meetingData.transcript.map(entry => 
+  `**[${entry.time}] ${entry.speaker}**  
+${entry.text}`
+).join('\n\n')}
+
+---
+*Generated on ${new Date().toLocaleString()}*`;
+}
+
+// ============================================================================
+// AI CHAT
+// ============================================================================
+
+function askAI() {
+  const input = document.getElementById('aiInput');
+  if (!input || !input.value.trim()) return;
+  
+  const question = input.value.trim();
+  const messages = document.getElementById('aiMessages');
+  
+  // Add user message
+  const userMsg = document.createElement('div');
+  userMsg.className = 'ai-msg user';
+  userMsg.innerHTML = `<div class="ai-bubble">${escapeHtml(question)}</div>`;
+  messages.appendChild(userMsg);
+  
+  input.value = '';
+  messages.scrollTop = messages.scrollHeight;
+  
+  // Show typing indicator
+  const typingMsg = document.createElement('div');
+  typingMsg.className = 'ai-msg bot';
+  typingMsg.id = 'typing';
+  typingMsg.innerHTML = '<div class="ai-bubble">Analyzing... 🤔</div>';
+  messages.appendChild(typingMsg);
+  messages.scrollTop = messages.scrollHeight;
+  
+  // Generate AI response
+  setTimeout(() => {
+    const response = generateAIResponse(question);
+    
+    document.getElementById('typing').remove();
+    
+    const botMsg = document.createElement('div');
+    botMsg.className = 'ai-msg bot';
+    botMsg.innerHTML = `<div class="ai-bubble">${response}</div><div class="ai-msg-time">AI Assistant</div>`;
+    messages.appendChild(botMsg);
+    messages.scrollTop = messages.scrollHeight;
+  }, 1000 + Math.random() * 1000);
+}
+
+function generateAIResponse(question) {
+  const q = question.toLowerCase();
+  
+  if (q.includes('action') || q.includes('task') || q.includes('todo')) {
+    const pending = aiState.meetingData.actionItems.filter(item => !item.done);
+    return `There are ${pending.length} pending action items:<br><br>${pending.map((item, i) => 
+      `${i + 1}. <strong>${item.text}</strong><br>→ ${item.assignee} (Due: ${item.due})`
+    ).join('<br><br>')}`;
+  }
+  
+  if (q.includes('who') || q.includes('assignee') || q.includes('responsible')) {
+    return `Task assignments:<br><br>• <strong>Anaiya:</strong> Design new dashboard UI<br>• <strong>Navdeep:</strong> Update pitch deck, API docs<br>• <strong>Meera:</strong> Review marketing plan`;
+  }
+  
+  if (q.includes('when') || q.includes('deadline') || q.includes('due')) {
+    return `Upcoming deadlines:<br><br>• <strong>Mar 18:</strong> API docs (Done ✓)<br>• <strong>Mar 20:</strong> Dashboard design<br>• <strong>Mar 22:</strong> Pitch deck update<br>• <strong>Mar 25:</strong> Marketing plan`;
+  }
+  
+  if (q.includes('decision') || q.includes('agree') || q.includes('decided')) {
+    return `Key decisions made:<br><br>1. Adopt Inter + Plus Jakarta Sans typography<br>2. Q1 launch target: April 15, 2025<br>3. Prioritize mobile-first approach for v2`;
+  }
+  
+  if (q.includes('summary') || q.includes('overview') || q.includes('about')) {
+    return `This meeting covered the product roadmap and Q1 goals. The team discussed dashboard improvements, AI features, and mobile app development. Overall sentiment was positive (72%) with strong alignment on the April 15 launch date.`;
+  }
+  
+  if (q.includes('sentiment') || q.includes('mood') || q.includes('feel')) {
+    return `Meeting sentiment analysis:<br><br>😊 <strong>72% Positive</strong> - Team is excited about roadmap<br>😐 <strong>21% Neutral</strong> - Some technical concerns<br>😟 <strong>7% Concern</strong> - Timeline concerns`;
+  }
+  
+  // Default responses
+  const defaults = [
+    `Based on the meeting transcript, the team made good progress on all fronts. Let me know if you need details on any specific topic.`,
+    `That's a great question! From the discussion, it seems the team is aligned on this. Would you like me to check the transcript for exact details?`,
+    `I analyzed the meeting notes and found relevant information. The team discussed this around the 15-minute mark.`,
+    `Let me summarize what was discussed: The team covered multiple topics including roadmap, features, and timelines. Anything specific you'd like to know?`
+  ];
+  
+  return defaults[Math.floor(Math.random() * defaults.length)];
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+// ============================================================================
+// UI UTILITIES
+// ============================================================================
+
+function showToast(message, type = 'info') {
+  let toast = document.getElementById('toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.style.cssText = 'position:fixed;top:80px;right:24px;background:#1a1f2e;color:white;padding:12px 20px;border-radius:8px;font-size:13.5px;font-weight:600;z-index:9999;opacity:0;transform:translateY(-10px);transition:all .3s;box-shadow:0 4px 12px rgba(0,0,0,.2);';
+    document.body.appendChild(toast);
+  }
+  
+  const colors = {
+    success: '#10b981',
+    error: '#ef4444',
+    warning: '#f59e0b',
+    info: '#6366f1'
+  };
+  toast.style.background = colors[type] || colors.info;
+  
+  toast.textContent = message;
+  toast.style.opacity = '1';
+  toast.style.transform = 'translateY(0)';
+  
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(-10px)';
+  }, 3000);
+}
+
+// ============================================================================
+// KEYBOARD SHORTCUTS
+// ============================================================================
+
+document.addEventListener('keydown', (e) => {
+  if (e.ctrlKey || e.metaKey) {
+    switch(e.key) {
+      case 'c':
+        if (!e.target.matches('input, textarea')) {
+          e.preventDefault();
+          copyContent();
+        }
+        break;
+      case 's':
+        e.preventDefault();
+        exportContent();
+        break;
+    }
+  }
+});
+
+// Allow Enter in AI input
+const aiInput = document.getElementById('aiInput');
+if (aiInput) {
+  aiInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      askAI();
+    }
+  });
+}
+
+console.log('✅ AI Copilot ready');
+console.log('⌨️ Shortcuts: Ctrl+C (copy), Ctrl+S (export), Enter (send message)');
+</script>
+</body>
+</html>

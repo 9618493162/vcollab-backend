@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Live Translation - VCollab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/dark-modern.css">
+<style>
+/* Translation overrides for dark theme */
+body { background: var(--bg-primary); }
+.tr-layout{flex:1;display:grid;grid-template-columns:1fr 360px;overflow:hidden;}
+.tr-main{padding:var(--space-2xl);overflow-y:auto;}
+.video-mock{background:var(--bg-tertiary);border-radius:var(--radius-lg);aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+.tr-feed{background:var(--bg-card);border:1px solid var(--border-primary);border-radius:var(--radius-lg);overflow:hidden;}
+.tr-panel{background:var(--bg-secondary);border-left:1px solid var(--border-primary);padding:var(--space-lg);overflow-y:auto;}
+.lang-item{display:flex;align-items:center;justify-content:space-between;padding:var(--space-sm) var(--space-md);border:1.5px solid var(--border-primary);border-radius:var(--radius-md);margin-bottom:var(--space-sm);cursor:pointer;transition:all var(--transition-base);font-size:var(--font-size-sm);font-weight:var(--font-weight-medium);color:var(--text-primary);}
+.lang-item:hover,.lang-item.active{border-color:var(--accent-primary);background:rgba(99,102,241,.1);color:var(--accent-primary);}
+<style>
+.tr-layout{flex:1;display:grid;grid-template-columns:1fr 340px;overflow:hidden;}
+.tr-main{padding:28px;overflow-y:auto;}
+.tr-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.tr-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:20px;font-weight:800;}
+.live-badge{display:flex;align-items:center;gap:6px;background:#fee2e2;color:#ef4444;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:700;}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#ef4444;animation:pulse 1.2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+/* Video + transcript split */
+.video-translate{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+.video-mock{background:#1a1f2e;border-radius:12px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+.video-person{display:flex;flex-direction:column;align-items:center;gap:8px;}
+.v-avatar{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:white;}
+.v-name{color:white;font-size:12px;font-weight:600;}
+.v-speaking{position:absolute;bottom:8px;left:8px;right:8px;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);border-radius:6px;padding:6px 10px;}
+.v-caption{font-size:12px;color:white;line-height:1.4;}
+.v-caption-translated{font-size:12px;color:#a5b4fc;line-height:1.4;margin-top:3px;}
+/* Transcript feed */
+.tr-feed{background:white;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.tr-feed-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.tr-feed-title{font-size:13px;font-weight:700;}
+.tr-entries{padding:12px 16px;max-height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;}
+.tr-entry{display:flex;gap:10px;}
+.tr-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;flex-shrink:0;margin-top:2px;}
+.tr-body{flex:1;}
+.tr-meta{display:flex;align-items:center;gap:8px;margin-bottom:3px;}
+.tr-name{font-size:12px;font-weight:700;}
+.tr-lang{font-size:10px;background:#eef2ff;color:#6366f1;padding:1px 6px;border-radius:4px;font-weight:700;}
+.tr-time{font-size:11px;color:var(--text-tertiary);}
+.tr-original{font-size:13px;color:var(--text-primary);line-height:1.5;}
+.tr-translated{font-size:13px;color:#6366f1;line-height:1.5;margin-top:3px;}
+/* Right panel */
+.tr-panel{background:white;border-left:1px solid var(--border);padding:20px;overflow-y:auto;}
+.panel-title{font-size:13px;font-weight:700;margin-bottom:14px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.05em;}
+.lang-selector{margin-bottom:20px;}
+.lang-item{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;margin-bottom:6px;cursor:pointer;transition:all .15s;font-size:13px;font-weight:500;}
+.lang-item:hover,.lang-item.active{border-color:#6366f1;background:#eef2ff;color:#4f46e5;}
+.lang-flag{font-size:16px;margin-right:6px;}
+.speaker-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border-light,#f3f4f6);}
+.speaker-row:last-child{border:none;}
+.s-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;flex-shrink:0;}
+.s-name{font-size:13px;font-weight:600;flex:1;}
+.s-lang{font-size:11px;color:var(--text-secondary);}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border-light,#f3f4f6);}
+.toggle-label{font-size:13px;font-weight:600;}
+.toggle{width:40px;height:22px;background:#d1d5db;border-radius:11px;position:relative;cursor:pointer;border:none;transition:background .2s;flex-shrink:0;}
+.toggle.on{background:#6366f1;}
+.toggle::after{content:'';position:absolute;width:16px;height:16px;border-radius:50%;background:white;top:3px;left:3px;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.toggle.on::after{transform:translateX(18px);}
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div style="width:32px;height:32px;background:#6366f1;border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-size:15px;font-weight:800;">V</div>
+      <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:17px;font-weight:800;color:white;">VCollab</span>
+    </div>
+    <a href="dashboard-dark.html" class="sidebar-item"><span class="icon">🏠</span>Home</a>
+    <a href="meeting-dark.html" class="sidebar-item"><span class="icon">📅</span>Meetings</a>
+    <a href="chat-dark.html" class="sidebar-item"><span class="icon">💬</span>Chat</a>
+    <a href="kanban-dark.html" class="sidebar-item"><span class="icon">📋</span>Contacts</a>
+    <a href="whiteboard-dark.html" class="sidebar-item"><span class="icon">🖊</span>Whiteboard</a>
+    <div class="sidebar-divider"></div>
+    <a href="recording-player-dark.html" class="sidebar-item"><span class="icon">⏺</span>Recordings</a>
+    <a href="ai-copilot-dark.html" class="sidebar-item"><span class="icon">🤖</span>AI Assistant</a>
+    <div class="sidebar-divider"></div>
+    <a href="admin-dashboard.html" class="sidebar-item"><span class="icon">📊</span>Analytics</a>
+    <a href="profile-dark.html" class="sidebar-item"><span class="icon">⚙️</span>Settings</a>
+  </aside>
+  <div class="main-content">
+    <div class="topbar">
+      <span style="font-size:14px;font-weight:700;">Live Translation</span>
+      <div class="topbar-actions">
+        <button onclick="location.href='meeting-dark.html'" style="padding:6px 14px;background:#eef2ff;color:#6366f1;border:none;border-radius:6px;font-size:12.5px;font-weight:600;cursor:pointer;">← Back to Meeting</button>
+        <button class="topbar-icon-btn">🔔</button>
+        <div style="width:32px;height:32px;border-radius:50%;background:#6366f1;display:flex;align-items:center;justify-content:center;color:white;font-size:13px;font-weight:700;">N</div>
+      </div>
+    </div>
+    <div class="tr-layout">
+      <div class="tr-main">
+        <div class="tr-header">
+          <div>
+            <div class="tr-title">🌐 Live Translation</div>
+            <div style="font-size:13px;color:var(--text-secondary);margin-top:2px;">Real-time translation · 6 speakers · 3 languages</div>
+          </div>
+          <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+        </div>
+
+        <!-- Video tiles with captions -->
+        <div class="video-translate">
+          <div class="video-mock">
+            <div class="video-person">
+              <div class="v-avatar" style="background:#6366f1;">N</div>
+              <div class="v-name">Navdeep</div>
+            </div>
+            <div class="v-speaking">
+              <div class="v-caption">Speaking: Anaiya Roy</div>
+              <div class="v-caption-translated">We need to focus on user experience...</div>
+            </div>
+          </div>
+          <div class="video-mock">
+            <div class="video-person">
+              <div class="v-avatar" style="background:#10b981;">A</div>
+              <div class="v-name">Anaiya</div>
+            </div>
+            <div class="v-speaking">
+              <div class="v-caption">Debemos mejorar la experiencia del usuario.</div>
+              <div class="v-caption-translated">→ We must improve the user experience.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live transcript feed -->
+        <div class="tr-feed">
+          <div class="tr-feed-header">
+            <span class="tr-feed-title">📝 Live Transcript</span>
+            <div style="display:flex;gap:8px;">
+              <span style="font-size:12px;color:var(--text-secondary);">Translating to: <strong style="color:#6366f1;">English</strong></span>
+              <button style="padding:4px 10px;background:#f4f6fa;border:1px solid var(--border);border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;">Auto Scroll</button>
+            </div>
+          </div>
+          <div class="tr-entries" id="trFeed">
+            <div class="tr-entry">
+              <div class="tr-av" style="background:#6366f1;">N</div>
+              <div class="tr-body">
+                <div class="tr-meta"><span class="tr-name">Navdeep</span><span class="tr-lang">EN</span><span class="tr-time">10:24 AM</span></div>
+                <div class="tr-original">Welcome everyone, let's get started with today's discussion.</div>
+              </div>
+            </div>
+            <div class="tr-entry">
+              <div class="tr-av" style="background:#10b981;">A</div>
+              <div class="tr-body">
+                <div class="tr-meta"><span class="tr-name">Anaiya Roy</span><span class="tr-lang">ES</span><span class="tr-time">10:25 AM</span></div>
+                <div class="tr-original">Debemos mejorar la experiencia del usuario.</div>
+                <div class="tr-translated">→ We must improve the user experience.</div>
+              </div>
+            </div>
+            <div class="tr-entry">
+              <div class="tr-av" style="background:#f59e0b;">B</div>
+              <div class="tr-body">
+                <div class="tr-meta"><span class="tr-name">Bold Sharma</span><span class="tr-lang">HI</span><span class="tr-time">10:26 AM</span></div>
+                <div class="tr-original">हमें Q1 के लिए एक स्पष्ट रोडमैप चाहिए।</div>
+                <div class="tr-translated">→ We need a clear roadmap for Q1.</div>
+              </div>
+            </div>
+            <div class="tr-entry">
+              <div class="tr-av" style="background:#6366f1;">N</div>
+              <div class="tr-body">
+                <div class="tr-meta"><span class="tr-name">Navdeep</span><span class="tr-lang">EN</span><span class="tr-time">10:27 AM</span></div>
+                <div class="tr-original">Agreed. The design system should be finalized by March 20th.</div>
+              </div>
+            </div>
+            <div class="tr-entry">
+              <div class="tr-av" style="background:#8b5cf6;">D</div>
+              <div class="tr-body">
+                <div class="tr-meta"><span class="tr-name">Daniel</span><span class="tr-lang">DE</span><span class="tr-time">10:28 AM</span></div>
+                <div class="tr-original">Ich stimme zu, wir sollten schnell vorankommen.</div>
+                <div class="tr-translated">→ I agree, we should move forward quickly.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right panel -->
+      <div class="tr-panel">
+        <div class="panel-title">My Language</div>
+        <div class="lang-selector">
+          <div class="lang-item active"><span class="lang-flag">🇺🇸</span> English (US)</div>
+          <div class="lang-item"><span class="lang-flag">🇪🇸</span> Spanish</div>
+          <div class="lang-item"><span class="lang-flag">🇮🇳</span> Hindi</div>
+          <div class="lang-item"><span class="lang-flag">🇩🇪</span> German</div>
+          <div class="lang-item"><span class="lang-flag">🇫🇷</span> French</div>
+          <div class="lang-item"><span class="lang-flag">🇯🇵</span> Japanese</div>
+        </div>
+
+        <div class="panel-title">Speakers</div>
+        <div style="margin-bottom:16px;">
+          <div class="speaker-row"><div class="s-av" style="background:#6366f1;">N</div><div><div class="s-name">Navdeep</div><div class="s-lang">English</div></div></div>
+          <div class="speaker-row"><div class="s-av" style="background:#10b981;">A</div><div><div class="s-name">Anaiya Roy</div><div class="s-lang">Spanish → EN</div></div></div>
+          <div class="speaker-row"><div class="s-av" style="background:#f59e0b;">B</div><div><div class="s-name">Bold Sharma</div><div class="s-lang">Hindi → EN</div></div></div>
+          <div class="speaker-row"><div class="s-av" style="background:#8b5cf6;">D</div><div><div class="s-name">Daniel</div><div class="s-lang">German → EN</div></div></div>
+        </div>
+
+        <div class="panel-title">Settings</div>
+        <div class="toggle-row">
+          <span class="toggle-label">Show Captions</span>
+          <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+        </div>
+        <div class="toggle-row">
+          <span class="toggle-label">Auto Translate</span>
+          <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+        </div>
+        <div class="toggle-row">
+          <span class="toggle-label">Show Original</span>
+          <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+        </div>
+        <div class="toggle-row" style="border:none;">
+          <span class="toggle-label">Auto Scroll</span>
+          <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
+
+<script>
+// ============================================================================
+// LIVE TRANSLATION - FULL FUNCTIONALITY
+// ============================================================================
+
+const translationState = {
+  currentLang: 'en',
+  isTranslating: true,
+  languages: {
+    en: { name: 'English', flag: '🇺🇸' },
+    es: { name: 'Spanish', flag: '🇪🇸' },
+    hi: { name: 'Hindi', flag: '🇮🇳' },
+    de: { name: 'German', flag: '🇩🇪' },
+    fr: { name: 'French', flag: '🇫🇷' },
+    ja: { name: 'Japanese', flag: '🇯🇵' }
+  }
+};
+
+// Simple translations for demo
+const translations = {
+  'Debemos mejorar la experiencia del usuario.': {
+    en: 'We must improve the user experience.',
+    hi: 'हमें उपयोगकर्ता अनुभव में सुधार करना चाहिए।'
+  },
+  'हमें Q1 के लिए एक स्पष्ट रोडमैप चाहिए।': {
+    en: 'We need a clear roadmap for Q1.',
+    es: 'Necesitamos una hoja de ruta clara para Q1.'
+  },
+  'Ich stimme zu, wir sollten schnell vorankommen.': {
+    en: 'I agree, we should move forward quickly.',
+    es: 'Estoy de acuerdo, deberíamos avanzar rápidamente.'
+  }
+};
+
+// Language selection
+document.querySelectorAll('.lang-item').forEach((item, index) => {
+  item.addEventListener('click', function() {
+    document.querySelectorAll('.lang-item').forEach(i => i.classList.remove('active'));
+    this.classList.add('active');
+    
+    const langs = ['en', 'es', 'hi', 'de', 'fr', 'ja'];
+    translationState.currentLang = langs[index];
+    
+    showToast(`Language changed to ${translationState.languages[langs[index]].name}`, 'success');
+    updateTranslations();
+  });
+});
+
+function updateTranslations() {
+  const entries = document.querySelectorAll('.tr-entry');
+  entries.forEach(entry => {
+    const original = entry.querySelector('.tr-original');
+    if (!original) return;
+    
+    const text = original.textContent.trim();
+    const translated = entry.querySelector('.tr-translated');
+    
+    if (translations[text] && translations[text][translationState.currentLang]) {
+      if (!translated) {
+        const newTranslated = document.createElement('div');
+        newTranslated.className = 'tr-translated';
+        newTranslated.textContent = `→ ${translations[text][translationState.currentLang]}`;
+        entry.querySelector('.tr-body').appendChild(newTranslated);
+      } else {
+        translated.textContent = `→ ${translations[text][translationState.currentLang]}`;
+        translated.style.display = 'block';
+      }
+    } else if (translated) {
+      translated.style.display = 'none';
+    }
+  });
+}
+
+// Simulate live translation updates
+let messageIndex = 0;
+const liveMessages = [
+  { speaker: 'Navdeep', avatar: 'N', color: '#6366f1', lang: 'EN', text: 'Let\'s review the sprint goals for next week.' },
+  { speaker: 'Anaiya', avatar: 'A', color: '#10b981', lang: 'ES', text: 'Los objetivos parecen alcanzables.', translation: 'The goals seem achievable.' },
+  { speaker: 'Bold', avatar: 'B', color: '#f59e0b', lang: 'HI', text: 'मुझे लगता है कि हम समय पर पूरा कर सकते हैं।', translation: 'I think we can complete it on time.' }
+];
+
+function addLiveTranslation() {
+  if (messageIndex >= liveMessages.length) return;
+  
+  const msg = liveMessages[messageIndex++];
+  const feed = document.getElementById('trFeed');
+  const now = new Date();
+  const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  
+  const entry = document.createElement('div');
+  entry.className = 'tr-entry';
+  entry.style.opacity = '0';
+  entry.innerHTML = `
+    <div class="tr-av" style="background:${msg.color};">${msg.avatar}</div>
+    <div class="tr-body">
+      <div class="tr-meta">
+        <span class="tr-name">${msg.speaker}</span>
+        <span class="tr-lang">${msg.lang}</span>
+        <span class="tr-time">${time}</span>
+      </div>
+      <div class="tr-original">${msg.text}</div>
+      ${msg.translation ? `<div class="tr-translated">→ ${msg.translation}</div>` : ''}
+    </div>
+  `;
+  
+  feed.appendChild(entry);
+  setTimeout(() => entry.style.opacity = '1', 100);
+  feed.scrollTop = feed.scrollHeight;
+  
+  showToast('New message translated', 'info');
+}
+
+// Add live messages every 10 seconds
+setInterval(addLiveTranslation, 10000);
+
+function showToast(message, type = 'info') {
+  let toast = document.getElementById('toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.style.cssText = 'position:fixed;top:80px;right:24px;background:#1a1f2e;color:white;padding:12px 20px;border-radius:8px;font-size:13.5px;font-weight:600;z-index:9999;opacity:0;transform:translateY(-10px);transition:all .3s;box-shadow:0 4px 12px rgba(0,0,0,.2);';
+    document.body.appendChild(toast);
+  }
+  
+  const colors = {
+    success: '#10b981',
+    error: '#ef4444',
+    warning: '#f59e0b',
+    info: '#6366f1'
+  };
+  toast.style.background = colors[type] || colors.info;
+  
+  toast.textContent = message;
+  toast.style.opacity = '1';
+  toast.style.transform = 'translateY(0)';
+  
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(-10px)';
+  }, 3000);
+}
+
+console.log('✅ Live Translation ready');
+console.log('🌐 Features: 6 languages, live captions, auto-translate');
+</script>

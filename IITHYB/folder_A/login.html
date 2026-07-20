@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - VCollab</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        // Redirect to new modern login page
+        window.location.href = 'login-new.html';
+    </script>
+</head>
+<body>
+
+<div class="login-container">
+    <div class="login-box">
+        <h1>Login</h1>
+
+        <div id="errorMessage" style="display: none; background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 15px;"></div>
+
+        <form id="loginForm">
+            <input type="email" id="email" placeholder="Enter Email" required>
+            <input type="password" id="password" placeholder="Enter Password" required>
+            <button type="submit" id="loginBtn">Login</button>
+        </form>
+
+        <p>
+            Don't have an account?
+            <a href="register.html">Register</a>
+        </p>
+    </div>
+</div>
+
+<script src="js/api.js"></script>
+<script>
+const loginForm = document.getElementById("loginForm");
+const loginBtn = document.getElementById("loginBtn");
+const errorMessage = document.getElementById("errorMessage");
+
+loginForm.addEventListener("submit", async function(event) {
+    event.preventDefault();
+    
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    
+    // Hide error message
+    errorMessage.style.display = 'none';
+    
+    // Disable button
+    loginBtn.disabled = true;
+    loginBtn.textContent = "Logging in...";
+    
+    // Call API
+    const result = await API.auth.login(email, password);
+    
+    if (result.success) {
+        window.location.href = "dashboard.html";
+    } else {
+        errorMessage.textContent = result.message || "Login failed. Please try again.";
+        errorMessage.style.display = 'block';
+        loginBtn.disabled = false;
+        loginBtn.textContent = "Login";
+    }
+});
+</script>
+
+</body>
+</html>
