@@ -222,11 +222,11 @@ process.on('SIGTERM', () => {
     });
 });
 
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
     console.log(`\n🚀 =======================================`);
     console.log(`✅ VCollab Backend Server v1.0`);
     console.log(`✅ Server running on port ${PORT}`);
-    console.log(`✅ API: http://localhost:${PORT}`);
+    console.log(`✅ Listening on 0.0.0.0:${PORT}`);
     console.log(`✅ Socket.IO ready for connections`);
     console.log(`✅ Rate limiting enabled`);
     console.log(`✅ Security middleware active`);
