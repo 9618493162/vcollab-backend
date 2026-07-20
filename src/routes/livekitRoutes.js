@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const auth = require("../middleware/auth");
+const { tokenLimiter } = require("../middleware/rateLimiter");
 const livekitService = require("../services/livekitService");
 const supabase = require("../config/supabase");
 
@@ -8,7 +9,7 @@ const supabase = require("../config/supabase");
  * Generate LiveKit token for joining a meeting
  * POST /api/livekit/token
  */
-router.post("/token", auth, async (req, res) => {
+router.post("/token", auth, tokenLimiter, async (req, res) => {
     try {
         const { meetingId, roomName } = req.body;
         

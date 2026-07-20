@@ -53,10 +53,23 @@ const passwordResetLimiter = rateLimit({
     }
 });
 
+// Token generation rate limiter (for LiveKit)
+const tokenLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 50, // Limit each IP to 50 token requests per 15 minutes
+    message: {
+        success: false,
+        message: 'Too many token requests, please try again later'
+    },
+    standardHeaders: true,
+    legacyHeaders: false
+});
+
 module.exports = {
     apiLimiter,
     authLimiter,
     uploadLimiter,
     meetingLimiter,
-    passwordResetLimiter
+    passwordResetLimiter,
+    tokenLimiter // Added for LiveKit token generation security
 };

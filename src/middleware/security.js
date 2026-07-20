@@ -134,8 +134,25 @@ const detectSuspiciousActivity = (req, res, next) => {
 };
 
 // CORS security with origin validation
+const allowedOrigins = [
+    'https://vcollab-react.vercel.app',
+    'https://vcollab-backend-production.up.railway.app',
+    'http://localhost:5173', // Development frontend
+    'http://localhost:5002'  // Development backend
+];
+
 const corsOptions = {
-    origin: '*', // Allow all origins temporarily for Railway deployment
+    origin: function (origin, callback) {
+        // Allow requests with no origin (mobile apps, Postman, curl, etc.)
+        if (!origin) return callback(null, true);
+        
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            console.warn(`🚨 CORS blocked request from unauthorized origin: ${origin}`);
+            callback(new Error(`CORS policy does not allow access from origin: ${origin}`));
+        }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
