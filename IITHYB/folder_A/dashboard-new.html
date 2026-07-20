@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard - VCollab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/dark-modern.css">
+<style>
+/* Dashboard Specific Styles */
+.dashboard-greeting {
+  margin-bottom: var(--space-xl);
+}
+
+.dashboard-greeting h1 {
+  font-size: 32px;
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.dashboard-greeting p {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.quick-actions {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+  flex-wrap: wrap;
+}
+
+.meetings-section {
+  margin-bottom: var(--space-xl);
+}
+
+.meetings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--space-lg);
+}
+
+.meeting-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  transition: all var(--transition-base);
+  cursor: pointer;
+}
+
+.meeting-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--accent-primary);
+}
+
+.meeting-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+}
+
+.meeting-card-title {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-xs);
+}
+
+.meeting-card-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-md);
+}
+
+.meeting-card-meta-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.meeting-card-participants {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--space-md);
+}
+
+.meeting-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border-primary);
+}
+
+.meeting-time-badge {
+  padding: 4px 12px;
+  background: rgba(99, 102, 241, 0.1);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--accent-primary);
+}
+
+.btn-join-small {
+  padding: 6px 16px;
+  font-size: var(--font-size-xs);
+}
+
+/* Recordings Section */
+.recordings-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.recording-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-base);
+  cursor: pointer;
+}
+
+.recording-item:hover {
+  background: var(--bg-hover);
+}
+
+.recording-thumb {
+  width: 100px;
+  height: 60px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.recording-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.recording-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-xs);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recording-meta {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.recording-duration {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-tertiary);
+}
+
+/* AI Widget */
+.ai-widget {
+  background: linear-gradient(135deg, #1e2139 0%, #2d3348 100%);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  position: relative;
+  overflow: hidden;
+}
+
+.ai-widget::before {
+  content: '';
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.2) 0%, transparent 70%);
+  top: -100px;
+  right: -100px;
+  border-radius: 50%;
+}
+
+.ai-widget-content {
+  position: relative;
+  z-index: 1;
+}
+
+.ai-widget-icon {
+  width: 56px;
+  height: 56px;
+  background: var(--accent-gradient);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  margin-bottom: var(--space-md);
+}
+
+.ai-widget h3 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.ai-widget p {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: var(--space-lg);
+}
+
+.ai-features-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.ai-feature-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.ai-feature-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--accent-primary);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Stats Grid */
+.stats-grid-small {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md);
+}
+
+.stat-box {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  text-align: center;
+}
+
+.stat-box-value {
+  font-size: 28px;
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-xs);
+}
+
+.stat-box-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+/* Quick Links */
+.quick-links-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.quick-link-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: var(--text-primary);
+  transition: all var(--transition-base);
+}
+
+.quick-link-item:hover {
+  background: var(--bg-hover);
+}
+
+.quick-link-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.quick-link-text {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  flex: 1;
+}
+
+.quick-link-arrow {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+/* Two column layout */
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: var(--space-xl);
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .dashboard-layout {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Ctext x='16' y='22' text-anchor='middle' fill='white' font-size='18' font-weight='bold'%3EV%3C/text%3E%3C/svg%3E" alt="VCollab">
+    <span class="sidebar-logo-text">VCollab</span>
+  </div>
+  
+  <nav class="sidebar-nav">
+    <ul>
+      <li class="sidebar-nav-item">
+        <a href="dashboard-new.html" class="sidebar-nav-link active">
+          <span class="sidebar-nav-icon">🏠</span>
+          <span>Home</span>
+        </a>
+      </li>
+      <li class="sidebar-nav-item">
+        <a href="meeting-dark.html" class="sidebar-nav-link">
+          <span class="sidebar-nav-icon">📹</span>
+          <span>Meetings</span>
+        </a>
+      </li>
+      <li class="sidebar-nav-item">
+        <a href="chat-dark.html" class="sidebar-nav-link">
+          <span class="sidebar-nav-icon">💬</span>
+          <span>Chat</span>
+          <span class="badge badge-primary">3</span>
+        </a>
+      </li>
+      <li class="sidebar-nav-item">
+        <a href="whiteboard-dark.html" class="sidebar-nav-link">
+          <span class="sidebar-nav-icon">🎨</span>
+          <span>Whiteboard</span>
+        </a>
+      </li>
+      <li class="sidebar-nav-item">
+        <a href="kanban-dark.html" class="sidebar-nav-link">
+          <span class="sidebar-nav-icon">📋</span>
+          <span>Kanban</span>
+        </a>
+      </li>
+    </ul>
+    
+    <div style="height: 1px; background: var(--border-primary); margin: var(--space-lg) 0;"></div>
+    
+    <ul>
+      <li class="sidebar-nav-item">
+        <a href="recording-player-dark.html" class="sidebar-nav-link">
+          <span class="sidebar-nav-icon">⏺️</span>
+          <span>Recordings</span>
+        </a>
+      </li>
+      <li class="sidebar-nav-item">
+        <a href="ai-copilot-dark.html" class="sidebar-nav-link">
+          <span class="sidebar-nav-icon">🤖</span>
+          <span>AI Assistant</span>
+        </a>
+      </li>
+    </ul>
+    
+    <div style="height: 1px; background: var(--border-primary); margin: var(--space-lg) 0;"></div>
+    
+    <ul>
+      <li class="sidebar-nav-item">
+        <a href="admin-dashboard.html" class="sidebar-nav-link">
+          <span class="sidebar-nav-icon">📊</span>
+          <span>Analytics</span>
+        </a>
+      </li>
+      <li class="sidebar-nav-item">
+        <a href="profile-dark.html" class="sidebar-nav-link">
+          <span class="sidebar-nav-icon">⚙️</span>
+          <span>Settings</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+  
+  <div style="margin-top: auto; padding: var(--space-lg); border-top: 1px solid var(--border-primary);">
+    <div class="topbar-user">
+      <div class="topbar-user-avatar" style="background: var(--accent-gradient); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">N</div>
+      <div>
+        <div class="topbar-user-name">Navdeep G</div>
+        <div style="font-size: var(--font-size-xs); color: var(--text-tertiary);">Admin</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- Top Bar -->
+<div class="topbar">
+  <div class="topbar-search">
+    <span class="topbar-search-icon">🔍</span>
+    <input type="text" class="topbar-search-input" placeholder="Search meetings, people, or files...">
+  </div>
+  
+  <div class="topbar-actions">
+    <button class="topbar-icon-btn" title="Notifications">
+      🔔
+    </button>
+    <button class="topbar-icon-btn" title="Settings">
+      ⚙️
+    </button>
+    <div class="topbar-user">
+      <div class="topbar-user-avatar" style="background: var(--accent-gradient); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">N</div>
+      <span class="topbar-user-name">Navdeep</span>
+    </div>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+  <div class="dashboard-greeting">
+    <h1 id="greetingText">Good Morning, Navdeep! 👋</h1>
+    <p id="greetingDate">Here's what's happening today</p>
+  </div>
+  
+  <div class="quick-actions">
+    <button class="btn btn-primary" onclick="location.href='create-meeting-dark.html'">
+      📹 New Meeting
+    </button>
+    <button class="btn btn-secondary" onclick="location.href='join-meeting-dark.html'">
+      🔗 Join Meeting
+    </button>
+    <button class="btn btn-secondary" onclick="location.href='create-meeting-dark.html'">
+      📅 Schedule Meeting
+    </button>
+  </div>
+  
+  <div class="dashboard-layout">
+    <!-- Left Column -->
+    <div>
+      <!-- Upcoming Meetings -->
+      <section class="meetings-section">
+        <div class="card-header">
+          <h2 class="card-title">Upcoming Meetings</h2>
+          <a href="meeting-dark.html" class="btn btn-ghost btn-sm">View All →</a>
+        </div>
+        <div class="meetings-grid" id="meetingsContainer">
+          <div style="text-align: center; padding: 60px; color: var(--text-secondary);">
+            Loading meetings...
+          </div>
+        </div>
+      </section>
+      
+      <!-- Recent Recordings -->
+      <section class="meetings-section">
+        <div class="card-header">
+          <h2 class="card-title">Recent Recordings</h2>
+          <a href="recording-player-dark.html" class="btn btn-ghost btn-sm">View All →</a>
+        </div>
+        <div class="card">
+          <div class="recordings-list" id="recordingsContainer">
+            <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+              Loading recordings...
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    
+    <!-- Right Column -->
+    <div>
+      <!-- AI Assistant Widget -->
+      <div class="ai-widget">
+        <div class="ai-widget-content">
+          <div class="ai-widget-icon">🤖</div>
+          <h3>AI Assistant</h3>
+          <p>Get meeting summaries, action items, and notes automatically.</p>
+          <div class="ai-features-list">
+            <div class="ai-feature-item">
+              <span class="ai-feature-dot"></span>
+              <span>AI Summary · auto-generated</span>
+            </div>
+            <div class="ai-feature-item">
+              <span class="ai-feature-dot"></span>
+              <span>Action Items · extracted</span>
+            </div>
+            <div class="ai-feature-item">
+              <span class="ai-feature-dot"></span>
+              <span>Smart Search · meeting history</span>
+            </div>
+          </div>
+          <button class="btn btn-primary" style="width: 100%;" onclick="location.href='ai-copilot-dark.html'">
+            Open AI Assistant →
+          </button>
+        </div>
+      </div>
+      
+      <!-- Today's Stats -->
+      <div class="card" style="margin-top: var(--space-lg);">
+        <div class="card-header">
+          <h3 class="card-title">Today's Activity</h3>
+        </div>
+        <div class="card-body">
+          <div class="stats-grid-small">
+            <div class="stat-box">
+              <div class="stat-box-value" id="statMeetings" style="color: var(--accent-primary);">0</div>
+              <div class="stat-box-label">Meetings</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-box-value" id="statTasks" style="color: var(--success);">0</div>
+              <div class="stat-box-label">Tasks Done</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-box-value" id="statMessages" style="color: var(--warning);">0</div>
+              <div class="stat-box-label">Messages</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-box-value" id="statCallTime" style="color: #8b5cf6;">0m</div>
+              <div class="stat-box-label">Call Time</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Quick Access -->
+      <div class="card" style="margin-top: var(--space-lg);">
+        <div class="card-header">
+          <h3 class="card-title">Quick Access</h3>
+        </div>
+        <div class="card-body">
+          <div class="quick-links-list">
+            <a href="whiteboard-dark.html" class="quick-link-item">
+              <span class="quick-link-icon">🎨</span>
+              <span class="quick-link-text">Whiteboard</span>
+              <span class="quick-link-arrow">→</span>
+            </a>
+            <a href="kanban-dark.html" class="quick-link-item">
+              <span class="quick-link-icon">📋</span>
+              <span class="quick-link-text">Kanban Board</span>
+              <span class="quick-link-arrow">→</span>
+            </a>
+            <a href="polls-dark.html" class="quick-link-item">
+              <span class="quick-link-icon">📊</span>
+              <span class="quick-link-text">Polls & Q&A</span>
+              <span class="quick-link-arrow">→</span>
+            </a>
+            <a href="translation-dark.html" class="quick-link-item">
+              <span class="quick-link-icon">🌍</span>
+              <span class="quick-link-text">Live Translation</span>
+              <span class="quick-link-arrow">→</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_URL = 'https://vcollab-backend-production.up.railway.app/api';
+const dashState = { user: null, meetings: [], recordings: [], stats: {} };
+
+async function init() {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    window.location.href = 'login-new.html';
+    return;
+  }
+  
+  updateGreeting();
+  await loadUserProfile();
+  await loadMeetings();
+  await loadStats();
+}
+
+function updateGreeting() {
+  const now = new Date();
+  const hour = now.getHours();
+  let greeting = 'Good Morning';
+  if (hour >= 12 && hour < 18) greeting = 'Good Afternoon';
+  else if (hour >= 18) greeting = 'Good Evening';
+  
+  const greetingText = document.getElementById('greetingText');
+  const greetingDate = document.getElementById('greetingDate');
+  
+  if (greetingText) {
+    greetingText.textContent = `${greeting}, Navdeep! 👋`;
+  }
+  
+  if (greetingDate) {
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    greetingDate.textContent = now.toLocaleDateString('en-US', options);
+  }
+}
+
+async function loadUserProfile() {
+  try {
+    const res = await fetch(`${API_URL}/auth/profile`, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    });
+    if (!res.ok) throw new Error('Auth failed');
+    dashState.user = await res.json();
+    
+    if (dashState.user.name) {
+      const hour = new Date().getHours();
+      let greeting = 'Good Morning';
+      if (hour >= 12 && hour < 18) greeting = 'Good Afternoon';
+      else if (hour >= 18) greeting = 'Good Evening';
+      
+      document.getElementById('greetingText').textContent = `${greeting}, ${dashState.user.name}! 👋`;
+    }
+  } catch (err) {
+    console.error('Profile load failed:', err);
+    // Continue with demo mode
+  }
+}
+
+async function loadMeetings() {
+  try {
+    const res = await fetch(`${API_URL}/meetings`, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    });
+    if (!res.ok) throw new Error('Failed to load meetings');
+    
+    dashState.meetings = await res.json();
+    renderMeetings();
+    renderRecordings();
+  } catch (err) {
+    console.error('Meetings load failed:', err);
+    renderEmptyMeetings();
+  }
+}
+
+function renderMeetings() {
+  const container = document.getElementById('meetingsContainer');
+  
+  if (!dashState.meetings || dashState.meetings.length === 0) {
+    renderEmptyMeetings();
+    return;
+  }
+  
+  container.innerHTML = dashState.meetings.slice(0, 3).map(meeting => {
+    const meetingDate = new Date(meeting.scheduled_time || meeting.created_at);
+    const now = new Date();
+    const diffMs = meetingDate - now;
+    const diffMins = Math.floor(diffMs / 60000);
+    
+    let timeLabel = 'Now';
+    if (diffMins > 0 && diffMins < 60) timeLabel = `In ${diffMins} min`;
+    else if (diffMins >= 60 && diffMins < 1440) timeLabel = `In ${Math.floor(diffMins/60)} hrs`;
+    else if (diffMins >= 1440) timeLabel = 'Tomorrow';
+    
+    return `
+      <div class="meeting-card" onclick="joinMeeting('${meeting.meeting_id}')">
+        <div class="meeting-card-header">
+          <div>
+            <div class="meeting-card-title">${meeting.title || meeting.meeting_id}</div>
+            <div class="meeting-card-meta">
+              <span class="meeting-card-meta-item">📅 ${meetingDate.toLocaleDateString()}</span>
+              <span class="meeting-card-meta-item">⏱️ ${meeting.duration || 45} min</span>
+            </div>
+          </div>
+        </div>
+        <div class="meeting-card-participants">
+          <div class="avatar-group">
+            <div class="avatar avatar-sm" style="background: var(--accent-primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">H</div>
+            <div class="avatar avatar-sm" style="background: var(--success); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">+3</div>
+          </div>
+        </div>
+        <div class="meeting-card-footer">
+          <span class="meeting-time-badge">${timeLabel}</span>
+          <button class="btn btn-primary btn-join-small" onclick="event.stopPropagation();joinMeeting('${meeting.meeting_id}')">Join Now</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderEmptyMeetings() {
+  document.getElementById('meetingsContainer').innerHTML = `
+    <div style="grid-column: 1/-1; text-align: center; padding: 60px; color: var(--text-secondary);">
+      <div style="font-size: 48px; margin-bottom: 16px;">📅</div>
+      <p>No upcoming meetings</p>
+      <button class="btn btn-primary" style="margin-top: 16px;" onclick="location.href='create-meeting-dark.html'">Schedule a Meeting</button>
+    </div>
+  `;
+}
+
+function renderRecordings() {
+  const container = document.getElementById('recordingsContainer');
+  
+  // Demo recordings
+  const recordings = [
+    { id: 1, title: 'Team Standup Meeting', date: '2026-07-14', duration: '23:45' },
+    { id: 2, title: 'Product Design Review', date: '2026-07-13', duration: '45:12' },
+    { id: 3, title: 'Client Presentation', date: '2026-07-12', duration: '1:15:30' }
+  ];
+  
+  container.innerHTML = recordings.map(rec => `
+    <div class="recording-item" onclick="location.href='recording-player-dark.html'">
+      <div class="recording-thumb">⏺️</div>
+      <div class="recording-info">
+        <div class="recording-title">${rec.title}</div>
+        <div class="recording-meta">${rec.date} · ${rec.duration}</div>
+      </div>
+      <div class="recording-duration">${rec.duration}</div>
+    </div>
+  `).join('');
+}
+
+function joinMeeting(meetingId) {
+  window.location.href = `meeting-dark.html?room=${meetingId}`;
+}
+
+async function loadStats() {
+  try {
+    const res = await fetch(`${API_URL}/meetings/stats`, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    });
+    if (!res.ok) throw new Error('Stats load failed');
+    
+    dashState.stats = await res.json();
+    renderStats();
+  } catch (err) {
+    console.error('Stats load failed:', err);
+    // Show demo stats
+    renderStats();
+  }
+}
+
+function renderStats() {
+  document.getElementById('statMeetings').textContent = dashState.stats.total_meetings || '3';
+  document.getElementById('statTasks').textContent = dashState.stats.tasks_completed || '8';
+  document.getElementById('statMessages').textContent = dashState.stats.total_messages || '24';
+  
+  const mins = dashState.stats.total_duration || 85;
+  const hrs = Math.floor(mins / 60);
+  const remainMins = mins % 60;
+  document.getElementById('statCallTime').textContent = hrs > 0 ? `${hrs}h ${remainMins}m` : `${mins}m`;
+}
+
+// Initialize
+init();
+console.log('✅ Dashboard initialized with modern dark theme');
+</script>
+
+</body>
+</html>

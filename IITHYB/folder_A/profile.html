@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - VCollab</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Google Sans', 'Roboto', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo h2 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 28px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 12px;
+            list-style: none;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-links li {
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #5f6368;
+            padding: 10px 20px;
+            border-radius: 24px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: block;
+            white-space: nowrap;
+        }
+
+        .nav-links a:hover {
+            background: #f1f3f4;
+            color: #202124;
+        }
+
+        .nav-links a.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        /* Profile Container */
+        .profile-container {
+            max-width: 900px;
+            margin: 48px auto;
+            padding: 24px;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 20px;
+            padding: 48px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        }
+
+        .profile-header {
+            text-align: center;
+            padding-bottom: 40px;
+            border-bottom: 2px solid #f1f3f4;
+            margin-bottom: 40px;
+        }
+
+        .profile-avatar {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 56px;
+            color: white;
+            margin: 0 auto 24px;
+            font-weight: 600;
+            box-shadow: 0 8px 24px rgba(102,126,234,0.3);
+        }
+
+        .profile-header h1 {
+            color: #202124;
+            font-size: 32px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        #profileEmail {
+            color: #5f6368;
+            font-size: 16px;
+        }
+
+        .profile-section {
+            margin-bottom: 40px;
+        }
+
+        .profile-section h2 {
+            color: #202124;
+            margin-bottom: 20px;
+            font-size: 22px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .profile-info {
+            background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
+            padding: 32px;
+            border-radius: 16px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-bottom: 1px solid #e8eaed;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 500;
+            color: #5f6368;
+            font-size: 15px;
+        }
+
+        .info-value {
+            color: #202124;
+            font-weight: 500;
+            font-size: 15px;
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 28px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102,126,234,0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102,126,234,0.4);
+        }
+
+        .btn-secondary {
+            background: #f1f3f4;
+            color: #5f6368;
+        }
+
+        .btn-secondary:hover {
+            background: #e8eaed;
+            color: #202124;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ea4335 0%, #d33025 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(234,67,53,0.3);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(234,67,53,0.4);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            background: rgba(52,168,83,0.1);
+            color: #34a853;
+            border-radius: 20px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #34a853;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @media (max-width: 768px) {
+            .profile-card {
+                padding: 32px 24px;
+            }
+
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="logo">
+        <h2>VCollab</h2>
+    </div>
+    <ul class="nav-links">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="meetings-list.html">Meetings</a></li>
+        <li><a href="chat.html">Chat</a></li>
+        <li><a href="profile.html" class="active">Profile</a></li>
+        <li><a href="#" onclick="API.auth.logout()">Logout</a></li>
+    </ul>
+</nav>
+
+<div class="profile-container">
+    <div class="profile-card">
+        <div class="profile-header">
+            <div class="profile-avatar" id="avatarInitials"></div>
+            <h1 id="profileName">Loading...</h1>
+            <p id="profileEmail"></p>
+        </div>
+        
+        <div class="profile-section">
+            <h2>👤 Account Information</h2>
+            <div class="profile-info">
+                <div class="info-row">
+                    <span class="info-label">Full Name:</span>
+                    <span class="info-value" id="infoName">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Email:</span>
+                    <span class="info-value" id="infoEmail">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Member Since:</span>
+                    <span class="info-value" id="infoJoined">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Account Status:</span>
+                    <span class="status-badge">
+                        <span class="status-dot"></span>
+                        Active
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="profile-section">
+            <h2>⚙️ Actions</h2>
+            <div class="actions-grid">
+                <button class="btn btn-primary" onclick="alert('Edit profile feature coming soon!')">✏️ Edit Profile</button>
+                <button class="btn btn-secondary" onclick="alert('Change password feature coming soon!')">🔒 Change Password</button>
+                <button class="btn btn-secondary" onclick="alert('Settings feature coming soon!')">⚙️ Settings</button>
+                <button class="btn btn-danger" onclick="confirmLogout()">🚪 Logout</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="js/api.js"></script>
+<script>
+// Check authentication
+if (!requireAuth()) {
+    throw new Error('Authentication required');
+}
+
+// Load profile data
+async function loadProfile() {
+    const userData = getUserData();
+    
+    if (userData) {
+        // Get initials
+        const initials = userData.fullName
+            .split(' ')
+            .map(n => n[0])
+            .join('')
+            .toUpperCase()
+            .substring(0, 2);
+        
+        document.getElementById('avatarInitials').textContent = initials;
+        document.getElementById('profileName').textContent = userData.fullName;
+        document.getElementById('profileEmail').textContent = userData.email;
+        document.getElementById('infoName').textContent = userData.fullName;
+        document.getElementById('infoEmail').textContent = userData.email;
+        document.getElementById('infoJoined').textContent = new Date().toLocaleDateString();
+    }
+    
+    // Try to get fresh profile data from API
+    const result = await API.auth.getProfile();
+    if (result.success) {
+        const user = result.user;
+        const initials = user.fullName
+            .split(' ')
+            .map(n => n[0])
+            .join('')
+            .toUpperCase()
+            .substring(0, 2);
+        
+        document.getElementById('avatarInitials').textContent = initials;
+        document.getElementById('profileName').textContent = user.fullName;
+        document.getElementById('profileEmail').textContent = user.email;
+        document.getElementById('infoName').textContent = user.fullName;
+        document.getElementById('infoEmail').textContent = user.email;
+        
+        if (user.createdAt) {
+            document.getElementById('infoJoined').textContent = new Date(user.createdAt).toLocaleDateString();
+        }
+    }
+}
+
+function confirmLogout() {
+    if (confirm('Are you sure you want to logout?')) {
+        API.auth.logout();
+    }
+}
+
+// Load profile on page load
+loadProfile();
+</script>
+
+</body>
+</html>

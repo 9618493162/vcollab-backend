@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Meeting - VCollab</title>
+    <link rel="stylesheet" href="css/create-meeting.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>Create a Meeting</h1>
+
+    <div id="errorMessage" style="display: none; background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 15px;"></div>
+
+    <form id="meetingForm">
+        <label>Meeting Title</label>
+        <input type="text" id="title" placeholder="Enter meeting title" required>
+
+        <label>Description</label>
+        <textarea id="description" placeholder="Meeting Description"></textarea>
+
+        <label>Date</label>
+        <input type="date" id="date" required>
+
+        <label>Time</label>
+        <input type="time" id="time" required>
+
+        <label>Meeting Type</label>
+        <select id="type">
+            <option>Public</option>
+            <option>Private</option>
+        </select>
+
+        <label>Passcode (Optional for Private meetings)</label>
+        <input type="text" id="passcode" placeholder="Enter passcode">
+
+        <button type="submit" id="createBtn">Create Meeting</button>
+    </form>
+
+    <br>
+    <a href="dashboard.html" class="back-btn">← Back to Dashboard</a>
+</div>
+
+<script src="js/api.js"></script>
+<script>
+// Check authentication
+if (!isAuthenticated()) {
+    window.location.href = 'login.html';
+}
+
+const meetingForm = document.getElementById("meetingForm");
+const createBtn = document.getElementById("createBtn");
+const errorMessage = document.getElementById("errorMessage");
+
+meetingForm.addEventListener("submit", async function(event) {
+    event.preventDefault();
+    
+    const title = document.getElementById("title").value.trim();
+    const description = document.getElementById("description").value.trim();
+    const date = document.getElementById("date").value;
+    const time = document.getElementById("time").value;
+    const type = document.getElementById("type").value;
+    const passcode = document.getElementById("passcode").value.trim();
+    
+    // Hide error
+    errorMessage.style.display = 'none';
+    
+    // Disable button
+    createBtn.disabled = true;
+    createBtn.textContent = "Creating...";
+    
+    // Call real API
+    const result = await API.meetings.create(title, description, date, time, type, passcode);
+    
+    if (result.success) {
+        alert(`Meeting Created Successfully!\nYour Meeting ID: ${result.meeting.meetingId}`);
+        localStorage.setItem("currentMeetingId", result.meeting.meetingId);
+        window.location.href = "meeting.html";
+    } else {
+        errorMessage.textContent = result.message || "Failed to create meeting";
+        errorMessage.style.display = 'block';
+        createBtn.disabled = false;
+        createBtn.textContent = "Create Meeting";
+    }
+});
+</script>
+
+</body>
+</html>

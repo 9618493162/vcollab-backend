@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Account - VCollab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root[data-theme="light"] {
+  --bg: #f8fafc;
+  --card-bg: #ffffff;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --border: #e2e8f0;
+  --accent: #6366f1;
+  --accent-hover: #4f46e5;
+  --error-bg: #fee2e2;
+  --error-text: #991b1b;
+  --success-bg: #d1fae5;
+  --success-text: #065f46;
+}
+
+:root[data-theme="dark"] {
+  --bg: #0f172a;
+  --card-bg: #1e293b;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --border: #334155;
+  --accent: #6366f1;
+  --accent-hover: #818cf8;
+  --error-bg: #7f1d1d;
+  --error-text: #fecaca;
+  --success-bg: #064e3b;
+  --success-text: #6ee7b7;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  transition: background 0.3s;
+}
+
+.register-container {
+  width: 100%;
+  max-width: 480px;
+}
+
+.theme-toggle {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: var(--card-bg);
+  color: var(--text-primary);
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.theme-toggle:hover {
+  transform: scale(1.1);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 32px;
+  text-decoration: none;
+}
+
+.logo-icon {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.logo-text {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.register-card {
+  background: var(--card-bg);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+  border: 1px solid var(--border);
+}
+
+h1 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+
+.subtitle {
+  text-align: center;
+  color: var(--text-secondary);
+  margin-bottom: 32px;
+  font-size: 15px;
+}
+
+.alert {
+  padding: 14px 16px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  display: none;
+  animation: slideDown 0.3s;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.alert-error {
+  background: var(--error-bg);
+  color: var(--error-text);
+  border: 1px solid var(--error-text);
+}
+
+.alert-success {
+  background: var(--success-bg);
+  color: var(--success-text);
+  border: 1px solid var(--success-text);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-size: 15px;
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  transition: all 0.2s;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+input::placeholder {
+  color: var(--text-secondary);
+}
+
+.password-wrapper {
+  position: relative;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.password-strength {
+  margin-top: 8px;
+  display: none;
+}
+
+.strength-bar {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border);
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.strength-fill {
+  height: 100%;
+  width: 0%;
+  transition: all 0.3s;
+}
+
+.strength-label {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.checkbox-wrapper input[type="checkbox"] {
+  width: auto;
+  cursor: pointer;
+}
+
+.checkbox-wrapper label {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin: 0;
+  cursor: pointer;
+}
+
+.checkbox-wrapper a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.checkbox-wrapper a:hover {
+  text-decoration: underline;
+}
+
+.btn-submit {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 4px;
+  font-family: 'Inter', sans-serif;
+}
+
+.btn-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(99, 102, 241, 0.3);
+}
+
+.btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 24px 0;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.social-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-social {
+  flex: 1;
+  padding: 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-social:hover {
+  border-color: var(--accent);
+  background: var(--card-bg);
+}
+
+.login-link {
+  text-align: center;
+  margin-top: 24px;
+  color: var(--text-secondary);
+  font-size: 15px;
+}
+
+.login-link a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+.back-home {
+  text-align: center;
+  margin-top: 24px;
+}
+
+.back-home a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.back-home a:hover {
+  color: var(--accent);
+}
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌙</button>
+
+<div class="register-container">
+  <a href="index-new.html" class="logo">
+    <div class="logo-icon">📹</div>
+    <span class="logo-text">VCollab</span>
+  </a>
+  
+  <div class="register-card">
+    <h1>Create Account</h1>
+    <p class="subtitle">Start collaborating with your team today</p>
+    
+    <div id="errorMessage" class="alert alert-error"></div>
+    <div id="successMessage" class="alert alert-success"></div>
+    
+    <form id="registerForm">
+      <div class="form-group">
+        <label for="fullName">Full Name</label>
+        <input type="text" id="fullName" placeholder="John Doe" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" placeholder="you@example.com" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="password-wrapper">
+          <input type="password" id="password" placeholder="Create a strong password" required oninput="checkPasswordStrength(this.value)">
+          <button type="button" class="toggle-password" onclick="togglePassword('password')">👁</button>
+        </div>
+        <div class="password-strength" id="passwordStrength">
+          <div class="strength-bar">
+            <div class="strength-fill" id="strengthFill"></div>
+          </div>
+          <div class="strength-label" id="strengthLabel"></div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <div class="password-wrapper">
+          <input type="password" id="confirmPassword" placeholder="Repeat your password" required>
+          <button type="button" class="toggle-password" onclick="togglePassword('confirmPassword')">👁</button>
+        </div>
+      </div>
+      
+      <div class="checkbox-wrapper">
+        <input type="checkbox" id="terms" required>
+        <label for="terms">
+          I agree to the <a href="#terms">Terms of Service</a> and <a href="#privacy">Privacy Policy</a>
+        </label>
+      </div>
+      
+      <button type="submit" class="btn-submit" id="registerBtn">
+        Create Account
+      </button>
+    </form>
+    
+    <div class="divider">OR</div>
+    
+    <div class="social-buttons">
+      <button class="btn-social" onclick="signUpWithGoogle()">
+        <span>🔵</span> Google
+      </button>
+      <button class="btn-social" onclick="signUpWithGitHub()">
+        <span>⚫</span> GitHub
+      </button>
+    </div>
+    
+    <div class="login-link">
+      Already have an account? <a href="login-new.html">Sign in</a>
+    </div>
+    
+    <div class="back-home">
+      <a href="index-new.html">← Back to home</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_URL = 'https://vcollab-backend-production.up.railway.app/api';
+
+// Theme Switcher
+function toggleTheme() {
+  const html = document.documentElement;
+  const currentTheme = html.getAttribute('data-theme');
+  const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+  const icon = document.getElementById('themeToggle');
+  
+  html.setAttribute('data-theme', newTheme);
+  icon.textContent = newTheme === 'light' ? '🌙' : '☀️';
+  localStorage.setItem('theme', newTheme);
+}
+
+// Load saved theme
+window.addEventListener('DOMContentLoaded', () => {
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  const icon = document.getElementById('themeToggle');
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+});
+
+// Password toggle
+function togglePassword(id) {
+  const input = document.getElementById(id);
+  const btn = input.nextElementSibling;
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.textContent = '🙈';
+  } else {
+    input.type = 'password';
+    btn.textContent = '👁';
+  }
+}
+
+// Password strength checker
+function checkPasswordStrength(password) {
+  const strengthDiv = document.getElementById('passwordStrength');
+  const fill = document.getElementById('strengthFill');
+  const label = document.getElementById('strengthLabel');
+  
+  if (!password) {
+    strengthDiv.style.display = 'none';
+    return;
+  }
+  
+  strengthDiv.style.display = 'block';
+  
+  let strength = 0;
+  if (password.length >= 8) strength++;
+  if (password.length >= 12) strength++;
+  if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+  if (/[0-9]/.test(password)) strength++;
+  if (/[^A-Za-z0-9]/.test(password)) strength++;
+  
+  const colors = ['#ef4444', '#f59e0b', '#10b981', '#059669'];
+  const labels = ['Weak', 'Fair', 'Good', 'Strong'];
+  const widths = ['25%', '50%', '75%', '100%'];
+  
+  const index = Math.min(strength - 1, 3);
+  if (index >= 0) {
+    fill.style.width = widths[index];
+    fill.style.background = colors[index];
+    label.textContent = labels[index];
+    label.style.color = colors[index];
+  }
+}
+
+// Register form handling
+const registerForm = document.getElementById('registerForm');
+const registerBtn = document.getElementById('registerBtn');
+const errorMessage = document.getElementById('errorMessage');
+const successMessage = document.getElementById('successMessage');
+
+registerForm.addEventListener('submit', async function(event) {
+  event.preventDefault();
+  
+  const fullName = document.getElementById('fullName').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const confirmPassword = document.getElementById('confirmPassword').value;
+  const terms = document.getElementById('terms').checked;
+  
+  // Hide messages
+  errorMessage.style.display = 'none';
+  successMessage.style.display = 'none';
+  
+  // Validation
+  if (!terms) {
+    errorMessage.textContent = 'Please accept the Terms of Service and Privacy Policy';
+    errorMessage.style.display = 'block';
+    return;
+  }
+  
+  if (password.length < 6) {
+    errorMessage.textContent = 'Password must be at least 6 characters long';
+    errorMessage.style.display = 'block';
+    return;
+  }
+  
+  if (password !== confirmPassword) {
+    errorMessage.textContent = 'Passwords do not match';
+    errorMessage.style.display = 'block';
+    return;
+  }
+  
+  // Disable button
+  registerBtn.disabled = true;
+  registerBtn.textContent = 'Creating account...';
+  
+  try {
+    const response = await fetch(`${API_URL}/auth/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        fullName: fullName,
+        email: email,
+        password: password
+      })
+    });
+    
+    const data = await response.json();
+    
+    if (response.ok && data.success) {
+      // Store tokens
+      localStorage.setItem('authToken', data.accessToken);
+      if (data.refreshToken) {
+        localStorage.setItem('refreshToken', data.refreshToken);
+      }
+      if (data.user) {
+        localStorage.setItem('userData', JSON.stringify(data.user));
+      }
+      
+      // Show success
+      successMessage.textContent = '✅ Account created successfully! Redirecting...';
+      successMessage.style.display = 'block';
+      
+      // Redirect to dashboard
+      setTimeout(() => {
+        window.location.href = 'dashboard-dark.html';
+      }, 1500);
+      
+    } else {
+      throw new Error(data.message || 'Registration failed');
+    }
+    
+  } catch (error) {
+    console.error('Registration error:', error);
+    errorMessage.textContent = error.message || 'Failed to create account. Please try again.';
+    errorMessage.style.display = 'block';
+    registerBtn.disabled = false;
+    registerBtn.textContent = 'Create Account';
+  }
+});
+
+// ============================================================================
+// OAUTH SIGN-UP
+// ============================================================================
+
+function signUpWithGoogle() {
+  showMessage('error', '⚠️ Google OAuth not configured. Please register with email.');
+}
+
+function signUpWithGitHub() {
+  showMessage('error', '⚠️ GitHub OAuth not configured. Please register with email.');
+}
+
+// ============================================================================
+// UTILITIES
+// ============================================================================
+
+function showMessage(type, message) {
+  const errorMsg = document.getElementById('errorMessage');
+  const successMsg = document.getElementById('successMessage');
+  
+  // Hide all messages first
+  errorMsg.style.display = 'none';
+  successMsg.style.display = 'none';
+  
+  // Show appropriate message
+  if (type === 'error') {
+    errorMsg.textContent = message;
+    errorMsg.style.display = 'block';
+  } else if (type === 'success') {
+    successMsg.textContent = message;
+    successMsg.style.display = 'block';
+  } else if (type === 'info') {
+    successMsg.textContent = message;
+    successMsg.style.background = '#dbeafe';
+    successMsg.style.color = '#1e40af';
+    successMsg.style.borderColor = '#3b82f6';
+    successMsg.style.display = 'block';
+  } else if (type === 'warning') {
+    successMsg.textContent = message;
+    successMsg.style.background = '#fef3c7';
+    successMsg.style.color = '#92400e';
+    successMsg.style.borderColor = '#f59e0b';
+    successMsg.style.display = 'block';
+  }
+}
+
+console.log('✅ Register page loaded');
+console.log('🔵 Google Sign-Up: Click to demo');
+console.log('⚫ GitHub Sign-Up: Click to demo');
+</script>
+
+</body>
+</html>

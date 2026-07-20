@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - VCollab</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Google Sans', 'Roboto', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        /* Top Navigation */
+        .navbar {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo h2 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 28px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 12px;
+            list-style: none;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-links li {
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #5f6368;
+            padding: 10px 20px;
+            border-radius: 24px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: block;
+            white-space: nowrap;
+        }
+
+        .nav-links a:hover {
+            background: #f1f3f4;
+            color: #202124;
+        }
+
+        .nav-links a.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        /* Dashboard Container */
+        .dashboard {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 48px 24px;
+        }
+
+        /* Welcome Section */
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 48px;
+            color: white;
+        }
+
+        .welcome-section h1 {
+            font-size: 48px;
+            font-weight: 400;
+            margin-bottom: 12px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .welcome-section p {
+            font-size: 20px;
+            opacity: 0.9;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-bottom: 48px;
+        }
+
+        .quick-action-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 28px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .quick-action-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        }
+
+        .quick-action-btn.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 32px;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+        }
+
+        .dashboard-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .dashboard-card h2 {
+            font-size: 24px;
+            margin-bottom: 12px;
+            color: #202124;
+            font-weight: 500;
+        }
+
+        .dashboard-card p {
+            color: #5f6368;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .card-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        /* Stats Section */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 48px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            color: #5f6368;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .welcome-section h1 {
+                font-size: 32px;
+            }
+
+            .quick-actions {
+                flex-direction: column;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar">
+    <div class="logo">
+        <h2>VCollab</h2>
+    </div>
+    <ul class="nav-links">
+        <li><a href="dashboard.html" class="active">Dashboard</a></li>
+        <li><a href="meetings-list.html">Meetings</a></li>
+        <li><a href="chat.html">Chat</a></li>
+        <li><a href="profile.html">Profile</a></li>
+        <li><a href="#" onclick="API.auth.logout()">Logout</a></li>
+    </ul>
+</nav>
+
+<!-- Dashboard Content -->
+<div class="dashboard">
+    <!-- Welcome Section -->
+    <div class="welcome-section">
+        <h1>Welcome to VCollab</h1>
+        <p id="welcomeMessage">Your professional video conferencing platform</p>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <a href="create-meeting.html" class="quick-action-btn primary">
+            <span>📹</span>
+            <span>Start Meeting</span>
+        </a>
+        <a href="join-meeting.html" class="quick-action-btn">
+            <span>🔗</span>
+            <span>Join Meeting</span>
+        </a>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">43</div>
+            <div class="stat-label">Features Available</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">HD</div>
+            <div class="stat-label">Video Quality</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">∞</div>
+            <div class="stat-label">Participants</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">24/7</div>
+            <div class="stat-label">Available</div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard Grid -->
+    <div class="dashboard-grid">
+        <a href="create-meeting.html" class="dashboard-card">
+            <span class="card-icon">📹</span>
+            <h2>Start Meeting</h2>
+            <p>Create a new video meeting with all advanced features</p>
+        </a>
+
+        <a href="join-meeting.html" class="dashboard-card">
+            <span class="card-icon">👥</span>
+            <h2>Join Meeting</h2>
+            <p>Join an existing meeting with a code</p>
+        </a>
+
+        <a href="meetings-list.html" class="dashboard-card">
+            <span class="card-icon">📅</span>
+            <h2>My Meetings</h2>
+            <p>View and manage all your meetings</p>
+        </a>
+
+        <a href="chat.html" class="dashboard-card">
+            <span class="card-icon">💬</span>
+            <h2>Chat</h2>
+            <p>Real-time messaging with your team</p>
+        </a>
+
+        <div class="dashboard-card" onclick="showFeature('File Sharing')">
+            <span class="card-icon">📁</span>
+            <h2>File Sharing</h2>
+            <p>Upload and share files during meetings</p>
+        </div>
+
+        <div class="dashboard-card" onclick="showFeature('AI Summary')">
+            <span class="card-icon">🤖</span>
+            <h2>AI Summary</h2>
+            <p>View AI-generated meeting summaries</p>
+        </div>
+
+        <a href="profile.html" class="dashboard-card">
+            <span class="card-icon">👤</span>
+            <h2>Profile</h2>
+            <p>Manage your account and settings</p>
+        </a>
+
+        <div class="dashboard-card" onclick="showFeature('Analytics')">
+            <span class="card-icon">📊</span>
+            <h2>Analytics</h2>
+            <p>View meeting statistics and insights</p>
+        </div>
+    </div>
+</div>
+
+<script src="js/api.js"></script>
+<script>
+// Check authentication
+if (!requireAuth()) {
+    throw new Error('Authentication required');
+}
+
+// Display welcome message
+const userData = getUserData();
+if (userData) {
+    document.getElementById('welcomeMessage').textContent = `Welcome back, ${userData.fullName}!`;
+}
+
+// Show feature info
+function showFeature(feature) {
+    alert(`${feature} is available in meetings!\n\nTo use it:\n1. Start or join a meeting\n2. Look for the feature in the meeting room`);
+}
+</script>
+
+</body>
+</html>

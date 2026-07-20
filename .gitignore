@@ -3,3 +3,16 @@ node_modules/
 uploads/
 *.log
 .DS_Store
+
+
+# ========================================
+# Security - Never commit these files
+# ========================================
+backend/.env
+backend/.env.local
+backend/.env.production
+**/check-railway-secrets.js
+**/test-security.js
+**/*.pem
+**/*.key
+**/secrets.json
